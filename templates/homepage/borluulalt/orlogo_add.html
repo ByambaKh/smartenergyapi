@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        function check_customer_code() {
+            var user_code_value = $('#user_code').val();
+
+            if (user_code_value.length == 0){
+                $('#user_code').is(':required')
+                $('#error_text').text('Хэрэглэгчийн дугаараа оруулна уу.');
+            } else {
+                data = {'user_code' : user_code_value };
+                ajax('/home/orlogo_nehemjleh', data, function(result){
+                    if (result == 'not_found'){
+                        $('#error_text').text('Энэ хэрэглэгчийн код олдсонгүй!');
+                    } else {
+                        $('#error_text').text('');
+
+                        $('#last_name').val(result.last_name);
+                        $('#first_name').val(result.first_name);
+                        $('#register').val(result.register);
+                        $('#address').val(result.address);
+                        $('#pay_total').val(result.pay_total);
+                        $('#bichilt').val(result.bichilt);
+                        $('#ehnii').val(result.ehnii);
+                        $('#balance').val(result.balance);
+                    }
+                });
+            }
+        }
+
+        $('input#user_code').focusout(function() {
+            check_customer_code()
+        });
+
+        $('#orlogo_total').keyup(function() {
+            $('#zuruu').val((parseFloat($('#balance').val()) - parseFloat($('#orlogo_total').val())).toFixed(2));
+        });
+
+        <!--$('#select_bank').change(function () {-->
+            <!--$.cookie('select_bank', $('#select_bank').val(), { 'expires' : 1, path : '/home/borluulalt/orlogo_add' })-->
+        <!--});-->
+        <!--$('#orlogo_date').change(function () {-->
+            <!--$.cookie('orlogo_date', $('#orlogo_date').val(), { 'expires' : 1, path : '/home/borluulalt/orlogo_add' })-->
+        <!--});-->
+        <!--$('#orlogo_date').val($.cookie('orlogo_date'));-->
+        <!--$('#select_bank option').each(function(i){-->
+            <!--if($(this).val() == $.cookie('select_bank')) {-->
+                <!--$(this).attr('selected', 'selected');-->
+            <!--}-->
+        <!--});-->
+    });
+</script>
+{% endblock %}
+{% block link %}{% url 'orlogo_list' %}{% endblock%}
+{% block title %}Орлого{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="card">
+        <form id="allInputsFormValidation" name="orlogo_add" class="form-horizontal" action="" method="post" novalidate="">{% csrf_token %}
+            <div class="content">
+
+                <font color="red" id="error_text"></font>
+
+                <legend>Орлого бүртгэх</legend>
+                <div class="col-md-12">
+                    {% if error != None %}
+                    <font color="red">{{error.description}}</font>
+                    {% else %}
+                    {% if success == "True" %}
+                    <font color="green">Амжилттай хадгалагдлаа.</font>
+                    {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хэрэглэгчийн код</label>
+                            <input class="form-control" type="number" placeholder="Хэрэглэгчийн дугаар" number="true"
+                                   id="user_code" name="user_code" required/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төлбөр хийсэн банк</label>
+                            <select class="form-control" name="select_bank" id="select_bank"  required>
+                                <option value="">- Сонгох -</option>
+                                {% for item in bank %}
+                                    {% if item.id == bank_id %}
+                                        <option value="{{item.id}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+
+                 <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Огноо</label>
+                            <input class="form-control datetimepicker" placeholder="Огноо" type="text" name="orlogo_date" id="orlogo_date"  autocomplete="off" required/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төлсөн төлбөр</label>
+                            <input class="form-control" type="number" step="0.01" name="orlogo_total" id="orlogo_total" required/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Эцсийн үлдэгдэл</label>
+                            <input class="form-control" type="number" step="0.01" name="balance" id="balance" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Зөрүү</label>
+                            <input class="form-control" type="number" step="0.01" name="zuruu" id="zuruu" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Энэ сарын нийт орлого</label>
+                            <input class="form-control" type="text" placeholder="Сүүлд төлсөн орлого" id="pay_total" name="pay_total" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Эхний үлдэгдэл</label>
+                            <input class="form-control" type="text" placeholder="Эхний үлдэгдэл" value="" id="ehnii" name="ehnii" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Сүүлийн сарын бичилт</label>
+                            <input class="form-control" type="text" placeholder="Сүүлийн сарын бичилт" value="" id="bichilt" name="bichilt" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Овог</label>
+                            <input class="form-control" type="text" placeholder="Овог"
+                                   id="last_name" name="last_name" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Нэр</label>
+                            <input class="form-control" type="text" placeholder="Нэр"
+                                   id="first_name" name="first_name" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Регистр</label>
+                            <input class="form-control" type="text" placeholder="Регистр" id="register" name="register" disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-12">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хаяг</label>
+                            <input class="form-control" type="text" placeholder="Хаяг" id="address" name="address" disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="footer text-center">
+                    <button type="submit" class="btn btn-info btn-fill">Хадгалах</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

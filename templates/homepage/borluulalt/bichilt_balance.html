@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block title %}Бичилт{% endblock %}
+
+{% block head_block %}
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+    function click_submit(id, name){
+        console.log(id)
+        var data = "/home/borluulalt/balance_submit/{{type}}/" + id +"/{{current_year}}/{{current_month}}/";
+        var button_id = "button#"+id + "_button";
+        var i_id = "i#" + id + "_itag";
+        $(button_id).prop('disabled', true);
+        $(i_id).addClass("fa fa-circle-o-notch fa-spin");
+        $.ajax({
+            type: 'GET',
+            url: data,
+            dataType : 'json',
+            success: function(response) {
+                $(i_id).removeClass();
+                $(button_id).prop('disabled', false);
+                var text = '"' + name + '"-н ' + "нийт " + response.success.count +" бичилтээс " + response.success.success_count + "-д баланс тооцов.";
+                demo.shwBalanceSuccessDialog('success-message', text);
+            },
+            error: function (data){
+                console.log(response.success.count)
+                $(i_id).removeClass();
+                $(button_id).prop('disabled', false);
+                alert('"' + name + '"-н бичилтүүдэд баланс тооцход алдаа гарлаа.')
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('select#select_angilal').change(function () {
+
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            console.log(valueSelected)
+            if (valueSelected == 0){
+                $('#dedstants_div').show();
+                $('#bair_div').hide();
+            }
+            else{
+                $('#dedstants_div').hide();
+                $('#bair_div').show();
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+{% if perms.data.view_bichiltbalance %}
+<div class="container-fluid">
+    <div class="row">
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    Энергийн баланс
+                </div>
+                <div class="content content-full-width">
+                    <div class="tab-content">
+                        <div id="personalUser" class="tab-pane active">
+                             <form id="allInputsFormValidation" class="form-horizontal" action="{{urlz}}" method="post" novalidate="">{% csrf_token %}
+                                <div class="form-group col-md-3">
+                                    <label>Он</label>
+                                    <select class="form-control" name="year_select" id="year_select">
+                                        <option value="">- Сонгох -</option>
+                                        {% for year in years %}
+                                            {% if year == current_year %}
+                                                <option value="{{year}}" selected>{{year}}</option>
+                                            {% else %}
+                                                <option value="{{year}}">{{year}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label>Сар</label>
+                                    <select class="form-control" name="month_select" id="month_select">
+                                        <option value="">- Сонгох -</option>
+                                        {% for month in months %}
+                                            {% if month == current_month %}
+                                                <option value="{{month}}" selected>{{month}}-р сар</option>
+                                            {% else %}
+                                                <option value="{{month}}">{{month}}-р сар</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label>Ангилал</label>
+                                    <select class="form-control" name="select_angilal" id="select_angilal">
+
+                                        {% if type == '0' %}
+                                            <option value="0" selected>Дэд станц</option>
+                                        {% else %}
+                                            <option value="0">Дэд станц</option>
+                                        {% endif %}
+                                        {% if type == '2' %}
+                                            <option value="2" selected>Орон сууц</option>
+                                        {% else %}
+                                            <option value="2">Орон сууц</option>
+                                        {% endif %}
+
+                                    </select>
+                                </div>
+                                 <div class="form-group col-md-3" id="dedstants_div" {%if type != '0' %}hidden{% endif %}>
+                                    <label>Дэд станцууд</label>
+                                    <select class="form-control" name="select_ded_stants" id="select_ded_stants">
+                                        <option value="0" selected>- СОНГОХ -</option>
+                                        {% for item in ded_stantss %}
+                                            {% if selected_stants == item.id %}
+                                                <option value="{{item.id}}" selected>{{item.name}}</option>
+                                            {% else %}
+                                                <option value="{{item.id}}">{{item.name}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!--<div class="form-group col-md-3" id="bair_div" {%if selected_bair == 0 %}hidden{% endif %}>-->
+                                    <!--<label>Байрнууд</label>-->
+                                    <!--<select class="form-control" name="selected_bair" id="selected_bair">-->
+                                        <!--<option value="0" selected>- СОНГОХ -</option>-->
+                                        <!--{% for item in bairs %}-->
+                                            <!--{% if selected_bair == item.id %}-->
+                                                <!--<option value="{{item.id}}" selected>{{item.name}}</option>-->
+                                            <!--{% else %}-->
+                                                <!--<option value="{{item.id}}">{{item.name}}</option>-->
+                                            <!--{% endif %}-->
+                                        <!--{% endfor %}-->
+                                    <!--</select>-->
+                                <!--</div>-->
+                                <div class="col-md-12 text-center">
+                                    <button class="btn btn-warning btn-fill btn-wd" type="submit" name="search_ahui">Шүүж харах</button>
+                                </div>
+                                <div class="clearfix"></div>
+                                <!--<div class="form-group" style="margin-top:27px; float:left;margin-left:15px;">-->
+                                    <!--<button name="balance_submit" class="btn btn-success btn-fill" type="submit">Баланс баталгаажуулах</button>-->
+                                <!--</div>-->
+                            </form>
+                            <!--<div class="download_button text-right">-->
+                                <!--<a href="/home/borluulalt/balance_export/">-->
+                                    <!--<button class="btn btn-success btn-fill">Баталгаажуулах</button>-->
+                                <!--</a>-->
+                            <!--</div>-->
+                            <table id="bootstrap-table1" class="table">
+                                <thead>
+                                <th data-field="reg_name" data-sortable="true">Нэр</th>
+                                <th data-field="name" data-sortable="true">ХАЦЭХ квтц</th>
+                                <th data-field="address1" data-sortable="true">Түгээсэн ЦЭХ квтц</th>
+                                <th data-field="address" data-sortable="true">Алдагдал квтц</th>
+                                <th data-field="percents" data-sortable="true">Алдагдал %-аар</th>
+                                <th data-field="ads1" data-sortable="true">Толгой станц</th>
+                                <th data-field="actions"></th>
+                                <th data-field="actions1">Харах</th>
+                                <th data-field="actions2"></th>
+                                </thead>
+                                <tbody>
+                                {% for item in data %}
+                                    <tr>
+                                        <td class="td-actions text-center">{{item.name}}</td>
+                                        <td class="td-actions text-right">{{item.self_balance|floatformat:1}}</td>
+                                        <td class="td-actions text-right">{{item.childs_balance|floatformat:1}}</td>
+                                        <td class="td-actions text-right">{{item.lose_balance|floatformat:1}}</td>
+                                        <td class="td-actions text-right">{{item.lose_percentage|floatformat:1}}</td>
+                                        {% if item.parent_name == "" %}
+                                            <td class="td-actions text-center">Байхгүй</td>
+                                        {% else %}
+                                            <td class="td-actions text-center">{{item.parent_name}}</td>
+                                        {% endif %}
+                                        {% if type == '0' %}
+                                        <td><a class="btn btn-primary btn-fill btn-sm" href="/home/borluulalt/bichilt_balance/{{item.id}}">Дэлгэрэнгүй харах</a></td>
+                                        <td>
+                                            {% if perms.data.change_bichiltbalance %}
+                                            <button class="btn btn-success btn-fill btn-sm" onclick="click_submit('{{item.id}}', '{{item.name}}')" id="{{item.id}}_button"><i id="{{item.id}}_itag" class=""></i> Баталгаажуулах</button>
+                                            {% else %}
+                                            <button class="btn btn-success btn-fill btn-sm" onclick="click_submit('{{item.id}}', '{{item.name}}')" id="{{item.id}}_button" disabled="disabled"><i id="{{item.id}}_itag"  class=""></i> Баталгаажуулах</button>
+                                            {% endif %}
+                                        </td>
+                                        <td><a class="btn btn-success btn-fill btn-sm" href="/home/borluulalt/balance_export/{{type}}/{{item.id}}/{{current_year}}/{{current_month}}/">Татаж авах</a></td>
+                                        {% else %}
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

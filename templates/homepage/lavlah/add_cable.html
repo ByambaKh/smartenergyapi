@@ -1,0 +1,181 @@
+ {% extends "base.html" %}
+{% block title %}Кабель{% endblock%}
+{% block link %}/home/lavlagaa/cable{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" enctype="multipart/form-data" action="{{action}}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="cable_id" value="{{cable.id}}">
+            <div class="content">
+                {% if 'edit' in action %}
+                <legend>Кабелийн утга засах</legend>
+                {% else %}
+                <legend>Кабелийн утга бүртгэх</legend>
+                {%endif%}
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Кабелийн нэр</label>
+                            <input class="form-control" type="text" placeholder="Кабелийн нэр" name="cable_ner" value="{{cable.ner}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Кабелийн урт /метр/</label>
+                            <input class="form-control" type="number" maxlength="7" placeholder="Кабелийн урт /метр/" name="cable_urt" min="0" value="{{cable.urt}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Кабелийн тип</label>
+                            <input class="form-control" type="text" placeholder="Кабелийн тип" name="cable_tip" value="{{cable.tip}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Мулфи тоо</label>
+                            <input class="form-control" type="number" maxlength="2" placeholder="Мулфи тоо" name="mulfi_too" value="{{cable.mulfi_too}}" max="30" min="0"/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Трасс</label>
+                            <input class="form-control" placeholder="Файл сонгох" type="file" accept=".png, .jpg, .jpeg, .pdf" name="trass"/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Суурилуулсан огноо</label>
+                            <input class="form-control datetimepicker" type="text" placeholder="Суурилуулсан огноо" name="suuriluulsan_ognoo" value="{{cable.suuriluulsan_ognoo|date:'Y-m-d'}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Эхлэл дэд станц</label>
+                            <select class="form-control" name="start_ded_stants" id="start_ded_stants" required>
+                                <option value="">Сонгох</option>
+                                {% for ded_stant in ded_stants %}
+                                {% if cable.start_ded_stants_id == ded_stant.id %}
+                                    <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}</option>
+                                {% else %}
+                                    <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Эхлэл</label>
+                            <select class="form-control" name="orolt" id="orolt" required>
+                                <option value="">Сонгох</option>
+                                {% if 'edit' in action %}
+                                {% for orolt in orolts %}
+                                {% if cable.orolt_id == orolt.id %}
+                                    <option value="{{orolt.id}}" selected>{{orolt.shugam_ner}}</option>
+                                {% else %}
+                                    <option value="{{orolt.id}}">{{orolt.shugam_ner}}</option>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төгсгөл дэд станц</label>
+                            <select class="form-control" name="end_ded_stants" id="end_ded_stants" required>
+                                <option value="">Сонгох</option>
+                                {% for ded_stant in ded_stants %}
+                                {% if cable.end_ded_stants_id == ded_stant.id %}
+                                    <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}</option>
+                                {% else %}
+                                    <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төгсгөл</label>
+                            <select class="form-control" name="garalt" id="garalt" required>
+                                <option value="">Сонгох</option>
+                                {% if 'edit' in action %}
+                                {% for garalt in garalts %}
+                                {% if cable.garalt_id == garalt.id %}
+                                    <option value="{{garalt.id}}" selected>{{garalt.shugam_ner}}</option>
+                                {% else %}
+                                    <option value="{{garalt.id}}">{{garalt.shugam_ner}}</option>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if 'edit' in action %}
+                    <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% else %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block headblock %}
+<script style="text/javascript">
+jQuery(document).ready(function() {
+    $('select#start_ded_stants').change(function() {
+        var ded_stants_id = $('#start_ded_stants').val();
+        $('select#orolt option').remove().end();
+
+        if(ded_stants_id != '') {
+            $.ajax({
+                url: '/home/lavlagaa/add_cable?start_ded_stants='+ded_stants_id,
+                type: 'GET',
+                success: function(result){
+                    $('#orolt').append('<option value="">Сонгох</option>')
+                    for(var i=0; i<=result.length-1; i++) {
+                        $('#orolt').append('<option value="'+result[i].id+'">'+result[i].name+'</option>')
+                    }
+                }
+            });
+        }
+    });
+
+    $('select#end_ded_stants').change(function() {
+        var ded_stants_id = $('#end_ded_stants').val();
+        $('select#garalt option').remove().end();
+
+        if(ded_stants_id != '') {
+            $.ajax({
+                url: '/home/lavlagaa/add_cable?end_ded_stants='+ded_stants_id,
+                type: 'GET',
+                success: function(result){
+                    $('#garalt').append('<option value="">Сонгох</option>')
+                    for(var i=0; i<=result.length-1; i++) {
+                        $('#garalt').append('<option value="'+result[i].id+'">'+result[i].name+'</option>')
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

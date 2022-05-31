@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block title %}Тасралт{% endblock%}
+{% block link %}/home/ashiglalt/tasralt_list/1/{% endblock%}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+		$("input#tasarsan_date").change(function(){
+            var tasarsanDate = new Date($("input#tasarsan_date").val());
+            var zalgasanDate = new Date($("input#zalgasan_date").val());
+            var hours = parseFloat((zalgasanDate - tasarsanDate)/1000/60/60);
+            if(isNaN(hours)){
+          	    $("input#tasraltiin_hugatsaa").val("");
+            } else {
+          	    $("input#tasraltiin_hugatsaa").val(hours);
+            }
+    	});
+
+    	$("input#zalgasan_date").change(function(){
+            var tasarsanDate = new Date($("input#tasarsan_date").val());
+            var zalgasanDate = new Date($("input#zalgasan_date").val());
+            var hours = parseFloat((zalgasanDate - tasarsanDate)/1000/60/60);
+            if(isNaN(hours)){
+          	    $("input#tasraltiin_hugatsaa").val("");
+            } else {
+          	    $("input#tasraltiin_hugatsaa").val(hours);
+            }
+    	});
+
+		$("input#amper").keyup(function(){
+			var amper = parseFloat($("input#amper").val());
+			var voltage = parseFloat($("input#voltage").val());
+			var power = parseFloat(amper * voltage * 1.73 / 1000);
+			if (isNaN(power)){
+			    $("input#chadal").val("1");
+			} else {
+			    $("input#chadal").val(power);
+			    var hours = parseFloat($("input#tasraltiin_hugatsaa").val());
+			    if(isNaN(hours)){
+			  	    $("input#dutuu_tugeesen").val("2");
+			    } else {
+			  	    power = parseFloat(power * hours);
+			  	    $("input#dutuu_tugeesen").val(power);
+			    }
+			}
+    	});
+
+    	$("input#voltage").keyup(function(){
+			var amper = parseFloat($("input#amper").val());
+			var voltage = parseFloat($("input#voltage").val());
+			var power = parseFloat(amper * voltage * 1.73 / 1000);
+			if (isNaN(power)){
+			    $("input#chadal").val("1");
+			} else {
+			    $("input#chadal").val(power);
+			    var hours = parseFloat($("input#tasraltiin_hugatsaa").val());
+			    if(isNaN(hours)){
+			  	    $("input#dutuu_tugeesen").val("2");
+			    } else {
+			  	    power = parseFloat(power * hours);
+			  	    $("input#dutuu_tugeesen").val(power);
+			    }
+			}
+    	});
+    });
+</script>
+{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="{{action}}"
+              method="post">
+            {% csrf_token %}
+            <div class="content">
+                {% if 'edit' in action %}
+                <legend>Тасралт засах</legend>
+                {% else %}
+                <legend>Тасралт бүртгэх</legend>
+                {%endif%}
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Дэд станц</label>
+                            <select class="form-control" name="ded_stants" id="ded_stants"
+                                    required>
+                                <option value="">Сонгох</option>
+                                {% for ded_stant in ded_stants %}
+                                {% if tasralt.ded_stants_id == ded_stant.id %}
+                                <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}
+                                </option>
+                                {% else %}
+                                <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Шугам</label>
+                            <select class="form-control" name="shugam" id="shugam" required>
+                                <option value="">Сонгох</option>
+                                {% if 'edit' in action %}
+                                {% for shugam in shugams %}
+                                {% if tasralt.shugam_id == shugam.id %}
+                                <option value="{{shugam.id}}" selected>{{shugam.shugam_ner}}
+                                </option>
+                                {% else %}
+                                <option value="{{shugam.id}}">{{shugam.shugam_ner}}</option>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ажилласан хамгаалалт</label>
+                            <select class="form-control" name="ajillasan_hamgaalalt" required>
+                                <option value="">Сонгох</option>
+                                <option value="0" {% if tasralt.ajillasan_hamgaalalt == '0' %}selected{% endif %}>Ихсэх гүйдлийн хамгаалалт шууд (MTO Отсечка)</option>
+                                <option value="1" {% if tasralt.ajillasan_hamgaalalt == '1' %}selected{% endif %}>Ихсэх гүйдлийн хамгаалалт хугацаатай (МТЗ)</option>
+                                <option value="2" {% if tasralt.ajillasan_hamgaalalt == '2' %}selected{% endif %}>Газардлагын хамгаалалт</option>
+                                <option value="3" {% if tasralt.ajillasan_hamgaalalt == '3' %}selected{% endif %}>Нумын хамгаалалт</option>
+                                <option value="4" {% if tasralt.ajillasan_hamgaalalt == '4' %}selected{% endif %}>Трансформаторын хамгаалалт</option>
+                                <option value="5" {% if tasralt.ajillasan_hamgaalalt == '5' %}selected{% endif %}>Давтамжийн хамгаалалт (АЧР)</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тасралтын шалтгаан</label>
+                            <textarea class="form-control" rows="4" name="tasraltiin_shaltgaan"
+                                      placeholder="Тасралтын шалтгаан" maxlength="1000"
+                                      required>{{tasralt.tasraltiin_shaltgaan }}</textarea>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Авсан арга хэмжээ</label>
+                            <textarea class="form-control" rows="4" name="avsan_arga_hemjee"
+                                      placeholder="Авсан арга хэмжээ" maxlength="1000" required>{{tasralt.avsan_arga_hemjee }}</textarea>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тасарсан огноо</label>
+                            <input class="form-control datetimepicker1" id="tasarsan_date"
+                                   placeholder="Тасарсан огноо" type="text" name="tasarsan_date"
+                                   value="{{tasralt.tasarsan_date|date:'Y-m-d H:i'}}"
+                                   required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Залгасан огноо</label>
+                            <input class="form-control datetimepicker1" id="zalgasan_date"
+                                   placeholder="Залгасан огноо" type="text" name="zalgasan_date"
+                                   value="{{tasralt.zalgasan_date|date:'Y-m-d H:i'}}"
+                                   required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тасралтын хугацаа (цаг)</label>
+                            <input class="form-control" type="text" id="tasraltiin_hugatsaa"
+                                   placeholder="Тасралтын хугацаа (цаг)"
+                                   name="tasraltiin_hugatsaa"
+                                   value="{{tasralt.tasraltiin_hugatsaa}}" readonly/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Гүйдэл (А)</label>
+                            <input class="form-control" type="number" id="amper" name="amper"
+                                   value="{{tasralt.amper}}" placeholder="Гүйдэл (А)" required
+                                   min=0 max=2000/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хүчдэл (В)</label>
+                            <input class="form-control" type="number" id="voltage"
+                                   name="voltage" value="{{tasralt.voltage}}"
+                                   placeholder="Хүчдэл (В)" required min=0 max=20000/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Чадал (кВт)</label>
+                            <input class="form-control" type="number" placeholder="Чадал (кВт)"
+                                   name="chadal" id="chadal" value="{{tasralt.chadal}}" required
+                                   readonly/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Дутуу түгээсэн ЦЭХ (кВт/цаг)</label>
+                            <input class="form-control" type="text" id="dutuu_tugeesen"
+                                   placeholder="Дутуу түгээсэн ЦЭХ (кВт/цаг)"
+                                   name="dutuu_tugeesen" value="{{tasralt.dutuu_tugeesen}}"
+                                   readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill">
+                    {% if 'edit' in action %}
+                    Засах
+                    {% else %}
+                    Хадгалах
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

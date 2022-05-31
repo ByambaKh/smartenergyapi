@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block head_block %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+			$('#bootstrap-table1 > tbody  > tr').each(function() {
+				var span = $(this).find('span.phone_num').text(function(i, text) {
+					return text.replace(/(\d{4})(\d{4})/, '$1-$2');
+				});
+			});
+        });
+    </script>
+{% endblock %}
+{% block link %}{% url 'user_list' %}{% endblock%}
+{% block title %}Ажилтан{% endblock %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-12">
+            <a href="user_add" class="btn btn-primary btn-fill btn-wd" type="button" >Ажилтан нэмэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    
+    {% if messages %}
+		<ul class="messagelist">
+		    {% for message in messages %}
+		    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                {{ message }}
+            </li>
+		    {% endfor %}
+		</ul>
+	{% endif %}
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+               		Ажилчдын жагсаалт
+                </div>
+
+                <table id="bootstrap-table1" class="table">
+                 	<thead>
+                      	<th class="text-center">№</th>
+                        <th data-field="username" data-sortable="true">Нэвтрэх нэр</th>
+                        <th data-field="lastname" data-sortable="true">Овог</th>
+                        <th data-field="firstname" data-sortable="true">Нэр</th>
+                        <th data-field="phone" data-sortable="true">Утасны дугаар</th>
+                        <th data-field="email" data-sortable="true">Имэйл хаяг</th>
+                        <th data-field="superuser" data-sortable="true">Системийн эрх</th>
+                        <th data-field="org" data-sortable="true">Байгууллага</th>
+                        <th data-field="actions" class="td-actions text-right">Засвар</th>
+                    </thead>
+                    <tbody>
+                    	{% for detail in datas %}
+	                    	<tr>
+	                         	<td>{{ forloop.counter }}</td>
+                                <td>{{ detail.user.username }}</td>
+                                <td>{{ detail.user.last_name }}</td>
+                                <td>{{ detail.user.first_name }}</td>
+                                <td><span class="phone_num">{{ detail.phone }}</span></td>
+                                <td>{{ detail.user.email }}</td>
+                                {% if detail.user.is_superuser == 1 %}
+                                    <td>Админ</td>
+                                {% else %}
+                                    <td>{{ detail.user.groups.all.0.name }}</td>
+                                {% endif %}
+                                <td>{{detail.org.name}}</td>
+	                            <td class="td-actions text-right">
+	                            	<a href="user_edit/{{detail.user.id}}/"
+	                            		class="btn btn-simple btn-warning btn-icon table-action edit" >
+	                            		<i class="fa fa-edit"></i>
+	                            	</a>
+	                            	<a href="user_del/{{detail.user.id}}/"
+	                            		class="btn btn-simple btn-danger btn-icon table-action remove"
+	                            		onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')">
+	                            		<i class="fa fa-remove"></i>
+	                            	</a>
+	                            	<a href="user_res/{{detail.user.id}}/"
+	                            		class="btn btn-simple btn-info btn-icon table-action view"
+	                            		onclick="return confirm('Нууц үг сэргээхдээ итгэлтэй байна уу?')">
+	                            		<i class="fa fa-key"></i>
+	                            	</a>
+	                            </td>
+	                        </tr>
+						{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+   </div>
+</div>
+
+{% endblock %}

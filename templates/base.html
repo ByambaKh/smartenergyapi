@@ -1,0 +1,632 @@
+{% load staticfiles %}
+{% load homepage_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.ico' %}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+
+    <title>Ухаалаг эрчим хүч ХХК</title>
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'assets/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'assets/css/light-bootstrap-dashboard.css' %}" rel="stylesheet"/>
+    <link href="{% static 'assets/css/demo.css' %}" rel="stylesheet"/>
+
+    <!--     Fonts and icons     -->
+
+    <!--<link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">-->
+    <!--<link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>-->
+    <link href="{% static 'assets/css/font-awesome.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'assets/css/fonts-aw.css' %}" rel="stylesheet" type='text/css'/>
+    <link href="{% static 'assets/css/pe-icon-7-stroke.css' %}" rel="stylesheet"/>
+    <link href="{% static 'assets/css/select2.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'assets/js/script.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/jquery.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/jquery-ui.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/tinymce/tinymce.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/select2.min.js' %}" type="text/javascript"></script>
+    {% block head_block %}{% endblock %}
+
+</head>
+<body>
+<div class="wrapper">
+    <div class="sidebar" data-color="grey" data-image="/static/assets/img/sidebar-3.jpg">
+
+        <div class="logo text-center">
+            <a href="/home/index"><img src="{% static 'assets/img/logo_login.png' %}" width="174" /></a>
+        </div>
+
+        <div class="sidebar-wrapper">
+
+            <ul class="nav">
+                <li class="{% if menu == '1' %}active{% endif %}">
+                    <a href="/home/index">
+                        <i class="pe-7s-graph"></i>
+                        <p>Хянах самбар</p>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="collapse" href="#bvrtgel"
+                       aria-expanded="{% if menu == '2'%}true{% else %}false{%endif%}">
+                        <i class="pe-7s-note"></i>
+                        <p>Бүртгэл
+                            <b class="caret"></b>
+                        </p>
+                    </a>
+                    <div class="collapse{% if menu == '2'%} in{%endif%}" id="bvrtgel">
+                        <ul class="nav">
+                            {% if perms.data.view_technicalproposal or perms.data.add_technicalproposal or perms.data.change_technicalproposal or perms.data.delete_technicalproposal %}
+                            <li class="{% if sub == '1' and menu == '2' %}active{% endif %}">
+                                <a href="/home/tech_nuhtsul/1/">Техникийн нөхцөл</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_geree or perms.data.add_geree or perms.data.change_geree or perms.data.delete_geree %}
+                            <li class="{% if sub == '2' and menu == '2' %}active{% endif %}">
+                                <a href="/home/geree_list/1/">Гэрээ</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_tooluurcustomer or perms.data.add_tooluurcustomer or perms.data.change_tooluurcustomer or perms.data.delete_tooluurcustomer %}
+                            <li class="{% if sub == '3' and menu == '2'%}active{% endif %}">
+                                <a href="/home/tooluur_list">Хэмжих хэрэгсэл</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_oroltgaralt or perms.data.add_oroltgaralt or perms.data.change_oroltgaralt or perms.data.delete_oroltgaralt %}
+                            <li class="{% if sub == '4' and menu == '2'%}active{% endif %}">
+                                <a href="/home/orolt_and_garalt_list">Оролт гаралт</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a data-toggle="collapse" href="#salesCollaple"
+                       aria-expanded="{% if menu == '3'%}true{% else %}false{%endif%}">
+                        <i class="pe-7s-note2"></i>
+                        <p>Борлуулалт
+                            <b class="caret"></b>
+                        </p>
+                    </a>
+                    <div class="collapse{% if menu == '3'%} in{%endif%}" id="salesCollaple">
+                        <ul class="nav">
+                            {% if perms.data.view_tuluvluguu or perms.data.add_tuluvluguu or perms.data.change_tuluvluguu or perms.data.delete_tuluvluguu %}
+                            <li class="{% if sub == '1' and menu == '3' %}active{% endif %}">
+                                <a href="/home/tuluvluguu">Төлөвлөгөө</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_bichilt or perms.data.add_bichilt or perms.data.change_bichilt or perms.data.delete_bichilt %}
+                            <li class="{% if sub == '2' and menu == '3' %}active{% endif %}">
+                                <a href="/home/borluulalt/bichilt_list/1/">Бичилт</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_bichiltbalance or perms.data.add_bichiltbalance or perms.data.change_bichiltbalance or perms.data.delete_bichiltbalance %}
+                            <li class="{% if sub == '8' and menu == '3' %}active{% endif %}">
+                                <a href="/home/borluulalt/bichilt_balance/0">Баланс тооцох</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_avlaga or perms.data.add_avlaga or perms.data.change_avlaga or perms.data.delete_avlaga %}
+                            <li class="{% if sub == '3' and menu == '3' %}active{% endif %}">
+                                <a href="/home/borluulalt/avlaga/0/">Авлага</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_paymenthistory or perms.data.add_paymenthistory or perms.data.change_paymenthistory or perms.data.delete_paymenthistory %}
+                            <li class="{% if sub == '4' and menu == '3'%}active{% endif %}">
+                                <a href="/home/borluulalt/orlogo_list">Орлого</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_posapi or perms.data.add_posapi or perms.data.change_posapi or perms.data.delete_posapi %}
+                            <li class="{% if sub == '6' and menu == '3'%}active{% endif %}">
+                                <a href="/home/borluulalt/tatvar">Татвар</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_customeruilchilgeetulbur or perms.data.add_customeruilchilgeetulbur or perms.data.change_customeruilchilgeetulbur or perms.data.delete_customeruilchilgeetulbur %}
+                            <li class="{% if sub == '5' and menu == '3'%}active{% endif %}">
+                                <a href="/home/vilchilgee">Төлбөрт үйлчилгээ</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_salgalt or perms.data.add_salgalt or perms.data.change_salgalt or perms.data.delete_salgalt %}
+                            <li class="{% if sub == '7' and menu == '3'%}active{% endif %}">
+                                <a href="/home/borluulalt/taslalt">Таслалт, залгалт</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a data-toggle="collapse" href="#serviceCollaple"
+                       aria-expanded="{% if menu == '4'%}true{% else %}false{%endif%}">
+                        <i class="pe-7s-tools"></i>
+                        <p>Ашиглалт
+                            <b class="caret"></b>
+                        </p>
+                    </a>
+                    <div class="collapse{% if menu == '4'%} in{%endif%}" id="serviceCollaple">
+                        <ul class="nav">
+                            {% if perms.data.view_tasralt or perms.data.add_tasralt or perms.data.change_tasralt or perms.data.delete_tasralt %}
+                            <li class="{% if sub == '1' and menu == '4'%}active{% endif %}">
+                                <a href="/home/ashiglalt/tasralt_list/1/">Тасралт</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_taslalt or perms.data.add_taslalt or perms.data.change_taslalt or perms.data.delete_taslalt %}
+                            <li class="{% if sub == '2' and menu == '4'%}active{% endif %}">
+                                <a href="/home/ashiglalt/taslalt_list/1/">Таслалт</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_gemtel or perms.data.add_gemtel or perms.data.change_gemtel or perms.data.delete_gemtel %}
+                            <li class="{% if sub == '5' and menu == '4'%}active{% endif %}">
+                                <a href="/home/ashiglalt/gemtel_list/1/">Гэмтэл</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_uzlegshalgalt or perms.data.add_uzlegshalgalt or perms.data.view_uzlegshalgalt or perms.data.delete_uzlegshalgalt %}
+                            <li class="{% if sub == '3' and menu == '4'%}active{% endif %}">
+                                <a href="/home/ashiglalt/uzleg_shalgalt_list">Үзлэг шалгалт</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_naryadmedeelel or perms.data.add_naryadmedeelel or perms.data.change_naryadmedeelel or perms.data.delete_naryadmedeelel %}
+                            <li class="{% if sub == '4' and menu == '4'%}active{% endif %}">
+                                <a href="/home/ashiglalt/naryad_medeelel_list">Нарядын мэдээлэл</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_shuurhaiajillagaa or perms.data.add_shuurhaiajillagaa or perms.data.change_shuurhaiajillagaa or perms.data.delete_shuurhaiajillagaa %}
+                            <li class="{% if sub == '6' and menu == '4'%}active{% endif %}">
+                                <a href="/home/ashiglalt/shuurhai_ajillagaa_list">Шуурхай ажиллагаа</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_ashiglaltzaavarchilgaa or perms.data.add_ashiglaltzaavarchilgaa or perms.data.change_ashiglaltzaavarchilgaa or perms.data.delete_ashiglaltzaavarchilgaa %}
+                            <li class="{% if sub == '7' and menu == '4'%}active{% endif %}">
+                                <a href="/home/ashiglalt/zaavarchilgaa_list/">Зааварчилгаа</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.data.view_ashiglalt_dedstants or perms.data.add_ashiglalt_dedstants or perms.data.change_ashiglalt_dedstants or perms.data.delete_ashiglalt_dedstants %}
+                            <li class="{% if sub == '8' and menu == '4'%}active{% endif %}">
+                                <a href="/home/ashiglalt/ded_stants/1/">Дэд станц</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </li>
+                {% if perms.data.view_call or perms.data.add_call or perms.data.change_call or perms.data.delete_call %}
+                <li class="{% if menu == '6' %}active{% endif %}">
+                    <a href="/home/call_list">
+                        <i class="pe-7s-call"></i>
+                        <p>Дуудлага</p>
+                    </a>
+                </li>
+                {% endif %}
+                <li class="{% if menu == '7' %}active{% endif %}">
+                    <a href="/home/lavlah">
+                        <i class="pe-7s-notebook"></i>
+                        <p>Лавлагаа</p>
+                    </a>
+                </li>
+                {% if perms.data.view_report or perms.data.add_report or perms.data.change_report or perms.data.delete_report %}
+                <li class="{% if menu == '8' %}active{% endif %}">
+                    <a href="/home/report/1/">
+                        <i class="pe-7s-folder"></i>
+                        <p>Тайлан</p>
+                    </a>
+                </li>
+                {% endif %}
+                {% if perms.data.view_files or perms.data.add_files or perms.data.change_files or perms.data.delete_files %}
+                <li class="{% if menu == '9' %}active{% endif %}">
+                    <a href="/home/files">
+                        <i class="pe-7s-server"></i>
+                        <p>Файл удирдлага</p>
+                    </a>
+                </li>
+                {% endif %}
+                <li>
+                    <a data-toggle="collapse" href="#settingsCollaple"
+                       aria-expanded="{% if menu == '10'%}true{% else %}false{%endif%}">
+                        <i class="pe-7s-config"></i>
+                        <p>Тохиргоо <b class="caret"></b></p>
+                    </a>
+                    <div class="collapse{% if menu == '10'%} in{%endif%}" id="settingsCollaple">
+                        <ul class="nav">
+                            {% if perms.data.view_org or perms.data.add_org or perms.data.change_org or perms.data.delete_org %}
+                            <li class="{% if sub == '1' and menu == '10'%}active{% endif %}">
+                                <a href="/home/org_list">Байгууллага</a>
+                            </li>
+                            {% endif %}
+                            <li class="{% if sub == '2' and menu == '10'%}active{% endif %}">
+                                <a href="/home/role_list">Эрхийн тохиргоо</a>
+                            </li>
+                            <li class="{% if sub == '3' and menu == '10'%}active{% endif %}">
+                                <a href="/home/user_list">Хэрэглэгч</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                {% if perms.data.view_avlaga or perms.data.add_avlaga or perms.data.change_avlaga or perms.data.delete_avlaga %}
+                <li class="{% if menu == '11' %}active{% endif %}">
+                    <a data-toggle="collapse" href="#medeelehCollaple"
+                       aria-expanded="{% if menu == '11'%}true{% else %}false{%endif%}">
+                        <i class="pe-7s-notebook"></i>
+                        <p>Зарлан мэдээлэх <b class="caret"></b></p>
+                    </a>
+                    <div class="collapse{% if menu == '11'%} in{%endif%}" id="medeelehCollaple">
+                        <ul class="nav">
+                            <li class="{% if sub == '1' and menu == '11'%}active{% endif %}">
+                                <a href="/home/medeeleh/0/">Мэдээлэх</a>
+                            </li>
+                            {% if perms.data.view_medeelehzagvar or perms.data.add_medeelehzagvar or perms.data.change_medeelehzagvar or perms.data.delete_medeelehzagvar %}
+                            <li class="{% if sub == '2' and menu == '11'%}active{% endif %}">
+                                <a href="/home/medeeleh/zagvar/1/">Мэдээлэх загвар</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse">
+                        <span class="sr-only"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href={% block link %}{% endblock %}>{% block title %}{% endblock %}</a>
+                </div>
+
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li style="vertical-top: middle;">
+                            <div style="margin-top:15px;">
+                                <p id="active_timer" style="text-align: center;">30:00</p>
+                            </div>
+                        </li>
+                        <li class="dropdown dropdown-with-icons">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-list"></i>
+                                <p class="hidden-md hidden-lg">
+                                    More
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+                            <ul class="dropdown-menu dropdown-with-icons">
+                                <li>
+                                    <a href="#">
+                                        <i class="pe-7s-user"></i>{{ request.user.first_name }} {{ request.user.last_name }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="pe-7s-portfolio"></i>
+                                        <div style="margin-left: 46px;">{% get_position request.user.id %}</div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/home/change_password">
+                                        <i class="pe-7s-key"></i>
+                                        <div style="margin-left: 46px;">Нууц үг солих</div>
+                                    </a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="/home/logout" class="text-danger">
+                                        <i class="pe-7s-close-circle"></i> Гарах
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <p class="copyright pull-right">
+                    Зохиогчийн эрхийг Ухаалаг эрчим ХХК эзэмшинэ &copy; 2018. Хөгжүүлсэн <a href="http://www.odi.mn">Od Innovation LLC</a> | <a href="/media/app-debug.apk">Заалтын апп татах</a>
+                </p>
+            </div>
+        </footer>
+
+    </div>
+</div>
+{% block additionalblock %}
+{% endblock %}
+
+</body>
+
+<!--   Core JS Files and PerfectScrollbar library inside jquery.ui   -->
+<script src="{% static 'assets/js/bootstrap.min.js' %}" type="text/javascript"></script>
+<script>
+    var countDownDate = 1800000;
+
+    // Update the count down every 1 second
+    var x = setInterval(function() {
+        // Get todays date and time
+        var now = new Date().getTime();
+
+        // Find the distance between now an the count down date
+        var distance = countDownDate;
+
+        // Time calculations for days, hours, minutes and seconds
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        $("#active_timer").text((minutes < 10 ? '0'+minutes : minutes) + ":" + (seconds < 10 ? '0'+seconds : seconds))
+
+        // If the count down is over, write some text
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("demo").innerHTML = "EXPIRED";
+        }
+        else{
+            countDownDate = countDownDate - 1000
+        }
+    }, 1000);
+
+    jQuery(document).ready(function() {
+        $('select#ded_stants').change(function() {
+            var ded_stants_id = $('#ded_stants').val();
+            $('select#shugam option').remove().end();
+
+            if(ded_stants_id != '') {
+                $.ajax({
+                    url: $(location).attr('pathname')+'?ded_stants='+ded_stants_id,
+                    type: 'GET',
+                    success: function(result){
+                        $('#shugam').append('<option value="">Сонгох</option>')
+                        for(var i=0; i<=result.length-1; i++) {
+                            $('#shugam').append('<option value="'+result[i].id+'">'+result[i].name+'</option>')
+                        }
+                    }
+                });
+            }else{
+                $('#shugam').append('<option value="">Сонгох</option>')
+            }
+        });
+
+        $('input#pt_suuri_ognoo').change(function() {
+            var suuri_date = new Date($(this).val());
+            var current_date = new Date();
+
+            var ajil_tsag = current_date.getTime() - suuri_date.getTime();
+            var seconds = ajil_tsag / 1000;
+            var hours = parseInt( seconds / 3600 );
+            seconds = seconds % 3600;
+            var minutes = parseInt( seconds / 60 );
+            seconds = seconds % 60;
+
+            $('input#pt_ajil_tsag').val(hours);
+        });
+
+        $('input#battery_suuri_ognoo').change(function() {
+            var suuri_date = new Date($(this).val());
+            var current_date = new Date();
+
+            var ajil_jil = current_date.getTime() - suuri_date.getTime();
+            var seconds = ajil_jil / 1000;
+            var years = parseInt( seconds / 31536000 );
+            seconds = seconds % 31536000;
+            var days = parseInt( seconds / 86400 );
+            seconds = seconds % 86400;
+
+            $('input#battery_ajil_jil').val(years+' жил, '+days+' өдөр');
+        });
+
+        $('a#brigad_members').click(function() {
+            alert('Hello');
+        });
+    });
+</script>
+
+<!--  Forms Validations Plugin -->
+<script src="{% static 'assets/js/jquery.validate.min.js' %}"></script>
+
+<!--  Plugin for Date Time Picker and Full Calendar Plugin-->
+<script src="{% static 'assets/js/moment.min.js' %}"></script>
+
+<!--  Date Time Picker Plugin is included in this js file -->
+<script src="{% static 'assets/js/bootstrap-datetimepicker.min.js' %}" charset="UTF-8"></script>
+<script src="{% static 'assets/js/bootstrap-datetimepicker.mn.js' %}" charset="UTF-8"></script>
+
+<!--  Select Picker Plugin -->
+<script src="{% static 'assets/js/bootstrap-selectpicker.js' %}"></script>
+
+<!--  Checkbox, Radio, Switch and Tags Input Plugins -->
+<script src="{% static 'assets/js/bootstrap-checkbox-radio-switch-tags.js' %}"></script>
+
+<!--  Notifications Plugin    -->
+<script src="{% static 'assets/js/bootstrap-notify.js' %}"></script>
+
+<!-- Sweet Alert 2 plugin -->
+<script src="{% static 'assets/js/sweetalert2.js' %}"></script>
+
+<!-- Vector Map plugin -->
+<script src="{% static 'assets/js/jquery-jvectormap.js' %}"></script>
+
+<!--  Google Maps Plugin    -->
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+
+<!-- Wizard Plugin    -->
+<script src="{% static 'assets/js/jquery.bootstrap.wizard.min.js' %}"></script>
+
+<!--  Datatable Plugin    -->
+<script src="{% static 'assets/js/bootstrap-table.js' %}"></script>
+
+<!--  Full Calendar Plugin    -->
+<script src="{% static 'assets/js/fullcalendar.min.js' %}"></script>
+
+<!-- Light Bootstrap Dashboard Core javascript and methods -->
+<script src="{% static 'assets/js/light-bootstrap-dashboard.js' %}"></script>
+
+<!--   Sharrre Library    -->
+<script src="{% static 'assets/js/jquery.sharrre.js' %}"></script>
+
+<!--   HighCharts    -->
+<script type="text/javascript" src="{% static 'js/highcharts/highcharts.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/highcharts/modules/exporting.js' %}"></script>
+
+<!--   Demo Library    -->
+<script src="{% static 'assets/js/demo.js' %}"></script>
+<!--   Custom JS From Pages    -->
+{% block headblock %}
+{% endblock %}
+<script>
+        tinymce.init({
+            selector: '.email_print',
+            language: 'mn_MN',
+            height: 200,
+            theme: 'modern',
+            plugins: [
+                'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                'searchreplace wordcount visualblocks visualchars code fullscreen',
+                'insertdatetime media nonbreaking save table contextmenu directionality',
+                'emoticons template paste textcolor colorpicker textpattern imagetools codesample toc'
+            ],
+            toolbar1: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+            toolbar2: 'print preview media | forecolor backcolor emoticons | codesample',
+            image_advtab: true,
+            templates: [
+                { title: 'Test template 1', content: 'Test 1' },
+                { title: 'Test template 2', content: 'Test 2' }
+            ],
+            content_css: [
+                '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+                '//www.tinymce.com/css/codepen.min.css'
+            ]
+        });
+</script>
+<script type="text/javascript">
+
+        $('ul.messagelist li').on('click', function() {
+           $(this).hide()
+        });
+
+        var $table = $('#bootstrap-table,#bootstrap-table1');
+
+        function operateFormatter(value, row, index) {
+            return [
+                '<a rel="tooltip" title="View" class="btn btn-simple btn-info btn-icon table-action view" href="javascript:void(0)">',
+                    '<i class="fa fa-image"></i>',
+                '</a>',
+                '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
+                    '<i class="fa fa-edit"></i>',
+                '</a>',
+                '<a rel="tooltip" title="Remove" class="btn btn-simple btn-danger btn-icon table-action remove" href="javascript:void(0)">',
+                    '<i class="fa fa-remove"></i>',
+                '</a>'
+            ].join('');
+        }
+
+        $().ready(function(){
+            window.operateEvents = {
+                'click .view': function (e, value, row, index) {
+                    info = JSON.stringify(row);
+
+                    swal('You click view icon, row: ', info);
+                    console.log(info);
+                },
+                'click .edit': function (e, value, row, index) {
+                    info = JSON.stringify(row);
+
+                    swal('You click edit icon, row: ', info);
+                    console.log(info);
+                },
+                'click .remove': function (e, value, row, index) {
+                    console.log(row);
+                    $table.bootstrapTable('remove', {
+                        field: 'id',
+                        values: [row.id]
+                    });
+                }
+            };
+
+            $table.bootstrapTable({
+                toolbar: ".toolbar",
+                clickToSelect: true,
+                showRefresh: true,
+                search: true,
+                showToggle: true,
+                showColumns: true,
+                pagination: true,
+                searchAlign: 'left',
+                pageSize: 8,
+                clickToSelect: false,
+                pageList: [8,10,25,50,100],
+
+                formatShowingRows: function(pageFrom, pageTo, totalRows){
+                    //do nothing here, we don't want to show the text "showing x of y from..."
+                },
+                formatRecordsPerPage: function(pageNumber){
+                    return pageNumber;
+                },
+                icons: {
+                    refresh: 'fa fa-refresh',
+                    toggle: 'fa fa-th-list',
+                    columns: 'fa fa-columns',
+                    detailOpen: 'fa fa-plus-circle',
+                    detailClose: 'fa fa-minus-circle'
+                }
+            });
+            //activate the tooltips after the data table is initialized
+            $('[rel="tooltip"]').tooltip();
+
+            $(window).resize(function () {
+                $table.bootstrapTable('resetView');
+            });
+        });
+</script>
+
+<script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-46172202-1', 'auto');
+      ga('send', 'pageview');
+</script>
+
+<script type="text/javascript">
+        $().ready(function(){
+            $('#registerFormValidation').validate();
+            $('#loginFormValidation').validate();
+            $('#allInputsFormValidation').validate();
+        });
+</script>
+<script type="text/javascript">
+        $(function(){
+            $('.datetimepicker').datetimepicker({
+                language: 'mn',
+                format: 'yyyy-mm-dd',
+                todayBtn: 1,
+                autoclose: 1,
+                weekStart: 1,
+                minView: 2,
+                pickTime: false
+            });
+        });
+</script>
+<script type="text/javascript">
+        $(function(){
+            $('.datetimepicker1').datetimepicker({
+                language: 'mn',
+                format: 'yyyy-mm-dd hh:ii',
+                weekStart: 1,
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                forceParse: 0,
+                showMeridian: 1
+            });
+        });
+</script>
+</html>

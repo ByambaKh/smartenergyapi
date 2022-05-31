@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Хүчний трансформатор{% endblock%}
+{% block link %}/home/lavlagaa/huchnii_trans{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="{{action}}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="transformator_id" value="{{transformator.id}}">
+            <div class="content">
+                {% if 'edit' in action %}
+                <legend>Трансформаторын утга засах</legend>
+                {% else %}
+                <legend>Трансформаторын утга бүртгэх</legend>
+                {%endif%}
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Трансформаторын нэр</label>
+                            <input class="form-control" name="ner" placeholder="Трансформаторын нэр" value="{{transformator.ner}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Дэд станц</label>
+                            <select class="form-control" name="ded_stants" id="ded_stants" required>
+                                <option value="">Сонгох</option>
+                                {% for ded_stant in ded_stants %}
+                                {% if transformator.ded_stants_id == ded_stant.id %}
+                                <option value="{{ded_stant.id|safe}}" selected>{{ded_stant.name}}</option>
+                                {% else %}
+                                <option value="{{ded_stant.id|safe}}">{{ded_stant.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Шугам</label>
+                            <select class="form-control" name="shugam" id="shugam" required>
+                                <option value="">Сонгох</option>
+                                {% if 'edit' in action %}
+                                {% for shugam in shugams %}
+                                    {% if transformator.shugam_id == shugam.id %}
+                                    <option value="{{shugam.id}}" selected>{{shugam.shugam_ner}}</option>
+                                    {% else %}
+                                    <option value="{{shugam.id}}">{{shugam.shugam_ner}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Трансформаторын чадал</label>
+                            <input class="form-control" name="chadal" placeholder="Трансформаторын чадал" value="{{transformator.chadal}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Трансформаторын тип</label>
+                            <select class="form-control" name="tip" required>
+                                <option value="">Сонгох</option>
+                                <option value="0" {%if transformator.tip == '0'%}selected{%endif%}>Хуурай</option>
+                                <option value="1" {%if transformator.tip == '1'%}selected{%endif%}>Тосон</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Суурилуулсан огноо</label>
+                            <input class="form-control datetimepicker1" id="pt_suuri_ognoo" placeholder="Суурилуулсан огноо" type="text" name="suuriluulsan_ognoo" value="{{transformator.suuriluulsan_ognoo|date:'m/d/Y H:i p'}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ажилласан цаг</label>
+                            <input class="form-control" name="ajillasan_tsag" id="pt_ajil_tsag" placeholder="Ажилласан цаг" value="{{transformator.ajillasan_tsag}}" readonly/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Үйлдвэрлэсэн огноо</label>
+                            <input class="form-control datetimepicker" type="text" placeholder="Үйлдвэрлэсэн огноо" name="uildverlesen_ognoo" value="{{transformator.uildverlesen_ognoo|date:'m/d/Y'}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Анцаф</label>
+                            <input class="form-control" name="antsaf" type="number" min="0" placeholder="Анцаф" value="{{transformator.antsaf}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if 'edit' in action %}
+                    <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% else %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

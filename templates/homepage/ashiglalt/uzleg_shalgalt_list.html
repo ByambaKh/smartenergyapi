@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Үзлэг шалгалт{% endblock%}
+{% block link %}/home/ashiglalt/uzleg_shalgalt_list{% endblock %}
+{% block content %}
+{% if perms.data.view_uzlegshalgalt %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if perms.data.add_uzlegshalgalt %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/ashiglalt/uzleg_shalgalt_add" class="btn btn-primary btn-fill btn-wd" type="button">Үзлэг шалгалт бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/ashiglalt/uzleg_shalgalt_list">
+                        {% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Дэд станц</label>
+                                <select name="ded_stants" class="form-control">
+                                    <option value="">Сонгох</option>
+                                    {% for ded_stant in ded_stants %}
+                                    {% if qry.ded_stants == ded_stant.id %}
+                                    <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}</option>
+                                    {% else %}
+                                    <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Огноо</label>
+                                <input type="text" class="form-control datetimepicker1" placeholder="Огноо" name="ognoo" value="{{qry.ognoo}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Ажилтан</label>
+                                <select class="form-control" name="ajiltan">
+                                    <option value="">Сонгох</option>
+                                    {% for ajiltan in ajiltans %}
+                                    {% if qry.ajiltan == ajiltan.id %}
+                                    <option value="{{ajiltan.id}}" selected>{{ajiltan.first_name}} {{ajiltan.last_name}}</option>
+                                    {% else %}
+                                    <option value="{{ajiltan.id}}">{{ajiltan.first_name}} {{ajiltan.last_name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd" type="submit">Шүүж харах</button>
+                            </div>
+                        </div>
+                    </form>
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                        <th class="text-center">№</th>
+                        <th data-field="ded_stants" data-sortable="true" class="text-left">Дэд станц</th>
+                        <th data-field="ognoo" data-sortable="true" class="text-left">Огноо</th>
+                        <th data-field="ajiltan" data-sortable="true" class="text-center">Ажилтан</th>
+                        <th data-field="aguulga" data-sortable="true" class="text-center">Агуулга</th>
+                        <th class="td-actions text-right">Засвар</th>
+                        </thead>
+                        <tbody>
+                        {% for detail in uzleg_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ detail.ded_stants_name }}</td>
+                            <td>{{ detail.ognoo|date:"Y-m-d H:i" }}</td>
+                            <td>{{ detail.ajiltan.first_name }} {{ detail.ajiltan.last_name }}</td>
+                            <td>{{ detail.aguulga }}</td>
+                            <td class="td-actions text-right">
+                                {% if perms.data.change_uzlegshalgalt %}
+                                <a href="/home/ashiglalt/uzleg_shalgalt_edit/{{detail.id}}/"
+                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                {% endif %}
+                                {% if perms.data.delete_uzlegshalgalt %}
+                                <a href="/home/ashiglalt/uzleg_shalgalt_del/{{detail.id}}/"
+                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

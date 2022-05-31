@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Гүйдэл{% endblock%}
+{% block link %}/home/lavlagaa/amper{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+                {% if urlz == "/home/lavlagaa/add_amper" %}
+	                <legend>Гүйдлийн утга бүртгэх</legend>
+	            {% else %}
+	                <legend>Гүйдлийн утга засах</legend>
+	            {%endif%}
+                <div class="col-md-6">
+                     <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Гүйдлийн утга /A/</label>
+                            <input class="form-control" type="number" name="value" value="{{amper.value}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_amper" %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                   <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

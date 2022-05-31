@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block link %}{% url 'role_list' %}{% endblock%}
+{% block title %}Эрх нэмэх{% endblock %}
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="card">
+            <form class="form-horizontal" action="{{ urlz }}" method="POST">{% csrf_token %}
+                <div class="content">
+                
+                    {% if urlz != "/home/role_add" %}
+                        <legend>Эрхийн мэдээлэл засах </legend>
+                    {% else %}
+                        <legend>Эрхийн мэдээлэл бүртгэх</legend>
+                    {% endif %}
+                    
+                    <div class="col-md-6">
+		                <table class="table" id="perm_table" name="perm_table">
+	                        <thead>
+	                            <th></th>
+	                      	    <th class="text-center">Дугаар</th>
+	                            <th>Нэр</th>  
+	                        </thead>
+	                        <tbody>
+	                        	{% for detail in perms %}
+	                        		{% if detail in gp_perms %}
+                            			<tr class="info">
+	                                {% else %}
+                            			<tr>
+	                                {%endif%}
+		                            	<td>
+		                            		{% if detail in gp_perms %}
+		                            			<input type="checkbox" name="perms" value={{detail.id}} checked/> 
+			                                {% else %}
+		                            			<input type="checkbox" name="perms" value={{detail.id}} />
+			                                {%endif%}
+		                            	</td> 
+		                            	<td class="text-center">{{ forloop.counter }}</td>
+		                                <td>{{ detail.name }}</td>
+		                            </tr>  
+	                         	{% endfor %}                                                       
+	                        </tbody>
+	                    </table>
+					</div>
+					
+                    <div class="col-md-6">
+
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Эрхийн нэр</label>
+                                    <input class="form-control" type="text" name="rolename"
+                                    	value="{{role.name}}" required/>
+                            </div>
+                        </fieldset>
+                        
+                    </div>
+					
+                    <div class="clearfix"></div>
+
+                </div>
+                <div class="footer text-center">
+                    <button type="submit" name="btn_submit" id="btn_submit" 
+                    	class="btn btn-info btn-fill">Хадгалах</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

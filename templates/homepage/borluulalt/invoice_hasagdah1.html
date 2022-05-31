@@ -1,0 +1,398 @@
+{% load mathfilters %}
+{% load staticfiles %}
+{% load humanize %}
+{% load homepage_tags_new %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="robots" content="noindex, nofollow" />
+        <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.ico' %}">
+		<link href="{% static 'assets/css/invoice.css' %}" rel="stylesheet" />
+		<title>Хэрэглэгчийн дансны дэлгэрэнгүй тайлан - Ухаалаг эрчим хүч ХХК</title>
+	</head>
+    <body>
+    {% if show is None %}
+        <div class="actions">
+            <button onclick="{% if payment is not None %}window.history.back(){% else %}window.close(){% endif %}">Хаах</button>
+			<button onclick="window.print()">Хэвлэх</button>
+		</div>
+    {% endif %}
+        {% for customer in customers %}
+        <div class="page">
+            <h3><b>Хэрэглэгчийн дансны дэлгэрэнгүй тайлан</b></h3>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" style="font-family: Arial, Verdana, sans-serif; color: #000; font-size: 10px; padding: -5px;">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" align="center" height="40px" style="font-size:12px">Төлбөрийн нэхэмжлэл № - <b>{% now 'ymd' %}{{ customer.customer_code }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="30%">Борлуулалтын цикл: <b>{{ customer.cycl_name }}</b></td>
+                                        <td width="50%">Дэд станц: <b>{{customer.deds_name}}</b></td>
+                                        <td width="20%" align="right">Нэхэмжлэл: <b>Ухаалаг эрчим хүч ХХК</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Банк: <b>{{customer.bank_name}}</b></td>
+                                        <td>Байгууллагын нэр: <b>{{ customer.last_name }} {{ customer.first_name }}</b></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Хэрэглэгчийн код: <b>{{ customer.customer_code }}</b></td>
+                                        <td>РД: <b>{{ customer.register }}</b></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Дансны дугаар: <b>{{ customer.bank_dans }}</b></td>
+                                        <td>Хаяг: <b>{{ customer.address_name }}</b></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Эхний үлдэгдэл: <b>{{ ehnii|floatformat:'2'|intcomma }}</b> төгрөг.</td>
+                                        <td>Тооцооны хамрах хугацаа: <b>{{customer.umnu_bichdate|date:'Y-m-d'}} - {{customer.odoo_bichdate|date:'Y-m-d'}}</b></td>
+                                        <td align="right">Хэвлэсэн: <b>{% now 'Y-m-d' %}</b></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br/>
+                            <table width="100%" border="0" style="font-family: Arial, Verdana, sans-serif; color: #000; font-size: 10px; padding: -5px; border: 1px solid #000;">
+                                <thead>
+                                    <tr height="25px">
+                                        <th rowspan="2" align="center" width="13%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Обьектын нэр</th>
+                                        <th rowspan="2" align="center" width="13%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Хэмжүүрийн дугаар</th>
+                                        <th colspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Тоолуурын заалт</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Зөрүү</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Коэф</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Хэрэглээ Кв.ц</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Кос (Ф)</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Тариф төгрөг</th>
+                                        <th rowspan="2" align="center" width="10%" style="border-bottom: solid 1px #000;">Дүн төгрөг</th>
+                                    </tr>
+                                    <tr height="25px">
+                                        <th align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Өмнөх</th>
+                                        <th align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Одоо</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="10" style="border-bottom: solid 1px #000; padding-left:5px;"><b>Тоолууртай хэрэглээ</b></td>
+                                    </tr>
+                                    {% aan_tooluurs customer.customer_code customer.year customer.month as aan_tooluurs %}
+                                    {% for tooluur in aan_tooluurs %}
+                                    {% if tooluur.tariff == '0' %}
+                                    <tr>
+                                        <td style="padding-left:3px;">Өдөр</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">({{tooluur.name}})<br>{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_balance_prev|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_balance|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_diff|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_diff_coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.odor_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">{{ tooluur.day_price|intcomma }}</td>
+                                    </tr>
+                                    {% elif tooluur.tariff == '1' %}
+                                     <tr>
+                                        <td style="padding-left:3px;">Өдөр</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">({{tooluur.name}})<br>{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_balance_prev|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_balance|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_diff|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_diff_coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.odor_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">{{ tooluur.day_price|intcomma }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-left:3px;">Шөнө</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">({{tooluur.name}})<br>{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.night_balance_prev|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.night_balance|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.night_diff|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.night_diff_coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.shono_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">{{ tooluur.night_price|intcomma }}</td>
+                                    </tr>
+                                    {% elif tooluur.tariff == '2' %}
+                                    <tr>
+                                        <td style="padding-left:3px;">Өдөр</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">({{tooluur.name}})<br>{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_balance_prev|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_balance|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_diff|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.day_diff_coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.odor_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">{{ tooluur.day_price|intcomma }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-left:3px;">Шөнө</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">({{tooluur.name}})<br>{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.night_balance_prev|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.night_balance|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.night_diff|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.night_diff_coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.shono_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">{{ tooluur.night_price|intcomma }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-left:3px;">Оргил</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">({{tooluur.name}})<br>{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.rush_balance_prev|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.rush_balance|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.rush_diff|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.rush_diff_coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.orgil_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">{{ tooluur.rush_price|intcomma }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <tr>
+                                        <td colspan="2" align="center" style="border-top: solid 1px #000;"><b>Дүн</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000; padding-right:3px;"><b>{{ customer.total_diff|intcomma }}</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000; padding-right:3px;"><b>{{ customer.total_diff_coef|intcomma }}</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="#000; border-top: solid 1px #000; padding-right:3px;"><b>{{ customer.total_price|intcomma }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="10" style="border-top: solid 1px #000; border-bottom: solid 1px #000; padding-left:5px;"><b>Хасагдаж тооцогдох тоолуур</b></td>
+                                    </tr>
+                                    {% for hasagdah_history in hasagdah_histories %}
+                                    <tr>
+                                        <td style="padding-left:3px;">Өдөр</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ hasagdah_history.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ hasagdah_history.day_balance_prev|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ hasagdah_history.day_balance|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ hasagdah_history.day_diff|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ hasagdah_history.coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">-{% hasagdah hasagdah_history %}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ hasagdah_history.odor_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">-{{ hasagdah_history.day_price|intcomma }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td colspan="2" align="center" style="border-top: solid 1px #000; padding-left:3px;"><b>Дүн</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;">{% totalhasagdah hasagdah_histories %}</td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000; padding-right:3px;"><b>-{{ customer.hasagdah|intcomma }}</b></td>
+                                    </tr>
+                                     <tr>
+                                        <td colspan="10" style="border-bottom: solid 1px #000; border-top: solid 1px #000; padding-left:5px;"><b>ЦЭХ чадлын төлбөр</b></td>
+                                    </tr>
+                                    {% if customer.customer_type != '0' %}
+                                    {% for tooluur in aan_tooluurs %}
+                                    {% if tooluur.tariff == '0' or tooluur.tariff == '1' %}
+                                    <tr>
+                                        <td style="padding-left:3px;">Энгийн тарифаар</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.between_days|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.total_diff_coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.kosp|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.chadal_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">{{ tooluur.chadal_price|intcomma }}</td>
+                                    </tr>
+                                    {% elif tooluur.tariff == '2' %}
+                                    <tr>
+                                        <td style="padding-left:3px;">Оргил тарифаар</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.between_days|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.rush_diff_coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.kosp|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ tooluur.chadal_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">{{ tooluur.chadal_price|intcomma }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                    <tr>
+                                        <td colspan="2" align="center" style="border-top: solid 1px #000; padding-left:3px;"><b>Дүн</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000; padding-right:3px;"><b>{{ customer.chadal_price|intcomma }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="10" style="border-top: solid 1px #000; border-bottom: solid 1px #000; padding-left:5px;"><b>Хасагдаж ЦЭХ чадлын төлбөр</b></td>
+                                    </tr>
+                                    {% if customer.customer_type != '0' %}
+                                    {% for hasagdah_history in hasagdah_histories %}
+                                    <tr>
+                                        <td style="padding-left:3px;">Энгийн тарифаар</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ hasagdah_history.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ hasagdah_history.between_days|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">-{{ hasagdah_history.day_diff_coef|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% divide hasagdah_history.chadal_price hasagdah_history.chadal_une as kosp %}
+                                            {{ kosp|floatformat:'2'|intcomma }}
+                                        </td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ hasagdah_history.chadal_une|intcomma }}</td>
+                                        <td align="right" style="padding-right:3px;">-{{ hasagdah_history.chadal_price|intcomma }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% endif %}
+                                    <tr>
+                                        <td colspan="2" align="center" style="border-top: solid 1px #000; padding-left:3px;"><b>Дүн</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000; padding-right:3px;"><b>-{{ customer.hasagdah_chadal|intcomma }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="10" style="border-top: solid 1px #000; border-bottom: solid 1px #000; padding-left:5px;"><b>Бусад</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: solid 1px #000; padding-left:3px;">НӨАТ</td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">
+                                            {% reduce bichilt customer.barimt_une as nuat1 %}
+                                            {% reduce_nuat nuat1 as reduce_nuat %}
+                                            {{ reduce_nuat|floatformat:'2'|intcomma }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: solid 1px #000; padding-left:3px;">Баримтын үнэ</td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{{ customer.barimt_une|intcomma }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: solid 1px #000; padding-left:3px;">НӨАТ(үйлч)</td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000; padding-right:3px;">{% nuat customer.price_tariff_id customer.barimt_une as nuat_uilch %}{{ nuat_uilch|floatformat:'2'|intcomma }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" align="center" style="border-top: solid 1px #000; border-bottom: solid 1px #000; padding-left:3px;"><b>Дүн</b></td>
+                                        <td colspan="7" style="border-top: solid 1px #000; border-bottom: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000; border-bottom: solid 1px #000; padding-right:3px;">
+                                            {% append3 reduce_nuat customer.barimt_une nuat_uilch as total_other %}
+                                            <b>{{ total_other|floatformat:'2'|intcomma }}</b>
+                                        </td>
+                                    </tr>
+                                    <tr height="25px">
+                                        <td colspan="2" align="center"><b>Нийт:</b></td>
+                                        <td colspan="4"></td>
+                                        <td align="right"><b></b></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td align="right" style="padding-right:3px;"><b>{{ bichilt|floatformat:'2'|intcomma }}</b></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {% get_tulburt_uilchilgee customer.customer_code customer.odoo_bichdate as uilchilgee_tulburs %}
+                            {% if uilchilgee_tulburs is not None %}<br/>
+                            {% for uilchilgee_tulbur in uilchilgee_tulburs %}
+                                * {{uilchilgee_tulbur.name}} - {{uilchilgee_tulbur.payment|floatformat:'2'|intcomma}}<br/>
+                            {% endfor %}
+                            {% endif %}
+                            <hr/><br/>
+                            {% if type == '1' %}
+                                <!--<p>Өмнөх орлого: <b>{{before_payment|floatformat:'2'|intcomma}}</b> төгрөг.</p>-->
+                                <!--<p>Нийт алданги: <b>0.00</b> төгрөг.</p>-->
+                                <!--<p>Төлбөрт үйлчилгээ: <b>{% if customer.uilchilgeenii_tulbur %}{{customer.uilchilgeenii_tulbur|floatformat:'2'|intcomma}}{% else %}0.00{% endif %}</b> төгрөг.</p>-->
+                                <!--<p>Нийт бичилт: <b>{{bichilt|floatformat:'2'|intcomma}}</b> төгрөг.</p>-->
+                                <!--<p>Орлого: <b>{{payment|floatformat:'2'|intcomma}}</b> төгрөг.</p>-->
+                                <!--{% append before_payment payment as result31 %}-->
+                                <!--{% append ehnii bichilt as result30 %}{% append result30 uil_tulbur as result32 %}-->
+                                <!--<p>Эцсийн үлдэгдэл: <b>{% reduce result32 result31 as result33 %}{{result33|floatformat:'2'|intcomma}}</b> төгрөг.</p>-->
+                            {% else %}
+                                <p>Нийт орлого: <b> {{payment|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                                <p>Нийт алданги: <b>0.00</b> төгрөг.</p>
+                                <p>Төлбөрт үйлчилгээ: <b>{% if customer.uilchilgeenii_tulbur %}{{customer.uilchilgeenii_tulbur|floatformat:'2'|intcomma}}{% else %}0.00{% endif %}</b> төгрөг.</p>
+                                <p>Нийт бичилт: <b>{{bichilt|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                                <p>Эцсийн үлдэгдэл: <b>{% append ehnii bichilt as result30 %}{% append result30 uil_tulbur as result31 %}{% reduce result31 payment as result32 %}{{result32|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                            {% endif %}
+                            <br/>
+                            <p>Нэхэмжлэгчийн данс: Хаан банк - 5173019075, Худалдаа хөгжлийн банк: 421000275, Голомт банк: 2105100820, Төрийн банк: 240022014300. Лавлах утас: 75777777.</p>
+                            <p>Санамж: Тооцоо гарсанаас хойш 10 хоногийн дотор төлбөрөө төлөхгүй бол алданги тооцох болно.</p>
+                            <br/><br/><br/>
+                            <div style="width : 100%; display: table">
+                            <table border="0" style="width: 50%; float: left">
+                                <tr height="25px">
+                                            <td colspan="2"><b>Хүлээлгэн өгсөн:</b></td>
+                                </tr>
+                                <tr height="25px">
+                                            <td width="100"></td><td>Албан тушаал:  /.................../</td>
+                                </tr>
+                                <tr height="25px">
+                                    <td width="100"></td><td >Нэр:  /.............../</td>
+                                </tr>
+                            </table>
+                            <table border="0" style="width: 50%; float: left">
+                                <tr height="25px" >
+                                            <td colspan="2"><b>Хүлээн авсан:</b></td>
+                                </tr>
+                                <tr height="25px">
+                                            <td width="100"></td><td>Албан тушаал:  /.................../</td>
+                                </tr>
+                                <tr height="25px">
+                                    <td width="100"></td><td >Нэр:  /.............../</td>
+                                </tr>
+                            </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </body>
+</html>

@@ -1,0 +1,1177 @@
+{% extends "base.html" %}
+
+{% block head_block %}
+<script type="text/javascript">
+
+    function validateDate(startDate, endDate) {
+        var start = document.getElementById(startDate).value;
+        var end = document.getElementById(endDate).value;
+
+        if (start >= end) {
+            alert('Эхлэх огноог дуусах огнооноос өмнө байхаар сонгоно уу');
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+</script>
+{% endblock %}
+
+{% block title %}Тайлан{% endblock%}
+{% block content %}
+{% if perms.data.view_report %}
+    <div class="container-fluid">
+
+        {% if messages %}
+            <ul class="messagelist">
+                {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }} </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">Тайлангийн маягтууд</div>
+
+                    <div class="content content-full-width">
+
+                        <ul role="tablist" class="nav nav-tabs">
+                            {% if activeTab == '1' %}
+                            <li role="presentation" class="active">
+                                {% else %}
+                            <li role="presentation">
+                                {%endif%}
+                                <a href="#GEREE" data-toggle="tab"><i class="fa fa-file-o"></i>Гэрээ</a>
+                            </li>
+                            {% if activeTab == '2' %}
+                            <li class="active">
+                                {% else %}
+                            <li>
+                                {%endif%}
+                                <a href="#BICHILT" data-toggle="tab"><i class="fa fa-pencil-square-o"></i>Бичилт</a>
+                            </li>
+                            {% if activeTab == '3' %}
+                            <li class="active">
+                                {% else %}
+                            <li>
+                                {%endif%}
+                                <a href="#SERVICE" data-toggle="tab"><i class="fa fa-wrench"></i>Төлбөрт үйлчилгээ</a>
+                            </li>
+                            {% if activeTab == '4' %}
+                            <li class="active">
+                                {% else %}
+                            <li>
+                                {%endif%}
+                                <a href="#AVLAGA" data-toggle="tab"><i class="fa fa-money"></i>Авлага</a>
+                            </li>
+                            {% if activeTab == '5' %}
+                            <li class="active">
+                                {% else %}
+                            <li>
+                                {%endif%}
+                                <a href="#EHZH" data-toggle="tab"><i class="fa fa-building-o"></i>ЭХЗХ</a>
+                            </li>
+                            {% if activeTab == '6' %}
+                            <li class="active">
+                                {% else %}
+                            <li>
+                                {%endif%}
+                                <a href="#all" data-toggle="tab"><i class="fa fa-building-o"></i>Нэгтгэл</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            {% if activeTab == '1' %}
+                            <div id="GEREE" class="tab-pane active">
+                            {% else %}
+                            <div id="GEREE" class="tab-pane">
+                            {%endif%}
+                                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">№</th>
+                                            <th data-field="geree_name" data-sortable="true">Нэр</th>
+                                            <th data-field="actions" class="td-actions text-center">Харах</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td>1</td>
+                                            <td>ЦЭХ-ээр хангах гэрээ байгуулсан айл өрхийн мэдээлэл</td>
+                                            <td>
+                                                <a href="{% url 'report_geree_1' %}"
+                                                   class="btn btn-simple btn-info btn-icon table-action view">
+                                                    <i class="fa fa-download"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>2</td>
+                                            <td>ЦЭХ-ээр хангах гэрээ байгуулсан ААН-н мэдээлэл</td>
+                                            <td>
+                                                <a href="{% url 'report_geree_2' %}"
+                                                   class="btn btn-simple btn-info btn-icon table-action view">
+                                                    <i class="fa fa-download"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>3</td>
+                                            <td>ЦЭХ-ээр хангах гэрээний хугацаа дуусч байгаа хэрэглэгчийн тайлан</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view"
+                                                   data-toggle="modal" data-target=".geree-3">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>4</td>
+                                            <td>Нийт бүртгэлтэй хэрэглэгчдийн товчоо</td>
+                                            <td>
+                                                <a href="{% url 'report_geree_4' %}"
+                                                   class="btn btn-simple btn-info btn-icon table-action view">
+                                                    <i class="fa fa-download"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {% if activeTab == '2' %}
+                            <div id="BICHILT" class="tab-pane active">
+                            {% else %}
+                            <div id="BICHILT" class="tab-pane">
+                            {%endif%}
+                                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">№</th>
+                                            <th data-field="bichilt_name" data-sortable="true">Нэр</th>
+                                            <th data-field="actions" class="td-actions text-center">Харах</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!--tr>
+                                            <td>1</td>
+                                            <td>ЦЭХ-ний бичилт, орлого, үлдэгдлийн дэлгэрэнгүй тайлан /дэд станцаар/</td>
+                                            <td>
+                                                <a href="" class="btn btn-simple btn-info btn-icon table-action view">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr-->
+                                        <tr>
+                                            <td>1</td>
+                                            <td>ЦЭХ-ний бичилт, орлого, үлдэгдлийн дэлгэрэнгүй тайлан /циклээр/</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".bichilt-2">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>{% now 'Y' %} оны {% now 'm' %}-р сарын цахилгаан эрчим хүчний бичилт</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".bichilt-3">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>ААН байгууллагуудын хэрэглээний дэлгэрэнгүй судалгаа /Чадлын хязгаар, Бичилт/</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".bichilt-4">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <!--tr>
+                                            <td>5</td>
+                                            <td>ААН байгууллагуудын хэрэглээний дэлгэрэнгүй судалгаа /Чадлын хязгаар, Орлого/</td>
+                                            <td>
+                                                <a href="" class="btn btn-simple btn-info btn-icon table-action view">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr-->
+                                        <tr>
+                                            <td>4</td>
+                                            <td>ААН байгууллагуудын хэрэглээний судалгаа /сар бүрээр/</td>
+                                            <td>
+                                                <a href="{% url 'report_bichilt_6' %}" class="btn btn-simple btn-info btn-icon table-action view">
+                                                    <i class="fa fa-download"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td>Ахуйн хэрэглэгчидийн хэрэглээний дэлгэрэнгүй судалгаа /Чадлын хязгаар, Бичилт/</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".bichilt-7">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <!--tr>
+                                            <td>8</td>
+                                            <td>Ахуйн хэрэглэгчийн хэрэглээний дэлгэрэнгүй судалгаа /Чадлын хязгаар, Орлого/</td>
+                                            <td>
+                                                <a href="" class="btn btn-simple btn-info btn-icon table-action view">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr-->
+                                        <tr>
+                                            <td>6</td>
+                                            <td>Ахуйн хэрэглэгчдийн хэрэглээний судалгаа /сар бүрээр/</td>
+                                            <td>
+                                                <a href="{% url 'report_bichilt_9' %}" class="btn btn-simple btn-info btn-icon table-action view">
+                                                    <i class="fa fa-download"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {% if activeTab == '3' %}
+                            <div id="SERVICE" class="tab-pane active">
+                            {% else %}
+                            <div id="SERVICE" class="tab-pane">
+                            {%endif%}
+                                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">№</th>
+                                            <th data-field="tooluur_name" data-sortable="true">Нэр</th>
+                                            <th data-field="actions" class="td-actions text-center">Харах</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Төлбөрт үйлчилгээний дэлгэрэнгүй тайлан</td>
+                                            <td>
+                                                <a href="{% url 'report_service_1' %}"
+                                                   class="btn btn-simple btn-info btn-icon table-action view"
+                                                   data-toggle="modal" data-target=".service-1">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Төлбөрт үйлчилгээний хураангуй тайлан</td>
+                                            <td>
+                                                <a href="{% url 'report_service_2' %}"
+                                                   class="btn btn-simple btn-info btn-icon table-action view"
+                                                   data-toggle="modal" data-target=".service-2">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {% if activeTab == '4' %}
+                            <div id="AVLAGA" class="tab-pane active">
+                            {% else %}
+                            <div id="AVLAGA" class="tab-pane">
+                            {%endif%}
+                                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">№</th>
+                                            <th data-field="tulbur_name" data-sortable="true">Нэр</th>
+                                            <th data-field="actions" class="td-actions text-center">Харах</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Авлагын насжилтын дэлгэрэнгүй тайлан</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".avlaga-1">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Авлагын насжилтын товчоо тайлан</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".avlaga-2">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Ногдуулсан алданги, алдангиас орсон орлогын тайлан</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".avlaga-3">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% if activeTab == '5' %}
+                            <div id="EHZH" class="tab-pane active">
+                            {% else %}
+                            <div id="EHZH" class="tab-pane">
+                            {%endif%}
+                                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">№</th>
+                                            <th data-field="ashiglalt_name" data-sortable="true">Нэр</th>
+                                            <th data-field="actions" class="td-actions text-center">Харах</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Ухаалаг эрчим хүч ХХК -ийн {% now 'Y' %} оны ЦЭХ-ний хэрэглээний бүтэц, борлуулалтын орлогын мэдээ (1)</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".ehzh-1">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Ухаалаг эрчим хүч ХХК -ийн {% now 'Y' %} оны ЦЭХ-ний хэрэглээний бүтэц, борлуулалтын орлогын мэдээ (2)</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".ehzh-6">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Цахилгаан түгээх, хангах ТЗЭ Ухаалаг эрчим хүч ХХК-ийн {% now 'Y' %} оны ....-р улирлын борлуулалтын мэдээ</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".ehzh-2">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>"Эрчим сүлжээ" ХХК -ийн {% now 'Y' %} оны ....-р улирлын авлагын  мэдээ</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".ehzh-3">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td>Эрчим хүчний ТЗЭ Ухаалаг эрчим хүч ХХК-ий {% now 'Y' %} оны ....-р улирлын өглөгийн мэдээ</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".ehzh-4">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>6</td>
+                                            <td>Ухаалаг эрчим хүч ХХК-ийн {% now 'Y' %} оны борлуулалтын орлогын мэдээ</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".ehzh-5">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                                {% if activeTab == '5' %}
+                            <div id="all" class="tab-pane active">
+                            {% else %}
+                            <div id="all" class="tab-pane">
+                            {%endif%}
+                                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">№</th>
+                                            <th data-field="ashiglalt_name" data-sortable="true">Нэр</th>
+                                            <th data-field="actions" class="td-actions text-center">Харах</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Ухаалаг эрчим хүч ХХК -ийн нэгтгэл тайлан (1)</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".all-tailan">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Ухаалаг эрчим хүч ХХК -ийн заалтууд (1)</td>
+                                            <td>
+                                                <a href="#" class="btn btn-simple btn-info btn-icon table-action view" data-toggle="modal" data-target=".zaalt-tailan">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+    </div>
+{% endif %}
+{% endblock %}
+{% block additionalblock %}
+<div class="modal fade geree-3" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">ЦЭХ-ээр хангах гэрээний хугацаа дуусч байгаа хэрэглэгчийн тайлан</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_geree_3" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="start_date" id="geree_3_start_date" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="end_date" id="geree_3_end_date" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill"
+                                onclick="return validateDate('geree_3_start_date','geree_3_end_date')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade service-1" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Төлбөрт үйлчилгээний дэлгэрэнгүй тайлан</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_service_1" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="start_date" id="service_1_start_date" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="end_date" id="service_1_end_date" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill"
+                                onclick="return validateDate('service_1_start_date','service_1_end_date')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade service-2" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Төлбөрт үйлчилгээний хураангуй тайлан</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_service_2" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="start_date" id="service_2_start_date" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="end_date" id="service_2_end_date" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill"
+                                onclick="return validateDate('service_2_start_date','service_2_end_date')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade bichilt-2" tabindex="-1" role="dialog" aria-labelledby="bichilt2ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="bichilt2ModalLabel">ЦЭХ-ний бичилт, орлого, үлдэгдлийн дэлгэрэнгүй тайлан /циклээр/</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_bichilt_2" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="start_date" id="bichilt_2_start_date" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="end_date" id="bichilt_2_end_date" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill" onclick="return validateDate('bichilt_2_start_date', 'bichilt_2_end_date')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bichilt-3" tabindex="-1" role="dialog" aria-labelledby="bichilt3ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="bichilt3ModalLabel"><span id="bichilt_3_year_title"></span> оны <span id="bichilt_3_month_title"></span>-р сарын цахилгаан эрчим хүчний бичилт</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_bichilt_3" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Он</label>
+                        <input type="number" placeholder="Он" min="2000" max="2100" maxlength="4" minlength="4" class="form-control" name="year" id="bichilt_3_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Сар</label>
+                        <input type="number" placeholder="Сар" min="1" max="12" minlength="1" maxlength="2" class="form-control" name="month" id="bichilt_3_month" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bichilt-4" tabindex="-1" role="dialog" aria-labelledby="bichilt4ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="bichilt4ModalLabel">ААН байгууллагуудын хэрэглээний дэлгэрэнгүй судалгаа /Чадлын хязгаар, Бичилт/</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_bichilt_4" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх он</label>
+                        <input type="number" class="form-control" min="2000" max="2100" name="start_year" id="bichilt_4_start_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх сар</label>
+                        <input type="number" class="form-control" min="1" max="12" name="start_month" id="bichilt_4_start_month" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах он</label>
+                        <input type="number" class="form-control" min="2000" max="2100" name="end_year" id="bichilt_4_end_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах сар</label>
+                        <input type="number" class="form-control" min="1" max="12" name="end_month" id="bichilt_4_end_month" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill" onclick="return validateDate('bichilt_4_start_year-bichilt_4_start_month', 'bichilt_4_end_year-bichilt_4_end_month')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bichilt-7" tabindex="-1" role="dialog" aria-labelledby="bichilt7ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="bichilt7ModalLabel">Ахуйн хэрэглэгчидийн хэрэглээний дэлгэрэнгүй судалгаа /Чадлын хязгаар, Бичилт/</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_bichilt_7" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх он</label>
+                        <input type="number" class="form-control" min="2000" max="2100" name="start_year" id="bichilt_7_start_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх сар</label>
+                        <input type="number" class="form-control" min="1" max="12" name="start_month" id="bichilt_7_start_month" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах он</label>
+                        <input type="number" class="form-control" min="2000" max="2100" name="end_year" id="bichilt_7_end_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах сар</label>
+                        <input type="number" class="form-control" min="1" max="12" name="end_month" id="bichilt_7_end_month" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill" onclick="return validateDate('bichilt_7_start_year-bichilt_7_start_month', 'bichilt_7_end_year-bichilt_7_end_month')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade avlaga-1" tabindex="-1" role="dialog" aria-labelledby="avlaga1ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="avlaga1ModalLabel">Авлагын насжилтын дэлгэрэнгүй тайлан</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_avlaga_1" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-4">
+                        <label>Дэд станц</label>
+                        <select class="form-control" name="ded_stants" required>
+                            <option value="">Сонгох</option>
+                            {% for ded_stant in ded_stants %}
+                            <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Эхлэх огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="start_date" id="avlaga_1_start_date" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Дуусах огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="end_date" id="avlaga_1_end_date" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill" onclick="return validateDate('avlaga_1_start_date', 'avlaga_1_end_date')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade avlaga-2" tabindex="-1" role="dialog" aria-labelledby="avlaga2ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="avlaga2ModalLabel">Авлагын насжилтын товч тайлан</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_avlaga_2" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="start_date" id="avlaga_2_start_date" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="end_date" id="avlaga_2_end_date" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill" onclick="return validateDate('avlaga_2_start_date', 'avlaga_2_end_date')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade avlaga-3" tabindex="-1" role="dialog" aria-labelledby="avlaga3ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="avlaga3ModalLabel">Ногдуулсан алданги, алдангиас орсон орлогын тайлан</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_avlaga_3" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Эхлэх огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="start_date" id="avlaga_3_start_date" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Дуусах огноо</label>
+                        <input type="text" class="form-control datetimepicker" name="end_date" id="avlaga_3_end_date" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill" onclick="return validateDate('avlaga_3_start_date', 'avlaga_3_end_date')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ehzh-1" tabindex="-1" role="dialog" aria-labelledby="ehzh1ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ehzh1ModalLabel">Ухаалаг эрчим хүч ХХК -ийн <span id="ezzh_1_year_title"></span> оны ЦЭХ-ний хэрэглээний бүтэц, борлуулалтын орлогын мэдээ</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_ehzh_1" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6"W>
+                        <label>Он</label>
+                        <input type="number" placeholder="Он" min="2000" max="2100" maxlength="4" minlength="4" class="form-control" name="year" id="ezzh_1_year" required>
+                    </div>
+                    <div class="form-group col-md-6"W>
+                        <label>Гүйцэтгэх захирал</label>
+                        <input type="text" placeholder="Гүйцэтгэх захирал" maxlength="25" class="form-control" name="ex_dir" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6">
+                        <label>Албаны менежер</label>
+                        <input type="text" placeholder="Албаны менежер" maxlength="25" class="form-control" name="dep_man" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Борлуулалт тооцооны ахлах инженер</label>
+                        <input type="text" placeholder="Борлуулалт тооцооны ахлах инженер" maxlength="25" class="form-control" name="sale_est_eng" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ehzh-6" tabindex="-1" role="dialog" aria-labelledby="ehzh1ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ehzh6ModalLabel">Ухаалаг эрчим хүч ХХК -ийн <span id="ezzh_6_year_title"></span> оны ЦЭХ-ний хэрэглээний бүтэц, борлуулалтын орлогын мэдээ</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_ehzh_6" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6"W>
+                        <label>Он</label>
+                        <input type="number" placeholder="Он" min="2000" max="2100" maxlength="4" minlength="4" class="form-control" name="year" id="ezzh_6_year" required>
+                    </div>
+                    <div class="form-group col-md-6"W>
+                        <label>Гүйцэтгэх захирал</label>
+                        <input type="text" placeholder="Гүйцэтгэх захирал" maxlength="25" class="form-control" name="ex_dir" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6">
+                        <label>Албаны менежер</label>
+                        <input type="text" placeholder="Албаны менежер" maxlength="25" class="form-control" name="dep_man" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Борлуулалт тооцооны ахлах инженер</label>
+                        <input type="text" placeholder="Борлуулалт тооцооны ахлах инженер" maxlength="25" class="form-control" name="sale_est_eng" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ehzh-2" tabindex="-1" role="dialog" aria-labelledby="ehzh2ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ehzh2ModalLabel">Цахилгаан түгээх, хангах ТЗЭ Ухаалаг эрчим хүч ХХК-ийн <span id="ezzh_2_year_title"></span> оны <span id="ezzh_2_season_title"></span>-р улирлын борлуулалтын мэдээ</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_ehzh_2" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6"W>
+                        <label>Он</label>
+                        <input type="number" placeholder="Он" min="2000" max="2100" maxlength="4" minlength="4" class="form-control" name="year" id="ezzh_2_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Улирал</label>
+                        <select class="form-control" name="season" id="ezzh_2_season" required>
+                            <option value="">Сонгох</option>
+                            <option value="1">1-р улирал</option>
+                            <option value="2">2-р улирал</option>
+                            <option value="3">3-р улирал</option>
+                            <option value="4">4-р улирал</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6">
+                        <label>Гүйцэтгэх захирал</label>
+                        <input type="text" placeholder="Гүйцэтгэх захирал" maxlength="25" class="form-control" name="ex_dir" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Албаны менежер</label>
+                        <input type="text" placeholder="Албаны менежер" maxlength="25" class="form-control" name="dep_man" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6">
+                        <label>Борлуулалт тооцооны ахлах инженер</label>
+                        <input type="text" placeholder="Борлуулалт тооцооны ахлах инженер" maxlength="25" class="form-control" name="sale_est_eng" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ehzh-3" tabindex="-1" role="dialog" aria-labelledby="ehzh3ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ehzh3ModalLabel">Ухаалаг эрчим хүч ХХК-ийн <span id="ezzh_3_year_title"></span> оны <span id="ezzh_3_season_title"></span>-р улирлын авлагын мэдээ</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_ehzh_3" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Он</label>
+                        <input type="number" placeholder="Он" min="2000" max="2100" maxlength="4" minlength="4" class="form-control" name="year" id="ezzh_3_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Улирал</label>
+                        <select class="form-control" name="season" id="ezzh_3_season" required>
+                            <option value="">Сонгох</option>
+                            <option value="1">1-р улирал</option>
+                            <option value="2">2-р улирал</option>
+                            <option value="3">3-р улирал</option>
+                            <option value="4">4-р улирал</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6"W>
+                        <label>Гүйцэтгэх захирал</label>
+                        <input type="text" placeholder="Гүйцэтгэх захирал" maxlength="25" class="form-control" name="ex_dir" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Албаны менежер</label>
+                        <input type="text" placeholder="Албаны менежер" maxlength="25" class="form-control" name="dep_man" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6">
+                        <label>Борлуулалт тооцооны ахлах инженер</label>
+                        <input type="text" placeholder="Борлуулалт тооцооны ахлах инженер" maxlength="25" class="form-control" name="sale_est_eng" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ehzh-4" tabindex="-1" role="dialog" aria-labelledby="ehzh4ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ehzh4ModalLabel">Эрчим хүчний ТЗЭ Ухаалаг эрчим хүч ХХК-ийн <span id="ezzh_4_year_title"></span> оны <span id="ezzh_4_season_title"></span>-р улирлын өглөгийн мэдээ</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_ehzh_4" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6">
+                        <label>Он</label>
+                        <input type="number" placeholder="Он" min="2000" max="2100" maxlength="4" minlength="4" class="form-control" name="year" id="ezzh_4_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Улирал</label>
+                        <select class="form-control" name="season" id="ezzh_4_season" required>
+                            <option value="">Сонгох</option>
+                            <option value="1">1-р улирал</option>
+                            <option value="2">2-р улирал</option>
+                            <option value="3">3-р улирал</option>
+                            <option value="4">4-р улирал</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6"W>
+                        <label>Гүйцэтгэх захирал</label>
+                        <input type="text" placeholder="Гүйцэтгэх захирал" maxlength="25" class="form-control" name="ex_dir" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Албаны менежер</label>
+                        <input type="text" placeholder="Албаны менежер" maxlength="25" class="form-control" name="dep_man" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6">
+                        <label>Борлуулалт тооцооны ахлах инженер</label>
+                        <input type="text" placeholder="Борлуулалт тооцооны ахлах инженер" maxlength="25" class="form-control" name="sale_est_eng" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ehzh-5" tabindex="-1" role="dialog" aria-labelledby="ehzh5ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ehzh5ModalLabel">Ухаалаг эрчим хүч ХХК-ийн <span id="ehzh_5_year_title"></span> оны борлуулалтын орлогын мэдээ</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_ehzh_5" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-12">
+                        <label>Он</label>
+                        <input type="number" placeholder="Он" min="2000" max="2100" id="ehzh_5_year" class="form-control" name="year" required>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill" onclick="return validateDate('ehzh_5_year')">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+                            <div class="modal fade all-tailan" tabindex="-1" role="dialog" aria-labelledby="ehzh1ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ehzh1ModalLabel">Ухаалаг эрчим хүч ХХК -ийн нэгтгэл тайлан</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_negtgel" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6"W>
+                        <label>Он</label>
+                        <input type="number" placeholder="Он" min="2000" max="2100" maxlength="4" minlength="4" class="form-control" name="year" id="ezzh_1_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Сар</label>
+                        <input type="number" placeholder="Борлуулалт тооцооны ахлах инженер" maxlength="2" class="form-control" name="month" required>
+                    </div>
+                    <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Цикл</label>
+                            <select class="form-control" name="cycles" style="height:100px;" id="services" multiple="multiple">
+                                {% for item in cycle %}
+                                     <option value="{{item.code}}">{{item.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                    <!--<div class="form-group col-md-6"W>-->
+                        <!--<label>Гүйцэтгэх захирал</label>-->
+                        <!--<input type="text" placeholder="Гүйцэтгэх захирал" maxlength="25" class="form-control" name="ex_dir" required>-->
+                    <!--</div>-->
+                    <!--<div class="clearfix"></div>-->
+                    <!--<div class="form-group col-md-6">-->
+                        <!--<label>Албаны менежер</label>-->
+                        <!--<input type="text" placeholder="Албаны менежер" maxlength="25" class="form-control" name="dep_man" required>-->
+                    <!--</div>-->
+                    <!--<div class="form-group col-md-6">-->
+                        <!--<label>Борлуулалт тооцооны ахлах инженер</label>-->
+                        <!--<input type="text" placeholder="Борлуулалт тооцооны ахлах инженер" maxlength="25" class="form-control" name="sale_est_eng" required>-->
+                    <!--</div>-->
+
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+                             <div class="modal fade zaalt-tailan" tabindex="-1" role="dialog" aria-labelledby="ehzh1ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ehzh1ModalLabel">Ухаалаг эрчим хүч ХХК -ийн заалт</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/report_zaalt" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-6"W>
+                        <label>Он</label>
+                        <input type="number" placeholder="Он" min="2000" max="2100" maxlength="4" minlength="4" class="form-control" name="year" id="ezzh_1_year" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Сар</label>
+                        <input type="number" placeholder="Борлуулалт тооцооны ахлах инженер" maxlength="2" class="form-control" name="month" required>
+                    </div>
+                    <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Цикл</label>
+                            <select class="form-control" name="cycles" style="height:100px;" id="services" multiple="multiple">
+                                {% for item in cycle %}
+                                     <option value="{{item.code}}">{{item.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                    <!--<div class="form-group col-md-6"W>-->
+                        <!--<label>Гүйцэтгэх захирал</label>-->
+                        <!--<input type="text" placeholder="Гүйцэтгэх захирал" maxlength="25" class="form-control" name="ex_dir" required>-->
+                    <!--</div>-->
+                    <!--<div class="clearfix"></div>-->
+                    <!--<div class="form-group col-md-6">-->
+                        <!--<label>Албаны менежер</label>-->
+                        <!--<input type="text" placeholder="Албаны менежер" maxlength="25" class="form-control" name="dep_man" required>-->
+                    <!--</div>-->
+                    <!--<div class="form-group col-md-6">-->
+                        <!--<label>Борлуулалт тооцооны ахлах инженер</label>-->
+                        <!--<input type="text" placeholder="Борлуулалт тооцооны ахлах инженер" maxlength="25" class="form-control" name="sale_est_eng" required>-->
+                    <!--</div>-->
+
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-12 text-right">
+                        <button type="submit" class="btn btn-info btn-fill">Харах</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block headblock %}
+<script style="text/javascript">
+    $('input#bichilt_3_year').keyup(function() {
+        $('span#bichilt_3_year_title').text($('input#bichilt_3_year').val());
+    });
+    $('input#bichilt_3_month').keyup(function() {
+        $('span#bichilt_3_month_title').text($('input#bichilt_3_month').val());
+    });
+
+    $('input#ezzh_1_year').keyup(function() {
+        $('span#ezzh_1_year_title').text($('input#ezzh_1_year').val());
+    });
+
+    $('input#ezzh_6_year').keyup(function() {
+        $('span#ezzh_6_year_title').text($('input#ezzh_6_year').val());
+    });
+
+    $('input#ezzh_2_year').keyup(function() {
+        $('span#ezzh_2_year_title').text($('input#ezzh_2_year').val());
+    });
+    $('#ezzh_2_season').change(function() {
+        $('span#ezzh_2_season_title').text($('#ezzh_2_season').val());
+    });
+
+    $('input#ezzh_3_year').keyup(function() {
+        $('span#ezzh_3_year_title').text($('input#ezzh_3_year').val());
+    });
+    $('#ezzh_3_season').change(function() {
+        $('span#ezzh_3_season_title').text($('#ezzh_3_season').val());
+    });
+
+    $('input#ezzh_4_year').keyup(function() {
+        $('span#ezzh_4_year_title').text($('input#ezzh_4_year').val());
+    });
+    $('#ezzh_4_season').change(function() {
+        $('span#ezzh_4_season_title').text($('#ezzh_4_season').val());
+    });
+
+    $('input#ehzh_5_year').keyup(function() {
+        $('span#ehzh_5_year_title').text($('input#ehzh_5_year').val());
+    });
+</script>
+{% endblock %}

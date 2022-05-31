@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Таслалт, залгалт{% endblock %}
+{% block head_block %}
+{% endblock %}
+{% block content %}
+{% if perms.data.view_salgalt %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    Таслалт хийгдсэн хэрэглэгчдийн жагсаалт
+                </div>
+                <form method="POST" action="/home/borluulalt/taslalt">{% csrf_token %}
+                    <div class="table_search_filter">
+                        <div class="form-group col-md-4">
+                            <label>Хэрэглэгчийн код</label>
+                            <input value="{{search.customer_code}}" type="text" maxlength="10"
+                                   placeholder="Хэрэглэгчийн код"
+                                   class="form-control" name="customer_code">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Хэрэглэгчийн нэр</label>
+                            <input value="{{search.customer_name}}" type="text" maxlength="50"
+                                   placeholder="Хэрэглэгчийн нэр"
+                                   class="form-control" name="customer_name">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Хаяг</label>
+                            <input value="{{search.address}}" type="text" maxlength="100" placeholder="Хаяг"
+                                   class="form-control" name="address">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Утасны дугаар</label>
+                            <input value="{{search.phone}}" type="tel" maxlength="8" placeholder="Утасны дугаар"
+                                   class="form-control" name="phone">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Төлөв</label>
+                            <select name="select_status" class="selectpicker" data-title="- Сонгох -"
+                                    data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+                                <option value="">- Сонгох -</option>
+                                {% if search.select_status == '0' %}
+                                <option value="0" selected>Таслалт хийх</option>
+                                {% else %}
+                                <option value="0">Таслалт хийх</option>
+                                {%endif%}
+                                {% if search.select_status == '1' %}
+                                <option value="1" selected>Тасласан</option>
+                                {% else %}
+                                <option value="1">Тасласан</option>
+                                {%endif%}
+                                {% if search.select_status == '2' %}
+                                <option value="2" selected>Залгасан</option>
+                                {% else %}
+                                <option value="2">Залгасан</option>
+                                {%endif%}
+                            </select>
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
+                <div class="download_button text-right">
+                    <button class="btn btn-success btn-fill" type="submit" name="export_xls"><span class="fa fa-file-excel-o"></span>
+                        Файлаар татаж авах
+                    </button>
+                </div>
+                </form>
+
+                <table id="bootstrap-table1" class="table">
+                    <thead>
+                    <th class="text-center">№</th>
+                    <th data-field="code" data-sortable="true">Хэрэглэгчийн код</th>
+                    <th data-field="name" data-sortable="true">Хэрэглэгчийн нэр</th>
+                    <th data-field="address" data-sortable="true">Хаяг</th>
+                    <th data-field="status" data-sortable="true">Төлөв</th>
+                    <th data-field="tasalsan_date" data-sortable="true">Таслалт огноо</th>
+                    <th data-field="zalgasan_date" data-sortable="true">Залгалт огноо</th>
+                    <th data-field="actions">Таслалт/Залгалт</th>
+                    </thead>
+                    <tbody>
+                    {% for detail in datas %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ detail.code}}</td>
+                        <td>{{ detail.first_name}} {{detail.last_name}}</td>
+                        <td>{{ detail.address_name}}</td>
+                        <td>
+                            {% if detail.status == 0|slugify %}
+                            Таслалт хийх
+                            {% elif detail.status == 1|slugify %}
+                            Тасласан
+                            {% elif detail.status == 2|slugify %}
+                            Залгасан
+                            {% endif %}
+                        </td>
+                        <td>{{ detail.salgasan_date|date:'Y-m-d h:i:s'}}</td>
+                        <td>{{ detail.zalgasan_date|date:'Y-m-d h:i:s'}}</td>
+                        <td>
+                            {% if detail.status == 0|slugify or detail.status == 2|slugify %}
+                            {% if perms.data.change_salgalt %}
+                            <a href="/home/borluulalt/taslah/{{detail.id}}/"
+                               class="btn btn-simple btn-danger btn-icon table-action remove"
+                               onclick="return confirm('Та таслалт хийхдээ итгэлтэй байна уу?')">
+                                <button class="btn btn-primary btn-fill btn-sm">Таслалт хийх</button>
+                            </a>
+                            {% endif %}
+                            {% else %}
+                            {% if perms.data.change_salgalt %}
+                            <a href="/home/borluulalt/zalgah/{{detail.id}}/"
+                               class="btn btn-simple btn-danger btn-icon table-action remove"
+                               onclick="return confirm('Та залгалт хийхдээ итгэлтэй байна уу?')">
+                                <button class="btn btn-primary btn-fill btn-sm">Залгалт хийх</button>
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

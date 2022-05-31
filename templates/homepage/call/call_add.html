@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load homepage_tags %}
+{% block head_block %}
+	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="http://yourjavascript.com/7174319415/script.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            console.log("called javascript")
+            $('select#select_general_types').change(function () {
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 var country_name   = optionSelected.text();
+
+                 console.log(optionSelected.val());
+                 data = {'name' : valueSelected };
+                 ajax('/home/get_sub_call_types',data,function(result){
+
+                        console.log(result);
+                        $("#select_sub_type option").remove();
+                        $("#select_sub_type").append('<option value=\'\'>Сонгох</option>');
+                        for (var i = result.length - 1; i >= 0; i--) {
+                            $("#select_sub_type").append('<option' + ' value=\''+ result[i].id + '\''+ '>'+ result[i].name +'</option>');
+                        };
+                 });
+             });
+        });
+    </script>
+{% endblock %}
+{% block link %}/home/call_list{% endblock%}
+{% block title %}Дуудлага{% endblock %}
+{% block content %}
+{% if perms.data.add_call or perms.data.change_call %}
+<div class="container-fluid">
+    <div class="card">
+        <form  action="" method="POST" id="allInputsFormValidation" class="form-horizontal">
+            {% csrf_token %}
+            <div class="content">
+                <legend>
+                    {% if edit_call != None %}
+                        Дуудлага засварлах
+                    {% else %}
+                        Дуудлага бүртгэх
+                    {% endif %}
+                </legend>
+
+                <div class="form-group col-md-3">
+                    <label class="control-label">Хэрэглэгчийн код</label>
+                    <input class="form-control" type="text" required="required" value="{{customer.code}}" name="user_code" disabled />
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="control-label">Хэрэглэгчийн овог нэр</label>
+                    <input class="form-control" type="text" value="{{customer.last_name}} {{customer.first_name}}" disabled />
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="control-label">Хэрэглэгчийн утасны дугаар</label>
+                    <input class="form-control" type="text" name="phone" required value="{{customer.phone}}" disabled/>
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="control-label">Залгасан утасны дугаар</label>
+                    <input class="form-control" type="text" name="call_phone" value="{{edit_call.call_phone}}" {% if edit_call is not None %}disabled{% else %}required{% endif %}/>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group col-md-3">
+                    <label class="control-label">Дуудлагын төрөл</label>
+                    <select class="form-control" name="select_call_type" oninvalid="this.setCustomValidity('Та талбарыг заавал сонгоно уу')" required>
+                        <option value="">Сонгох</option>
+                        {% for call_type in call_types %}
+                        {% if edit_call.call_type.name == call_type.name %}
+                            <option value="{{call_type.id}}" selected>{{call_type.name}}</option>
+                        {% else %}
+                            <option value="{{call_type.id}}">{{call_type.name}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="control-label" id="assigning_title">Хариуцах ажилтан</label>
+                    <select class="form-control" id="select_user" name="select_user" required oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')" oninput="setCustomValidity('')">
+                        <option value="">- Сонгох -</option>
+                        {% for user in users %}
+                        {% make_int edit_call.assigning_user as assigning_user %}
+                        {% if user.id == assigning_user %}
+                            <option value="{{user.id}}" selected>{{user.user.first_name}} {{user.user.last_name}}</option>
+                        {% else %}
+                            {% if request.user.id == user.id %}
+                            <option value="{{user.id}}" selected>{{user.user.first_name}} {{user.user.last_name}}</option>
+                            {% else %}
+                            <option value="{{user.id}}">{{user.user.first_name}} {{user.user.last_name}}</option>
+                            {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="control-label">Дуудлагын огноо</label>
+                    <input value="{% if edit_call == None %}{{now|date:'Y-m-d h:i'}}{% else %}{{edit_call.call_created_date|date:'Y-m-d h:i'}}{% endif %}" class="form-control datetimepicker1" name="created_date" type="text" {% if edit_call is not None %}disabled{% else %}required{% endif %}>
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="control-label">Шийдвэрлэсэн огноо</label>
+                    <input class="form-control datetimepicker1" name="completed_date" value="{{edit_call.completed_date|date:'Y-m-d h:i'}}" type="text">
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Тайлбар</label>
+                    <textarea class="form-control" rows="6" name="note">{{ edit_call.note }}</textarea>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill" name="save">Засах</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

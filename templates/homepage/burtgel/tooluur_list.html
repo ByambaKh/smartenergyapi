@@ -1,0 +1,158 @@
+{% extends "base.html" %} 
+{% block title %}Хэмжих хэрэгсэл 
+{% endblock%} 
+{% block content %}
+{% if perms.data.view_tooluurcustomer %}
+<div class="container-fluid">
+	{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+	{% if perms.data.add_tooluurcustomer %}
+	    <div class="row">
+	        <div class="col-md-12">
+				<a href="/home/tooluur_add" class="btn btn-primary btn-fill btn-wd"
+					type="button">Шинэ хэмжих хэрэгсэл бүртгэх</a>
+	        </div>
+	        <div class="clearfix"></div>
+	        <br/>
+	    </div>
+	{% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй хэмжих хэрэгслүүд
+                </div>
+
+                <div class="content content-full-width">
+
+	                <form method="POST" action="/home/tooluur_list">{% csrf_token %}
+	                    <div class="table_search_filter">
+	                        <div class="form-group col-md-4">
+								<label>Ангилал</label>
+                                <select name="select_angilal" class="selectpicker" data-title="- Сонгох -"
+										data-style="btn-default btn-block" data-menu-style="dropdown-blue" >
+									<option value="">- Сонгох -</option>
+									{% if search_q.customer_angilal == '0' %}
+	                                    <option value="0" selected>Дэд станц</option>
+	                                {% else %}
+	                                    <option value="0">Дэд станц</option>
+	                                {%endif%}
+	                                {% if search_q.customer_angilal == '1' %}
+	                                    <option value="1" selected>Хэрэглэгч</option>
+	                                {% else %}
+	                                    <option value="1">Хэрэглэгч</option>
+	                                {%endif%}
+	                                {% if search_q.customer_angilal == '2' %}
+	                                    <option value="2" selected>Байр</option>
+	                                {% else %}
+	                                    <option value="2">Байр</option>
+	                                {%endif%}
+	                        	</select>
+							</div>
+	                        <div class="form-group col-md-4">
+	                            <label>Хэрэглэгчийн код</label>
+	                            <input value="{{search_q.customer_code}}" type="text" maxlength="10" placeholder="Код" class="form-control" name="customer_code">
+							</div>
+	                        <div class="form-group col-md-4">
+	                            <label>Хэрэглэгчийн нэр</label>
+	                            <input value="{{search_q.customer_name}}" type="text" maxlength="50" placeholder="Нэр" class="form-control" name="customer_name">
+							</div>
+	                        <div class="clearfix"></div>
+	                        <div class="form-group col-md-4">
+	                            <label>Тоолуурын марк</label>
+								<select name="tooluur_mark" class="selectpicker" data-title="- Сонгох -" data-style="btn-default btn-block"
+									data-menu-style="dropdown-blue" >
+										<option value="">- Сонгох -</option>
+									{% for item in mark_list %}
+										{% if item.mark == search_q.tooluur_mark %}
+											<option value="{{item.mark}}" selected>{{item.mark}}</option>
+										{% else %}
+											<option value="{{item.mark}}">{{item.mark}}</option>
+										{% endif %}
+									{% endfor %}
+								</select>
+							</div>
+	                        <div class="form-group col-md-4">
+	                            <label>Тоолуурын дугаар</label>
+	                            <input value="{{search_q.tooluur_number}}" placeholder="Дугаар" class="form-control" name="tooluur_number">
+							</div>
+	                        <div class="form-group col-md-4">
+	                            <label>Тоолуурын нэршил</label>
+	                            <input value="{{search_q.tooluur_name}}" placeholder="Нэршил" class="form-control" name="tooluur_name">
+							</div>
+	                        <div class="clearfix"></div>
+	                        <div class="col-md-12 text-center">
+	                        {% comment %}
+								<a href="/home/tooluur_list" class="btn btn-info btn-fill btn-wd"
+									type="button">Цэвэрлэх</a>
+							{% endcomment %}
+	                            <button class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+	                        </div>
+	                        <div class="clearfix"></div>
+	                    </div>
+
+                    <div class="download_button text-right">
+	                    <button class="btn btn-success btn-fill" type="submit" name="export_xls"><span class="fa fa-file-excel-o"></span>
+                        	Файлаар татаж авах
+                    	</button>
+                    </div>
+					</form>
+
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                      	    <th class="text-center">№</th>
+							<th data-field="code" data-sortable="true" class="text-left">Хэрэглэгчийн код</th>
+							<th data-field="full_name" data-sortable="true" class="text-left">Хэрэглэгчийн нэр</th>
+							<th data-field="number" data-sortable="true" class="text-left">Тоолуурын дугаар</th>
+							<th data-field="name" data-sortable="true" class="text-left">Тоолуурын нэршил</th>
+                            <th data-field="mark" data-sortable="true" class="text-left">Тоолуурын марк</th>
+                            <th data-field="expire_date" data-sortable="true" class="text-center">Баталгаа дуусах</th>
+                            <th data-field="guidel" data-sortable="true" class="text-left">ГТ коеф</th>
+                            <th data-field="huchdel" data-sortable="true" class="text-left">ХТ коеф</th>
+                            <th data-field="actions" class="td-actions text-right">Засвар</th>
+                        </thead>
+                        <tbody>
+                            {% for detail in list %}
+	                            <tr>
+	                                <td>{{ forloop.counter }}</td>
+									{% if detail.flatname != None %}
+	                                	<td>- Байр -</td>
+	                                	<td>{{ detail.flatname }}</td>
+									{% else %}
+	                                	<td>{{ detail.code|default_if_none:detail.dtcode }}</td>
+	                                	<td>{{ detail.first_name|default_if_none:detail.name }} {{ detail.last_name|default_if_none:"" }}</td>
+									{% endif %}
+	                                <td>{{ detail.number }}</td>
+	                                <td>{{ detail.toolname }}</td>
+	                                <td>{{ detail.mark }}</td>
+	                                <td>{{ detail.expire_date|date:"Y-m-d" }}</td>
+	                                <td>{{ detail.guidel|default_if_none:"-" }}</td>
+	                                <td>{{ detail.huchdel|default_if_none:"-" }}</td>
+	                                <td class="td-actions text-right">
+	                                	{% if perms.data.change_tooluurcustomer %}
+		                                    <a href="/home/tooluur_edit/{{detail.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+		                                        <i class="fa fa-edit"></i>
+		                                    </a>
+										{% endif %}
+		                                {% if perms.data.delete_tooluurcustomer %}
+		                                    <a href="/home/tooluur_del/{{detail.id}}/" onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')" class="btn btn-simple btn-danger btn-icon table-action remove">
+		                                        <i class="fa fa-remove"></i>
+		                                    </a>
+										{% endif %}
+	                                </td>
+	                            </tr>
+                         	{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

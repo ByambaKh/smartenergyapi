@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('input#coefficient').focusout(function() {
+            var coff = $('#coefficient').val()
+            coff = coff/5
+            $('input#multiply_coef').val(coff);
+        });
+    });
+
+
+
+</script>
+{% endblock%}
+{% block link %}/home/lavlagaa/guidliin_trans{% endblock%}
+{% block title %}Гүйдлийн трансформатор
+{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+        <ul class="messagelist">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+
+                {% if urlz == "/home/lavlagaa/add_guidliin_trans" %}
+                <legend>Гүйдлийн трансформаторын мэдээлэл засах</legend>
+                {% else %}
+                <legend>Гүйдлийн трансформатор мэдээлэл бүртгэх</legend>
+                {%endif%}
+                <div class="col-md-6">
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Дэд станц</label> <select
+                                name="select_dedstants" id="select_dedstants"
+                                class="selectpicker" data-title="- Сонгох -"
+                                data-style="btn-default btn-block"
+                                data-menu-style="dropdown-blue" required>
+                            {% for item in dedstants_list %}
+                            {% if item.id == transformator.dedstants.id %}
+                            <option value="{{item.id}}" selected>{{item.name}}</option>
+                            {% else %}
+                            <option value="{{item.id}}">{{item.name}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Марк</label> <select
+                                name="select_mark" id="select_mark"
+                                class="selectpicker" data-title="- Сонгох -"
+                                data-style="btn-default btn-block"
+                                data-menu-style="dropdown-blue" required>
+                            {% for item in mark_list %}
+                            {% if item.id == transformator.mark.id %}
+                            <option value="{{item.id}}" selected>{{item.name}}</option>
+                            {% else %}
+                            <option value="{{item.id}}">{{item.name}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Сериал дугаар</label>
+                            <input class="form-control" type="text" name="number" value="{{transformator.number}}"
+                                   required/>
+                        </div>
+                    </fieldset>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Нэршил</label>
+                            <input class="form-control" type="text" name="name" value="{{transformator.name}}"
+                                   required/>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Трансформацлах коэфицент (/5)</label>
+                            <input class="form-control" type="number" name="coefficient" id="coefficient"
+                                   value="{{transformator.coefficient}}" required/>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Үржүүлэх коэфицент</label>
+                            <input class="form-control" type="number" name="multiply_coef" id="multiply_coef"
+                                   value="{{transformator.multiply_coef}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_guidliin_trans" %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                   <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %} 
+{% block title %}Үйлчилгээ
+{% endblock%} 
+{% block content %}
+
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if perms.data.change_tulburtuilchilgee %}
+    <div class="row">
+        <div class="col-md-12">
+			<a href="/home/lavlagaa/add_service" class="btn btn-primary btn-fill btn-wd" type="button">
+               Үйлчилгээний мэдээлэл бүртгэх
+            </a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+{% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй үйлчилгээ</div>
+                <div class="content content-full-width">
+	                <form method="POST" action="/home/lavlagaa/uilchilgee">{% csrf_token %}
+	                    <div class="table_search_filter">
+	                        <div class="form-group col-md-4">
+	                            <label>Нэр</label>
+	                            <input value="{{search_q.name}}" placeholder="Нэр" class="form-control" name="name">
+							</div>
+							<div class="form-group col-md-4">
+	                            <label>Үйлчилгээний дугаар</label>
+	                            <input value="{{search_q.code}}" placeholder="Үйлчилгээний дугаар" class="form-control" name="code">
+							</div>
+							<div class="form-group col-md-4">
+	                            <label>Үйлчилгээний төлбөр /дээш/</label>
+	                            <input type="number" value="{{search_q.code}}" placeholder="Үйлчилгээний төлбөр" class="form-control" name="payment">
+							</div>
+	                        <div class="col-md-12 text-center">
+	                            <button class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+	                        </div>
+	                        <div class="clearfix"></div>
+	                    </div>
+	                </form>
+
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                      	    <th class="text-center">№</th>
+							<th data-field="name" data-sortable="true"> Үйлчилгээний нэр</th>
+							<th data-field="code" data-sortable="true">Үйлчилгээний дугаар</th>
+							<th data-field="angilal" data-sortable="true">Хэрэглэгчийн ангилал</th>
+							<th data-field="payment" data-sortable="true" class="text-right">Үйлчилгээний төлбөр</th>
+                            <th data-field="actions" class="td-actions text-center">Засвар</th>
+                        </thead>
+                        <tbody>
+                            {% for detail in datas %}
+	                            <tr>
+	                                <td>{{ forloop.counter }}</td>
+                                    {% if detail.name != None %}
+	                                    <td>{{ detail.name }}</td>
+                                    {% else %}
+                                        <td> - </td>
+                                    {% endif %}
+                                    {% if detail.code != None %}
+	                                    <td>{{ detail.code }}</td>
+                                    {% else %}
+                                        <td> - </td>
+                                    {% endif %}
+	                                {% if detail.angilal == '1' %}
+	                                    <td>Ахуйн хэрэглэгч</td>
+                                    {% else %}
+                                        <td>Аж ахуй нэгж</td>
+                                    {% endif %}
+	                                <td>{{ detail.payment }}</td>
+	                                <td>
+                                        {% if perms.data.change_tulburtuilchilgee %}
+                                            <a href="/home/lavlagaa/edit_service/{{detail.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if perms.data.delete_tulburtuilchilgee %}
+                                            <a href="/home/lavlagaa/del_service/{{detail.id}}/" onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')" class="btn btn-simple btn-danger btn-icon table-action remove">
+                                                <i class="fa fa-remove"></i>
+                                            </a>
+                                        {% endif %}
+	                                </td>
+	                            </tr>
+                         	{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

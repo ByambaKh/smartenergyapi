@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Аймаг / Нийслэл
+{% endblock%} 
+{% block content %}
+
+<div class="container-fluid">
+{% if messages %}
+<ul class="messagelist">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% if perms.data.add_aimag %}
+    <div class="row">
+        <div class="col-md-12">
+			<a href="/home/lavlagaa/add_niislel" class="btn btn-primary btn-fill btn-wd" type="button">
+               Аймаг / Нийслэлийн мэдээлэл бүртгэх
+            </a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+{% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй Aймаг/Нийслэл</div>
+                <div class="content content-full-width">
+	                <form method="POST" action="/home/lavlagaa/aimag_niislel">{% csrf_token %}
+	                    <div class="table_search_filter">
+	                        <div class="form-group col-md-4">
+	                            <label>Нэр</label>
+	                            <input value="{{search_q.name}}" placeholder="Нэр" class="form-control" name="name">
+							</div>
+							<div class="form-group col-md-4">
+	                            <label>Аймаг/Нийслэлийн дугаар</label>
+	                            <input value="{{search_q.code}}" placeholder="Аймаг/Нийслэлийн дугаар" class="form-control" name="code">
+							</div>
+	                        <div class="col-md-12 text-center">
+	                            <button class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+	                        </div>
+	                        <div class="clearfix"></div>
+	                    </div>
+	                </form>
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                      	    <th class="text-center">№</th>
+							<th data-field="name" data-sortable="true" class="text-left"> Аймаг/Нийслэлийн нэр</th>
+							<th data-field="code" data-sortable="true" class="text-left">Аймаг/Нийслэлийн дугаар</th>
+                            <th data-field="actions" class="td-actions text-center">Засвар</th>
+                        </thead>
+                        <tbody>
+                            {% for detail in datas %}
+	                            <tr>
+	                                <td class="text-center">{{ forloop.counter }}</td>
+	                                <td class="text-left">{{ detail.name }}</td>
+	                                <td class="text-left">{{ detail.code }}</td>
+	                                <td class="td-actions text-center">
+	                                    {% if perms.data.change_aimag %}
+	                                    <a href="/home/lavlagaa/edit_niislel/{{detail.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+	                                        <i class="fa fa-edit"></i>
+	                                    </a>
+	                                    {% endif %}
+	                        			{% if perms.data.delete_aimag %}
+	                                    <a href="/home/lavlagaa/del_niislel/{{detail.id}}/" onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')" class="btn btn-simple btn-danger btn-icon table-action remove">
+	                                        <i class="fa fa-remove"></i>
+	                                    </a>
+	                                    {% endif %}
+	                                </td>
+	                            </tr>
+                         	{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "base.html" %} 
+{% block title %}Зааварчилгаа{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% if perms.data.add_zaavarchilgaa %}
+    <div class="row">
+        <div class="col-md-12">
+			<a href="/home/lavlagaa/add_zaavarchilgaa" class="btn btn-primary btn-fill btn-wd" type="button">
+               Зааварчилгаа бүртгэх
+            </a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+{% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй зааварчилгаа</div>
+                <div class="content content-full-width">
+                    <ul role="tablist" class="nav nav-tabs">
+                        {% if activeTab == '1' %}
+                        <li role="presentation" class="active">
+                            {% else %}
+                        <li role="presentation">
+                            {%endif%}
+                            <a href="#ZAAVARCHILGAA" data-toggle="tab"><i class="fa fa-building"></i>Зааварчилгаа</a>
+                        </li>
+                        {% if activeTab == '2' %}
+                        <li class="active">
+                            {% else %}
+                        <li>
+                            {%endif%}
+                            <a href="#BULEG" data-toggle="tab"><i class="fa fa-building"></i>Бүлэг</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        {% if activeTab == '1' %}
+                        <div id="ZAAVARCHILGAA" class="tab-pane active">
+                            {% else %}
+                            <div id="ZAAVARCHILGAA" class="tab-pane">
+                                {%endif%}
+                                <form method="post" action="/home/lavlagaa/zaavarchilgaa/1/">
+                                    {% csrf_token %}
+                                    <div class="table_search_filter">
+                                        <div class="form-group col-md-4">
+                                            <label>Бүлэг</label>
+                                            <select class="form-control" name="category">
+                                            <option value="">Сонгох</option>
+                                            {% for category in categories %}
+                                            {% if search_q.category == category.id %}
+                                                <option value="{{category.id}}" selected>{{category.name}}</option>
+                                            {% else %}
+                                                <option value="{{category.id}}">{{category.name}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Гарчиг</label>
+                                            <input value="{{search_q.title}}" placeholder="Гарчиг" class="form-control" name="title">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Тайлбар</label>
+                                            <input value="{{search_q.description}}" placeholder="Тайлбар" class="form-control" name="description">
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <button class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </form>
+                                <table id="bootstrap-table1" class="table">
+                                    <thead>
+                                        <th class="text-center">№</th>
+                                        <th data-field="category" data-sortable="true" class="text-left">Бүлэг</th>
+                                        <th data-field="name" data-sortable="true" class="text-left">Зааварчилгааны нэр</th>
+                                        <th data-field="code" data-sortable="true" class="text-left">Тайлбар</th>
+                                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for zaavarchilgaa in zaavarchilgaas %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ zaavarchilgaa.cat_name }}</td>
+                                                <td>{{ zaavarchilgaa.title }}</td>
+                                                <td>{{ zaavarchilgaa.description }}</td>
+                                                <td>
+                                                {% if perms.data.change_zaavarchilgaa %}
+                                                    <a href="/home/lavlagaa/edit_zaavarchilgaa/{{zaavarchilgaa.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                {% endif %}
+                                                {% if perms.data.delete_zaavarchilgaa %}
+                                                    <a href="/home/lavlagaa/del_zaavarchilgaa/{{zaavarchilgaa.id}}/" onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')" class="btn btn-simple btn-danger btn-icon table-action remove">
+                                                        <i class="fa fa-remove"></i>
+                                                    </a>
+                                                {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="clearfix"></div>
+                            </div>
+                            {% if activeTab == '2' %}
+                            <div id="BULEG" class="tab-pane active">
+                                {% else %}
+                                <div id="BULEG" class="tab-pane">
+                                    {%endif%}
+                                    <form method="post" action="{{category_action}}">
+                                        {% csrf_token %}
+                                        <div class="table_search_filter">
+                                            {% if perms.data.add_zaavarchilgaacategory %}
+                                            <form method="post" action="{{category_action}}">
+                                            {% csrf_token %}
+                                            <table class="table">
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="form-group text-right">
+                                                            <label class="control-label">Бүлгийн нэр :</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-group">
+                                                            <input class="form-control" type="text" name="name" placeholder="Бүлгийн нэр" value="{{zaavarchilgaaCategory.name}}" required>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-group text-left">
+                                                            <button type="submit" class="btn btn-primary btn-fill btn-wd">
+                                                            {% if 'edit' in category_action %}
+                                                                Засварлах
+                                                            {% else %}
+                                                                Бүртгэх
+                                                            {% endif %}
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                            </form>
+                                            {% endif %}
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </form>
+                                    <table id="bootstrap-table2" class="table" style="margin-left: 10px;">
+                                        <thead>
+                                            <th data-field="check" class="text-center">№</th>
+                                            <th data-field="created_date" data-sortable="true" class="text-center">Огноо</th>
+                                            <th data-field="group_name" data-sortable="true" class="text-center">Бүлгийн нэр</th></th>
+                                            <th data-field="actions" class="td-actions text-center">Засвар</th>
+                                        </thead>
+                                        <tbody>
+                                        {% for category in categories %}
+                                        <tr>
+                                            <td class="text-center">{{ forloop.counter }}</td>
+                                            <td class="text-center">{{ category.created_date|date:'Y-m-d' }}</td>
+                                            <td class="text-center">{{ category.name }}</td>
+                                            <td class="td-actions text-center">
+                                                {% if perms.data.change_zaavarchilgaacategory %}
+                                                <a href="/home/lavlagaa/edit_zaavarchilgaa_category/{{category.id}}/"
+                                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                {% endif %}
+                                                {% if perms.data.delete_zaavarchilgaacategory %}
+                                                <a href="/home/lavlagaa/del_zaavarchilgaa_category/{{category.id}}/"
+                                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                                    <i class="fa fa-remove"></i>
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

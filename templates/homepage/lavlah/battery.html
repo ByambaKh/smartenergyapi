@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Баттерей{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if perms.data.add_battery %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/lavlagaa/add_battery" class="btn btn-primary btn-fill btn-wd" type="button">Баттерейны утга
+                бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй баттерейны утгууд</div>
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/lavlagaa/battery">
+                        {% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Дугаар</label>
+                                <input placeholder="Дугаар" class="form-control" name="dugaar" value="{{search_q.dugaar}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Ампер</label>
+                                <input placeholder="Ампер" class="form-control" name="amper" value="{{search_q.amper}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Сериал</label>
+                                <input placeholder="Сериал" class="form-control" name="serial" value="{{search_q.serial}}">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-4">
+                                <label>Дэд станцын нэр</label>
+                                <select name="ded_stants" class="form-control">
+                                    <option value="">Сонгох</option>
+                                    {% for ded_stant in ded_stants %}
+                                    {% if search_q.ded_stants == ded_stant.id %}
+                                    <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}</option>
+                                    {% else %}
+                                    <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Ажилласан жил</label>
+                                <input placeholder="Ажилласан жил" type="text" pattern="\d*" class="form-control" name="ajilsan_jil" value="{{search_q.ajilsan_jil}}">
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd" type="submit">Шүүж харах</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </form>
+
+                    <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                        <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="ded_stants" data-sortable="true" class="text-center">Дэд станц</th>
+                        <th data-field="dugaar" data-sortable="true" class="text-center">Дугаар</th>
+                        <th data-field="amper" data-sortable="true" class="text-center">Ампер</th>
+                        <th data-field="serial" data-sortable="true" class="text-center">Сериал</th>
+                        <th data-field="ajilsan_jil" data-sortable="true" class="text-center">Ажилласан жил</th>
+                        <th data-field="suuriluulsan_ognoo" data-sortable="true" class="text-center">Суурилуулсан огноо</th>
+                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                        </thead>
+                        <tbody>
+                        {% for battery in batteries %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center">{{ battery.name }}</td>
+                            <td class="text-center">{{ battery.dugaar }}</td>
+                            <td class="text-center">{{ battery.amper }}</td>
+                            <td class="text-center">{{ battery.serial }}</td>
+                            <td class="text-center">{% if battery.ajilsan_jil is not None %}{{battery.ajilsan_jil}}{% endif %}</td>
+                            <td class="text-center">{{ battery.suuriluulsan_ognoo|date:'Y-m-d' }}</td>
+                            <td class="td-actions text-center">
+                                {% if perms.data.change_battery %}
+                                <a href="/home/lavlagaa/edit_battery/{{battery.id}}/"
+                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                {% endif %}
+                                {% if perms.data.delete_battery %}
+                                <a href="/home/lavlagaa/del_battery/{{battery.id}}/"
+                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

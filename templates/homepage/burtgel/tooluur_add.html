@@ -1,0 +1,399 @@
+{% extends "base.html" %} 
+{% block head_block %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        function check_fs_and_name(valueSelected){
+            if(valueSelected == 0) {
+                $("#user_label").text("Дэд станц");
+                $('#dedstants_tooluurtype_fs').show();
+            }
+            if(valueSelected == 1) {
+                $("#user_label").text("Хэрэглэгч");
+                $('#dedstants_tooluurtype_fs').hide();
+            }
+            if(valueSelected == 2) {
+                $("#user_label").text("Байр");
+                $('#dedstants_tooluurtype_fs').hide();
+            }
+        }
+
+        $('input#select_tooluur').focusout(function () {
+             <!--var optionSelected = $(this).find("option:selected");-->
+             <!--var valueSelected  = optionSelected.val();-->
+
+             var valueWrited = $(this).val();
+             if (valueWrited.length == 0){
+                $('#error_text').text('Тоолуурын дугаараа оруулна уу.');
+             }
+             else{
+                 $('#error_text').text('');
+                 data = {'code' : valueWrited };
+                 ajax('/home/get_tooluur',data,function(result){
+                    if (result.length > 0){
+                        $('#tooluur_mark').val(result[0].mark);
+                        $('#tooluur_name').val(result[0].name);
+                        $('#balance_value').val(result[0].balance_value);
+                        $('#balance_value_night').val(result[0].balance_value_night);
+                        $('#balance_value_rush').val(result[0].balance_value_rush);
+                        $('#verified_date').val(result[0].verified_date);
+                        $('#installed_date').val(result[0].installed_date);
+                        $('#expire_date').val(result[0].expire_date);
+                        $('#amper_tf').val(result[0].amper);
+                        $('#voltage_tf').val(result[0].voltage);
+
+                        if (result[0].tariff == 0) {
+                            $('#tariff').val("1 тарифт");
+                            $('#balance_value_night').prop('disabled', true);
+                            $('#balance_value_rush').prop('disabled', true);
+                        } else if (result[0].tariff == 1) {
+                            $('#tariff').val("2 тарифт");
+                            $('#balance_value_night').prop('disabled', false);
+                            $('#balance_value_rush').prop('disabled', true);
+                        } else if (result[0].tariff == 2) {
+                            $('#tariff').val("3 тарифт");
+                            $('#balance_value_night').prop('disabled', false);
+                            $('#balance_value_rush').prop('disabled', false);
+                        }
+
+                        if (result[0].amper <= 5) {
+                            $('#amp_trans_fs').show();
+                        } else {
+                            $('#amp_trans_fs').hide();
+                        }
+
+                        if (result[0].voltage <= 100) {
+                            $('#volt_trans_fs').show();
+                        } else {
+                            $('#volt_trans_fs').hide();
+                        }
+                    }
+                    else{
+                        $('#error_text').text('Тоолуурын дугаар бүртгэгдээгүй байна.');
+                    }
+                 });
+             }
+         });
+
+        $('select#select_angilal').change(function () {
+
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            data = {'code' : valueSelected };
+            check_fs_and_name(valueSelected);
+            $("#select_customer option").remove().end();
+            $("#select_customer").append('<option>- Сонгох -</option>');
+            ajax('/home/get_cus',data,function(result){
+                $("#select_customer").append('<option value="">- Сонгох -</option>');
+                for (var i = 0; i < result.length; i++) {
+                    if(valueSelected == 1) {
+                        $("#select_customer").append('<option value="'+ result[i].id +'">'+ result[i].code +'</option>');
+                    }
+                    else {
+                        $("#select_customer").append('<option value="'+ result[i].id +'">'+ result[i].name +'</option>');
+
+                    }
+                };
+            });
+        });
+
+        {% if tooluurCus != None %}
+            check_fs_and_name({{tooluurCus.customer_angilal}})
+        {%endif %}
+        var availableTooluurs = [];
+        {% for item in tooluur %}
+            availableTooluurs.push("{{item.number}}");
+        {% endfor %}
+
+        $( "#select_tooluur" ).autocomplete({
+          source: availableTooluurs
+        });
+
+    });
+</script>
+{% endblock %}
+{% block link %}{% url 'tool_cus_list' %}{% endblock%}
+{% block title %}Хэмжих хэрэгсэл {% endblock%} 
+{% block content %}
+
+<div class="container-fluid">
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">{% csrf_token %}
+            <div class="content">
+            {% if urlz == "/home/tooluur_add" %}
+                <legend>Хэмжих хэрэгсэл бүртгэх</legend>
+            {% else %}
+                <legend>Хэмжих хэрэгсэл засах</legend>
+            {%endif%}
+                <div class="col-md-12">
+                    <font color="red" id="error_text"></font>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тоолуурын дугаар</label>
+                            <input class="form-control" name="select_tooluur" id="select_tooluur" value="{{tooluurCus.tooluur.number}}" required/>
+                                <!--<select id="select_tooluur" name="select_tooluur" class="selectpicker"-->
+                                    <!--data-title="- Сонгох -" data-style="btn-default btn-block"-->
+                                    <!--data-menu-style="dropdown-blue" required>-->
+                                    <!--<option value="{{tooluurCus.tooluur.number}}" selected>{{tooluurCus.tooluur.number}}</option>-->
+                                        <!--&lt;!&ndash;{% for item in tooluur %}&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<option value="{{item.number}}">{{item.number}}</option>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;{% endfor %}&ndash;&gt;-->
+                                <!--</select>-->
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Өдрийн заалт</label>
+                            <input class="form-control" type="number" maxlength="12" name="balance_value"
+                                id="balance_value" value="{{tooluurCus.tooluur.balance_value}}" required/>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Шөнийн заалт</label>
+
+                            {% if tooluurCus.tooluur.tariff == "0" %}
+                                <input class="form-control" type="number" maxlength="12" name="balance_value_night"
+                                    id="balance_value_night" value="{{tooluurCus.tooluur.balance_value_night}}" disabled/>
+                            {% else %}
+                                <input class="form-control" type="number" maxlength="12" name="balance_value_night"
+                                    id="balance_value_night" value="{{tooluurCus.tooluur.balance_value_night}}"/>
+                            {%endif%}
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Оргил цагийн заалт</label>
+                            {% if tooluurCus.tooluur.tariff == "2" %}
+                                <input class="form-control" type="number" maxlength="12" name="balance_value_rush"
+                                    id="balance_value_rush" value="{{tooluurCus.tooluur.balance_value_rush}}"/>
+                            {% else %}
+                                <input class="form-control" type="number" maxlength="12" name="balance_value_rush"
+                                    id="balance_value_rush" value="{{tooluurCus.tooluur.balance_value_rush}}" disabled/>
+                            {%endif%}
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ампер</label>
+                            <input class="form-control" type="number" name="amper_tf" id="amper_tf"
+                                value="{{am.value}}" disabled/>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хүчдэл</label>
+                            <input class="form-control" type="number" name="voltage_tf" id="voltage_tf"
+                                value="{{vol.value}}" disabled/>
+                        </div>
+                    </fieldset>
+                    <fieldset name="amp_trans_fs" id="amp_trans_fs">
+                        <div class="form-group">
+                            <label class="control-label">ГТ-н коеффициент</label>
+                            <select class="form-control" name="select_amp_trans" id="select_amp_trans">
+                                <option value="">- Сонгох -</option>
+                                {% for detail in trans_amp %}
+
+                                    {% if detail.det_id == tooluurCus.guidliin_trans.id %}
+                                        <option value="{{detail.det_id}}" selected>{{detail.mult_coef}}</option>
+                                    {% else %}
+                                        <option value="{{detail.det_id}}">{{detail.mult_coef}}</option>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ангилал</label>
+                            <select id="select_angilal" name="select_angilal" class="selectpicker"
+                                data-title="- Сонгох -" data-style="btn-default btn-block"
+                                data-menu-style="dropdown-blue" required>
+                                {% if tooluurCus.customer_angilal == '0' %}
+                                    <option value="0" selected>Дэд станц</option>
+                                {% else %}
+                                    <option value="0">Дэд станц</option>
+                                {%endif%}
+                                {% if tooluurCus.customer_angilal == '1' %}
+                                    <option value="1" selected>Хэрэглэгч</option>
+                                {% else %}
+                                    <option value="1">Хэрэглэгч</option>
+                                {%endif%}
+                                {% if tooluurCus.customer_angilal == '2' %}
+                                    <option value="2" selected>Байр</option>
+                                {% else %}
+                                    <option value="2">Байр</option>
+                                {%endif%}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset name="dedstants_tooluurtype_fs" id="dedstants_tooluurtype_fs" hidden>
+                        <div class="form-group">
+                            <label class="control-label">Ангилал</label>
+                            <select id="select_dedstants_angilal" name="select_dedstants_angilal" class="selectpicker"
+                                data-title="- Сонгох -" data-style="btn-default btn-block"
+                                data-menu-style="dropdown-blue" required>
+                                {% if tooluurCus.flow_type == '0' %}
+                                    <option value="0" selected>Оролт</option>
+                                {% else %}
+                                    <option value="0">Оролт</option>
+                                {%endif%}
+                                {% if tooluurCus.flow_type == '1' %}
+                                    <option value="1" selected>Гаралт</option>
+                                {% else %}
+                                    <option value="1">Гаралт</option>
+                                {%endif%}
+                                {% if tooluurCus.flow_type == '2' %}
+                                    <option value="2" selected>Дотоод хэрэгцээ</option>
+                                {% else %}
+                                    <option value="2">Дотоод хэрэгцээ</option>
+                                {%endif%}
+                                {% if tooluurCus.flow_type == '3' %}
+                                    <option value="3" selected>Т</option>
+                                {% else %}
+                                    <option value="3">Т</option>
+                                {%endif%}
+                            </select>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хүчдэлийн түвшин</label>
+                            <select id="select_tooluur_input" name="select_tooluur_input" class="selectpicker"
+                                data-title="- Сонгох -" data-style="btn-default btn-block"
+                                data-menu-style="dropdown-blue" required>
+                                    <option value="0">10 kВ</option>
+                                    <option value="1">0.4 kВ</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тоолуурын нэршил</label>
+                            <input class="form-control" type="text" name="tooluur_name"
+                                id="tooluur_name" value="{{tooluurCus.tooluur.name}}" disabled/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тоолуурын марк</label>
+                            <input class="form-control" type="text" name="tooluur_mark"
+                                id="tooluur_mark" value="{{tooluurCus.tooluur.mark}}" disabled/>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тариф</label>
+                            <input class="form-control" type="text" name="tariff"
+                                id="tariff" value="{{tariff}}" disabled/>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Баталгаажсан огноо</label>
+                            <input type="text" class="form-control timedatepicker" id="verified_date"
+                                name="verified_date" value="{{verified_date}}" disabled/>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тоолуур суурилуулсан огноо</label>
+                            <input type="text" class="form-control timedatapicker" id="installed_date"
+                                name="installed_date" value="{{installed_date}}" disabled/>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Баталгаажилт дуусах огноо</label>
+                            <input type="text" class="form-control timedatapicker" id="expire_date"
+                                name="expire_date" value="{{expire_date}}" disabled/>
+                        </div>
+                    </fieldset>
+                    <fieldset name="volt_trans_fs" id="volt_trans_fs">
+                        <div class="form-group">
+                            <label class="control-label">ХТ-н коеффициент</label>
+                            <select class="form-control" name="select_volt_trans" id="select_volt_trans">
+                                <option value="">- Сонгох -</option>
+                                {% for detail in trans_volt %}
+                                    {% if detail.det_id == tooluurCus.huchdeliin_trans.id %}
+                                    <option value="{{detail.det_id}}" selected>{{detail.mult_coef}}</option>
+                                    {% else %}
+                                    <option value="{{detail.det_id}}">{{detail.mult_coef}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label" id="user_label">Хэрэглэгч</label>
+                            <select class="form-control" id="select_customer" name="select_customer" required>
+                                <option value="">- Сонгох -</option>
+                                {% for item in customer_type %}
+                                    {% if tooluurCus.customer_code == item.code %}
+                                        {% if tooluurCus.customer_angilal == '1' %}
+                                            <option value="{{item.id}}" selected>{{item.code}}</option>
+                                        {% else %}
+                                            <option value="{{item.id}}" selected>{{item.name}}</option>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if tooluurCus.customer_angilal == '1' %}
+                                            <option value="{{item.id}}">{{item.code}}</option>
+                                        {% else %}
+                                            <option value="{{item.id}}">{{item.name}}</option>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <div class="col-md-6">
+                        <fieldset>
+                            <div class="form-group" style="margin-left:-15px;">
+                                <label class="control-label">Гэрэл</label>
+                                <select class="form-control" name="light">
+                                    <option value="0" {% if tooluurCus.light == 0 %}selected{% endif %}>Хэрэглэдэггүй</option>
+                                    <option value="1" {% if tooluurCus.light == 1 %}selected{% endif %}>Хэрэглэдэг</option>
+                                </select>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
+                        <fieldset>
+                            <div class="form-group" style="margin-right:-15px;">
+                                <label class="control-label">Үүдний халаагуур</label>
+                                <select class="form-control" name="ten">
+                                    <option value="0" {% if tooluurCus.ten == 0 %}selected{% endif %}>Хэрэглэдэггүй</option>
+                                    <option value="1" {% if tooluurCus.ten == 1 %}selected{% endif %}>Хэрэглэдэг</option>
+                                </select>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill">Хадгалах</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Системийн эрх
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-12">
+            <a href="role_add" class="btn btn-primary btn-fill btn-wd" type="button" >Эрх нэмэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+               		Эрхийн жагсаалт
+                </div>
+
+                <table id="bootstrap-table1" class="table">
+                 	<thead>
+                      	<th class="text-center">№</th>
+                        <th data-field="name" data-sortable="true" class="text-center">Нэр</th>
+                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                    </thead>
+                    <tbody>
+                    	{% for detail in datas %}
+	                    	<tr>
+	                         	<td>{{ forloop.counter }}</td>
+                                <td>{{ detail.name }}</td>
+	                            <td class="td-actions text-center">
+	                            	<a href="role_edit/{{detail.id}}"
+	                            		class="btn btn-simple btn-warning btn-icon table-action edit" >
+	                            		<i class="fa fa-edit"></i>
+	                            	</a>
+	                            </td>
+	                        </tr>
+						{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+   </div>
+</div>
+
+{% endblock %}

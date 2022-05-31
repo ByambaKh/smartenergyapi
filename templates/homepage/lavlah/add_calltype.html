@@ -1,0 +1,47 @@
+{% extends "base.html" %} 
+{% block title %}Дуудлагын төрөл{% endblock %}
+{% block link %}/home/lavlagaa/call_type{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+	<div class="card">
+		<form id="allInputsFormValidation" class="form-horizontal" action={{urlz}}" method="post" novalidate="">{% csrf_token %}
+			<div class="content">
+                {% if urlz == "/home/lavlagaa/add_calltype" %}
+				    <legend>Дуудлагын төрөл бүртгэх</legend>
+                {% else %}
+                    <legend>Дуудлагын төрөл засах</legend>
+                {% endif %}
+				<div class="col-md-12">
+                    <fieldset>
+                        <div class="form-group">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Дуудлагын төрлийн нэр</label>
+                                    <input class="form-control" type="text" name="name" value="{{calltype.name}}" required/>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </fieldset>
+                </div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="clearfix"></div>
+			<div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_calltype" %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                   <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% endif %}
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

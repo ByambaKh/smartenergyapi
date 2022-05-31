@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load homepage_tags %}
+{% block title %}Хянах самбар{% endblock %}
+{% block headblock %}
+<script type="text/javascript">
+	    $(function () {
+	        $.getJSON("{% url 'line' %}", function(data) {
+	            $('#linechart').highcharts(data);
+	        });
+
+	        $.getJSON("{% url 'line_time' %}", function(data) {
+	            $('#linecharttime').highcharts(data);
+	        });
+	    });
+</script>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-6 height-470">
+                <div class="card">
+                    <div class="header">
+                        <a href="/home/ashiglalt/tasralt_list/1/">Тасралт</a> |
+                        <a href="/home/ashiglalt/taslalt_list/1/">Таслалт</a> |
+                        <a href="/home/ashiglalt/gemtel_list/1/">Гэмтэл</a> - Тоо
+                        <p class="category">{{description}}</p>
+                    </div>
+                    <div id="linechart" style="height: 400px; min-width: 310px; max-width: 1200px; margin: 0 auto"></div>
+                    </br>
+                </div>
+            </div>
+            <div class="col-md-6 height-470">
+                <div class="card">
+                    <div class="header">
+                        <a href="/home/ashiglalt/tasralt_list/1/">Тасралт</a> |
+                        <a href="/home/ashiglalt/taslalt_list/1/">Таслалт</a> |
+                        <a href="/home/ashiglalt/gemtel_list/1/">Гэмтэл</a> - Хугацаа
+                        <p class="category">{{description}}</p>
+                    </div>
+                    <div id="linecharttime" style="height: 400px; min-width: 310px; max-width: 1200px; margin: 0 auto"></div>
+                    <br/>
+                </div>
+            </div>
+        </div>
+        </br>
+        </br>
+        <div class="row">
+            <div class="col-md-6 height-470">
+                <div class="card">
+                    <div class="header">
+                        <a href="/home/lavlagaa/ded_stants">Дэд станц</a>
+                    </div>
+                    <div class="toolbar">
+                        <!--        Here you can write extra buttons/actions for the toolbar              -->
+                    </div>
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                        <th class="text-left">#</th>
+                        <th class="text-left" data-sortable="true">Код</th>
+                        <th class="text-center" data-sortable="true">Нэр</th>
+                        <th class="text-center" data-sortable="true">Чадал</th>
+                        </thead>
+                        <tbody>
+                        {% for item in ded_stants %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ item.code }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.chadal }} кВт</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6 height-470">
+                <div class="card">
+                    <div class="header">
+                        <a href="/home/lavlagaa/shugam">Шугам</a>
+                    </div>
+                    <div class="toolbar">
+                        <!--        Here you can write extra buttons/actions for the toolbar              -->
+                    </div>
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                        <th class="text-left">#</th>
+                        <th class="text-left" data-sortable="true">Дэд станц</th>
+                        <th class="text-left" data-sortable="true">Нэр</th>
+                        <th class="text-center" data-sortable="true">Төлөв</th>
+                        <th class="text-center" data-sortable="true">Тип</th>
+                        </thead>
+                        <tbody>
+                        {% for item in shugam_data %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ item.ded_stants.name }}</td>
+                            <td>{{ item.shugam_ner }}</td>
+                            {% if item.shugam_tuluv == '0' %}
+                                <td class="text-center cell_bg_red">Залгаатай</td>
+                            {% elif item.shugam_tuluv == '1' %}
+                                <td class="text-center cell_bg_green">Тасархай</td>
+                            {% else %}
+                                <td class="text-center">Бэлтгэлт</td>
+                            {% endif %}
+                            <td>{% if item.shugam_tip == '0' %}
+                                Оролт
+                                {% elif item.shugam_tip == '1' %}
+                                Гаралт
+                                {% elif item.shugam_tip == '2' %}
+                                СХВТ
+                                {% elif item.shugam_tip == '3' %}
+                                СХС
+                                {% else %}
+                                ДХТ
+                                {% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

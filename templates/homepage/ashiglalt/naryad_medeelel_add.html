@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block head_block %}
+<script type="text/javascript">
+    var count = 1;
+
+    function other_member_button() {
+        count ++;
+        if(count < 4) {
+            var other_member = '<div class="col-md-6"><input class="form-control" placeholder="Овог нэр" type="text" name="om_full_name"></div>';
+            $('div#other_members').append(other_member);
+        }
+    }
+</script>
+{% endblock %}
+{% block title %}Нарядын мэдээлэл{% endblock%}
+{% block link %}/home/ashiglalt/naryad_medeelel_list{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" action="{{action}}" method="post">
+            {% csrf_token %}
+            <div class="content">
+                {% if 'edit' in action %}
+                <legend>Нарядын мэдээлэл засах</legend>
+                {% else %}
+                <legend>Нарядын мэдээлэл бүртгэх</legend>
+                {%endif%}
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Дэд станц</label>
+                            <select class="form-control" name="ded_stants" required>
+                                <option value="">Сонгох</option>
+                                {% for ded_stant in ded_stants %}
+                                {% if naryad.ded_stants_id == ded_stant.id %}
+                                <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}</option>
+                                {% else %}
+                                <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Наряд олгогч</label>
+                            <select class="form-control" name="naryad_olgogch" required>
+                                <option value="">Сонгох</option>
+                                {% for naryad_member in naryad_members %}
+                                {% if naryad.naryad_olgogch_id == naryad_member.id %}
+                                <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% else %}
+                                <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Зөвшөөрөл олгогч</label>
+                            <select class="form-control" name="zuv_olgogch" required>
+                                <option value="">Сонгох</option>
+                                {% for naryad_member in naryad_members %}
+                                {% if naryad.zuv_olgogch_id == naryad_member.id %}
+                                <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% else %}
+                                <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Удирдагч</label>
+                            <select class="form-control" name="udirdagch" required>
+                                <option value="">Сонгох</option>
+                                {% for naryad_member in naryad_members %}
+                                {% if naryad.udirdagch_id == naryad_member.id %}
+                                <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% else %}
+                                <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Гүйцэтгэгч</label>
+                            <select class="form-control" name="guitsedgegch" required>
+                                <option value="">Сонгох</option>
+                                {% for naryad_member in naryad_members %}
+                                {% if naryad.guitsedgegch_id == naryad_member.id %}
+                                <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% else %}
+                                <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ажиглагч</label>
+                            <select class="form-control" name="ajiglagch">
+                                <option value="">Сонгох</option>
+                                {% for naryad_member in naryad_members %}
+                                {% if naryad.ajiglagch_id == naryad_member.id %}
+                                <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% else %}
+                                <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Нарядын дугаар</label>
+                            <input class="form-control" placeholder="Нарядын дугаар" type="number" name="naryad_dugaar" value="{{naryad.naryad_dugaar}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ажлын нэр</label>
+                            <input class="form-control" placeholder="Ажлын нэр" type="text" name="ajil_name" value="{{naryad.ajil_name}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+					<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ажил эхэлсэн огноо</label>
+                            <input class="form-control datetimepicker1" placeholder="Ажил эхэлсэн огноо" type="text" name="ajil_start_date" value="{{naryad.ajil_start_date|date:'Y-m-d H:i'}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ажил дууссан огноо</label>
+                            <input class="form-control datetimepicker1" placeholder="Ажил дууссан огноо" type="text" name="ajil_end_date" value="{{naryad.ajil_end_date|date:'Y-m-d H:i'}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ажлын аюулгүй байдал</label>
+                            <input type="text" class="form-control" placeholder="Ажлын аюулгүй байдал" name="ayulgui_baidal" value="{{naryad.ayulgui_baidal}}">
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ажилд оруулагч</label>
+                            <select class="form-control" name="ajil_oruulagch" required>
+                                <option value="">Сонгох</option>
+                                {% for naryad_member in naryad_members %}
+                                {% if naryad.ajil_oruulagch_id == naryad_member.id %}
+                                <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% else %}
+                                <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Бригадын гүшүүд</label>
+                            <select class="form-control" name="brigad_members" style="height:90px;" multiple>
+                                {% if 'edit' in action %}
+                                {% for naryad_member_in in naryad_members_in %}
+                                <option value="{{naryad_member_in.id}}" selected>{{naryad_member_in.first_name}} {{naryad_member_in.last_name}}</option>
+                                {% endfor %}
+                                {% for naryad_member_out in naryad_members_out%}
+                                <option value="{{naryad_member_out.id}}">{{naryad_member_out.first_name}} {{naryad_member_out.last_name}}</option>
+                                {% endfor %}
+                                {% else %}
+                                {% for naryad_member in naryad_members %}
+                                <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Бригадын бусад гүшүүд
+                                <a onclick="other_member_button()" id="other_member_button" class="btn btn-simple btn-info btn-icon">
+									<i class="fa fa-plus"></i>
+								</a>
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+                <div id="other_members">
+                    {% if om_full_names %}
+                    {% for om_full_name in om_full_names %}
+                    <div class="col-md-6">
+                        <input class="form-control" placeholder="Овог нэр" type="text" name="om_full_name" value="{{om_full_name}}">
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="col-md-6">
+                        <input class="form-control" placeholder="Овог нэр" type="text" name="om_full_name">
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill">
+                    {% if 'edit' in action %}
+                        Засах
+                    {% else %}
+                        Хадгалах
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

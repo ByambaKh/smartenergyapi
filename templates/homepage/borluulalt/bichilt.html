@@ -1,0 +1,873 @@
+{% extends 'base.html' %}
+{% load homepage_tags %}
+{% block title %}Бичилт{% endblock %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        {% if success != None %}
+            var text = "Нийт " + "{{success.total_count}}" +" бичилтээс " +"{{success.write_count}}"+ "-д авлага үүсгэв.";
+            demo.shwBalanceSuccessDialog('success-message', text);
+        {% endif %}
+        console.log("{{current_year}}")
+
+        $('select#select_duureg').change(function () {
+             var optionSelected = $(this).find("option:selected");
+             var valueSelected  = optionSelected.val();
+             data = {'code' : valueSelected };
+
+             ajax('/home/get_horoo',data,function(result){
+                $("#select_horoo option").remove().end();
+                $("#select_hothon option").remove().end();
+                $("#select_block option").remove().end();
+
+                $("#select_horoo").append('<option value="">- Сонгох -</option>');
+                for (var i = result.length - 1; i >= 0; i--) {
+                    $("#select_horoo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                };
+             });
+        });
+        $('select#select_horoo').change(function () {
+             var optionSelected = $(this).find("option:selected");
+             var valueSelected  = optionSelected.val();
+             data = {'code' : valueSelected };
+
+             ajax('/home/get_hothon',data,function(result){
+                $("#select_hothon option").remove().end();
+                $("#select_block option").remove().end();
+
+                $("#select_hothon").append('<option>- Сонгох -</option>');
+                for (var i = result.length - 1; i >= 0; i--) {
+                    $("#select_hothon").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                };
+             });
+        });
+        $('select#select_hothon').change(function () {
+             var optionSelected = $(this).find("option:selected");
+             var valueSelected  = optionSelected.val();
+             data = {'code' : valueSelected };
+
+             ajax('/home/get_block',data,function(result){
+                $("#select_block option").remove().end();
+
+                $("#select_block").append('<option>- Сонгох -</option>');
+                for (var i = result.length - 1; i >= 0; i--) {
+                    $("#select_block").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                };
+             });
+         });
+         $('button[name="write_to_avlaga"]').click(function(){
+            $(this).attr('type','submit');
+         });
+    });
+</script>
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid">
+    {% if messages %}
+        <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    <!--<div class="row">-->
+    <!--<div class="col-md-12">-->
+    <!--<a href="/home/borluulalt/bichilt_balance/0" class="btn btn-info btn-fill btn-wd" type="button">Баланс тооцох</a>-->
+    <!--</div>-->
+    <!--<div class="clearfix"></div>-->
+    <!--<br/>-->
+    <!--</div>-->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="content content-full-width">
+                    <ul role="tablist" class="nav nav-tabs">
+                        {% if activeTab == '1' %}
+                        <li role="presentation" class="active">
+                            <a href="#personalUserActive" data-toggle="tab"><i class="fa fa-user"></i>Хэрэглэгч</a>
+                        </li>
+                        {% else %}
+                        <li role="presentation">
+                            <a href="#personalUser" data-toggle="tab"><i class="fa fa-user"></i>Хэрэглэгч</a>
+                        </li>
+                        {%endif%}
+                        {% if activeTab == '2' %}
+                        <li role="notbichilt" class="active">
+                            <a href="#notBichiltUserActive" data-toggle="tab"><i class="fa fa-user"></i>Бичилт хийгдээгүй хэрэглэгч</a>
+                        </li>
+                        {% else %}
+                        <li role="notbichilt">
+                            <a href="#notBichiltUser" data-toggle="tab"><i class="fa fa-user"></i>Бичилт хийгдээгүй
+                                хэрэглэгч</a>
+                        </li>
+                        {%endif%}
+                        {% if activeTab == '3' %}
+                        <li role="companyUser" class="active">
+                            <a href="#companyUserActive" data-toggle="tab"><i class="fa fa-user"></i>Дэд станц</a>
+                        </li>
+                        {% else %}
+                        <li role="companyUser">
+                            <a href="#companyUser" data-toggle="tab"><i class="fa fa-user"></i>Дэд станц</a>
+                        </li>
+                        {%endif%}
+                        {% if activeTab == '4' %}
+                        <li role="bairUser" class="active">
+                            <a href="#bairUserActive" data-toggle="tab"><i class="fa fa-user"></i>Байр</a>
+                        </li>
+                        {% else %}
+                        <li role="bairUser">
+                            <a href="#bairUser" data-toggle="tab"><i class="fa fa-user"></i>Байр</a>
+                        </li>
+                        {%endif%}
+                    </ul>
+                    <div class="tab-content">
+                        {% if activeTab == '1' %}
+                        <div id="personalUserActive" class="tab-pane active">
+                            {% else %}
+                            <div id="personalUser" class="tab-pane">
+                                {% endif%}
+                                <form method="POST" action="/home/borluulalt/bichilt_list/1/">{% csrf_token %}
+                                    <div class="text-right">
+                                        {% if perms.data.add_bichilt %}
+                                        <a href="/home/borluulalt/bichilt_add" class="btn btn-primary btn-fill btn-wd" type="button">Бичилт оруулах</a>
+                                        {% endif %}
+                                        {% if perms.data.add_avlaga %}
+                                        <button class="btn btn-success btn-fill btn-wd" type="button" name="write_to_avlaga">Авлага үүсгэх</button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="header">
+                                        Бичилт хийгдсэн хэрэглэгчид
+                                    </div>
+                                    <div class="table_search_filter">
+                                        <div class="form-group col-md-3">
+                                            <label>Огноо /эхлэх/</label>
+                                            {% if search_q != None %}
+                                            <input value="{{search_q.start_date}}" class="form-control datetimepicker"
+                                                   name="start_date" type="text">
+                                            {% else %}
+                                            <input value="{{start_date}}" class="form-control datetimepicker"
+                                                   name="start_date" type="text">
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Огноо /дуусах/</label>
+                                            {% if search_q != None %}
+                                            <input value="{{search_q.end_date}}" class="form-control datetimepicker"
+                                                   name="end_date" type="text">
+                                            {% else %}
+                                            <input value="{{end_date}}" class="form-control datetimepicker"
+                                                   name="end_date" type="text">
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Тоолуурын дугаар</label>
+                                            <input placeholder="Тоолуурын дугаар" class="form-control"
+                                                   name="tooluur_number" id="tooluur_number"
+                                                   value="{{search_q.tooluur_number}}" type="text" maxlength="12">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Хэрэглэгчийн код</label>
+                                            <input placeholder="Хэрэглэгчийн код" class="form-control"
+                                                   name="customer_code" id="customer_code"
+                                                   value="{{search_q.customer_code}}" type="number" max="999999999"
+                                                   min="100000">
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="form-group col-md-3">
+                                            <label>Хэрэглэгчийн нэр</label>
+                                            <input placeholder="Хэрэглэгчийн нэр" class="form-control" name="user_name"
+                                                   id="user_name" value="{{search_q.user_name}}" type="text">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Хэрэглээ эхлэх</label>
+                                            <input placeholder="Хэрэглээ эхлэх" class="form-control" name="start_usage"
+                                                   id="start_usage" value="{{search_q.start_usage}}" type="number">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Хэрэглээ дуусах</label>
+                                            <input placeholder="Хэрэглээ дуусах" class="form-control" name="end_usage"
+                                                   id="end_usage" value="{{search_q.end_usage}}" type="number">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Дүүрэг</label>
+                                            <select class="form-control" id="select_duureg" name="select_duureg">
+                                                <option value="">-Сонгох-</option>
+                                                {% for item in duuregs %}
+                                                {% if item.code == search_q.duureg %}
+                                                <option value='{{ item.code }}' selected>{{ item.name }}</option>
+                                                {% else %}
+                                                <option value='{{ item.code }}'>{{ item.name }}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="form-group col-md-3">
+                                            <label>Хороо</label>
+                                            <select class="form-control" id="select_horoo" name="select_horoo">
+                                                <option value="">-Сонгох-</option>
+                                                {% for item in horoo %}
+                                                {% if item.code == search_q.horoo %}
+                                                <option value='{{ item.code }}' selected>{{ item.name }}</option>
+                                                {% else %}
+                                                <option value='{{ item.code }}'>{{ item.name }}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Хотхон</label>
+                                            <select class="form-control" id="select_hothon" name="select_hothon">
+                                                <option value="">-Сонгох-</option>
+                                                {% for item in hothon %}
+                                                {% if item.code == search_q.hothon %}
+                                                <option value="{{item.code}}" selected>{{item.name}}</option>
+                                                {% else %}
+                                                <option value="{{item.code}}">{{item.name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Эгнээ</label>
+                                            <select class="form-control" id="select_block" name="select_block">
+                                                <option value="">-Сонгох-</option>
+                                                {% for item in egnee %}
+                                                {% if item.code == search_q.egnee %}
+                                                <option value="{{item.code}}" selected>{{item.name}}</option>
+                                                {% else %}
+                                                <option value="{{item.code}}">{{item.name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Оруулсан ажилтан</label>
+                                            <select class="form-control" id="created_user" name="created_user">
+                                                <option value="">-Сонгох-</option>
+                                                {% for item in created_users %}
+                                                {% if item.user.id == search_q.created_user %}
+                                                <option value="{{item.user.id}}" selected>{{item.user.username}}
+                                                </option>
+                                                {% else %}
+                                                <option value="{{item.user.id}}">{{item.user.username}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="form-group col-md-3">
+                                            <label>Асуудалтай эсэх</label>
+                                            <input type="checkbox" class="form-control" name="is_problem" value="1"
+                                                   {% if search_q.is_problem == "1" %}checked{% endif %}>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <button class="btn btn-warning btn-fill btn-wd" type="submit"
+                                                    name="search_ahui">Шүүж харах
+                                            </button>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <div class="download_button text-right">
+                                        <button class="btn btn-success btn-fill" type="submit"
+                                                name="export_xls_customer"><span class="fa fa-file-excel-o"></span>
+                                            Файлаар татаж авах
+                                        </button>
+                                    </div>
+                                </form>
+                                <div class="clearfix"></div>
+                                <table id="bootstrap-table1" class="table">
+                                    <thead>
+                                    <th class="text-center">№</th>
+                                    <th class="text-left" data-sortable="true">Тоолуурын №</th>
+                                    <th class="text-left" data-sortable="true">Хэрэглэгчийн нэр</th>
+                                    <th class="text-left" data-sortable="true">Хэрэглэгчийн код</th>
+                                    <th class="text-center" data-sortable="true">Бичилтийн огноо</th>
+                                    <th class="text-left" data-sortable="true">Чадлын төлбөр</th>
+                                    <th class="text-left" data-sortable="true">Хэрэглээний төлбөр</th>
+                                    <th class="text-left" data-sortable="true">Суурь төлбөр</th>
+                                    <th class="text-left" data-sortable="true">Нийт зөрүү</th>
+                                    <th class="text-left" data-sortable="true">Нийт төлбөр</th>
+                                    <th class="text-left" data-sortable="true">Төлөв</th>
+                                    <th class="text-left" data-sortable="true">Асуудалтай эсэх</th>
+                                    <th data-field="view">Харах</th>
+                                    <th data-field="delete">Устгах</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in data_bichilt %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{item.tooluur.tooluur.number}} - {{item.tooluur.tooluur.name}}</td>
+                                        <td>{{item.tooluur.customer.last_name}} {{item.tooluur.customer.first_name}}
+                                        </td>
+                                        <td>{{item.tooluur.customer.code}}</td>
+                                        <td>{{item.bichilt_date|date:"Y-m-d"}}</td>
+                                        {% if item.chadal_price != None %}
+                                        <td class="td-actions text-right">{{item.chadal_price|floatformat:2}} ₮</td>
+                                        {% else %}
+                                        <td class="td-actions text-right">0.0 ₮</td>
+                                        {% endif %}
+                                        {% if item.hereglee_price != None %}
+                                        <td class="td-actions text-right">{{item.hereglee_price|floatformat:2}} ₮</td>
+                                        {% else %}
+                                        <td class="td-actions text-right">0.0 ₮</td>
+                                        {% endif %}
+                                        {% if item.suuri_price != None %}
+                                        <td class="td-actions text-right">{{item.suuri_price|floatformat:2}} ₮</td>
+                                        {% else %}
+                                        <td class="td-actions text-right">0.0 ₮</td>
+                                        {% endif %}
+                                        {% if item.total_diff != None %}
+                                        <td class="td-actions text-right">{{item.total_diff|floatformat:2}}</td>
+                                        {% else %}
+                                        <td class="td-actions text-right">0.0</td>
+                                        {% endif %}
+                                        {% if item.total_price != None %}
+                                        <td class="td-actions text-right">{{item.total_price|floatformat:2}} ₮</td>
+                                        {% else %}
+                                        <td class="td-actions text-right">0.0 ₮</td>
+                                        {% endif %}
+                                        {% if item.type == "0" %}
+                                        <td>Бичилт хийгдсэн</td>
+                                        {% elif item.type == "1" %}
+                                        <td>Баланс тооцогдсон</td>
+                                        {% else %}
+                                        <td>Авлага үүссэн</td>
+                                        {% endif %}
+                                        <td>
+                                            {% if item.is_problem == "1" %}
+                                            Асуудалтай
+                                            {% else %}
+                                            Асуудалгүй
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="/home/borluulalt/bichilt_view/{{item.id}}/"
+                                               class="btn btn-simple btn-info btn-icon table-action view">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {% if perms.data.delete_bichilt %}
+                                            {% if item.avlaga is None %}
+                                            <a href="/home/borluulalt/bichilt_remove/{{item.id}}/"
+                                               class="btn btn-simple btn-warning btn-icon table-action trash"
+                                            onclick="return confirm('Бичилтийг устгахдаа итгэлтэй байна уу?')">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                            {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="clearfix"></div>
+                            </div>
+                            {% if activeTab == '2' %}
+                            <div id="notBichiltUserActive" class="tab-pane active">
+                                {% else %}
+                                <div id="notBichiltUser" class="tab-pane">
+                                    {% endif %}
+                                    <form method="POST" action="/home/borluulalt/bichilt_list/2/">{% csrf_token %}
+                                        <div class="header">Заалт оруулаагүй тоолуурууд</div>
+                                        <div class="table_search_filter">
+                                            <div class="form-group col-md-3">
+                                                <label>Огноо /эхлэх/</label>
+                                                {% if search_not_pay_q != None %}
+                                                <input value="{{search_not_pay_q.start_date}}"
+                                                       class="form-control datetimepicker" name="start_date"
+                                                       type="text" required>
+                                                {% else %}
+                                                <input value="{{start_date}}" class="form-control datetimepicker"
+                                                       name="start_date" type="text" required>
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>Огноо /дуусах/</label>
+                                                {% if search_not_pay_q != None %}
+                                                <input value="{{search_not_pay_q.end_date}}"
+                                                       class="form-control datetimepicker" name="end_date" type="text" required>
+                                                {% else %}
+                                                <input value="{{end_date}}" class="form-control datetimepicker"
+                                                       name="end_date" type="text" required>
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>Тоолуурын дугаар</label>
+                                                <input placeholder="Тоолуурын дугаар" class="form-control"
+                                                       name="tooluur_number" value="{{search_not_pay_q.tooluur_number}}"
+                                                       type="text" maxlength="12">
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>Хэрэглэгчийн код</label>
+                                                <input placeholder="Хэрэглэгчийн код" class="form-control"
+                                                       name="customer_code" value="{{search_not_pay_q.customer_code}}"
+                                                       type="number" max="999999999" min="100000">
+                                            </div>
+                                            <div class="clearfix"></div>
+                                            <div class="form-group col-md-3">
+                                                <label>Хэрэглэгчийн нэр</label>
+                                                <input placeholder="Хэрэглэгчийн нэр" class="form-control"
+                                                       name="user_name" value="{{search_not_pay_q.user_name}}"
+                                                       type="text">
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>Утасны дугаар</label>
+                                                <input placeholder="Утасны дугаар" class="form-control" name="phone"
+                                                       value="{{search_not_pay_q.phone}}" type="text">
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>Цикл</label>
+                                                <select class="form-control" name="cycle">
+                                                <option value="">-Сонгох-</option>
+                                                {% for cycle in cycles %}
+                                                    {% if cycle.code == search_not_pay_q.cycle %}
+                                                        <option value="{{cycle.code}}" selected>{{cycle.name}}</option>
+                                                    {% else %}
+                                                        <option value="{{cycle.code}}">{{cycle.name}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>Хаяг</label>
+                                                <input placeholder="Хаяг" class="form-control" name="address"
+                                                       value="{{search_not_pay_q.address}}" type="text">
+                                            </div>
+                                            <div class="col-md-12 text-center">
+                                                <button class="btn btn-warning btn-fill btn-wd" type="submit"
+                                                        name="search_not_pay_q">Шүүж харах
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="clearfix"></div>
+                                    <table id="bootstrap-table1" class="table">
+                                        <thead>
+                                        <th class="text-center">№</th>
+                                        <th class="text-left" data-sortable="true">Тоолуурын №</th>
+                                        <th class="text-left" data-sortable="true">Хэрэглэгчийн код</th>
+                                        <th class="text-left" data-sortable="true">Хэрэглэгчийн нэр</th>
+                                        <th class="text-left" data-sortable="true">Утасны дугаар</th>
+                                        <th class="text-left" data-sortable="true">Хаяг</th>
+                                        </thead>
+                                        <tbody>
+                                        {% for not_bichilt in not_bichilts %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ not_bichilt.tooluur.number }}</td>
+                                            <td>{{ not_bichilt.customer_code }}</td>
+                                            <td>{{ not_bichilt.customer.first_name }} {{ not_bichilt.customer.last_name}}</td>
+                                            <td>{{ not_bichilt.customer.phone }}</td>
+                                            <td>{% get_address not_bichilt.customer.id as addr_name %}{{addr_name}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <!--div class="blog_pagination" style="float:right !important;">
+                                        <nav aria-label="Page navigation">
+                                            {% if not_bichilts.has_other_pages %}
+                                            <ul class="pagination">
+                                                {% if not_bichilts.has_previous %}
+                                                    <li><a href="?page={{ not_bichilts.previous_page_number }}">&laquo;</a></li>
+                                                {% else %}
+                                                    <li class="disabled"><span>&laquo;</span></li>
+                                                {% endif %}
+                                                {% for i in page_range %}
+                                                    {% if not_bichilts.number == i %}
+                                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                                    {% else %}
+                                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if not_bichilts.has_next %}
+                                                    <li><a href="?page={{ not_bichilts.next_page_number }}">&raquo;</a></li>
+                                                {% else %}
+                                                    <li class="disabled"><span>&raquo;</span></li>
+                                                {% endif %}
+                                            </ul>
+                                        {% endif %}
+                                        </nav>
+                                    </div-->
+                                    <div class="clearfix"></div>
+                                </div>
+                                {% if activeTab == '3' %}
+                                <div id="companyUserActive" class="tab-pane active">
+                                    {% else %}
+                                    <div id="companyUser" class="tab-pane">
+                                        {% endif %}
+                                        <div class="text-right">
+                                            {% if perms.data.add_bichilt %}
+                                            <a href="/home/borluulalt/bichilt_ded_stants_add"
+                                               class="btn btn-primary btn-fill btn-wd" type="button">Бичилт оруулах</a>
+                                            {% endif %}
+                                        </div>
+                                        <div class="header">
+                                            Бичилт хийгдсэн дэд станцууд
+                                        </div>
+                                        <form method="POST" action="/home/borluulalt/bichilt_list/3/">{% csrf_token %}
+                                            <div class="table_search_filter">
+                                                <div class="form-group col-md-3">
+                                                    <label>Огноо /эхлэх/</label>
+                                                    {% if search_dedstants_q != None %}
+                                                    <input value="{{search_dedstants_q.start_date}}"
+                                                           class="form-control datetimepicker" name="start_date"
+                                                           type="text" required="true">
+                                                    {% else %}
+                                                    <input value="{{start_date}}" class="form-control datetimepicker"
+                                                           name="start_date" type="text" required="true">
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Огноо /дуусах/</label>
+                                                    {% if search_dedstants_q != None %}
+                                                    <input value="{{search_dedstants_q.end_date}}"
+                                                           class="form-control datetimepicker" name="end_date"
+                                                           type="text" required="true">
+                                                    {% else %}
+                                                    <input value="{{end_date}}" class="form-control datetimepicker"
+                                                           name="end_date" type="text" required="true">
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Тоолуурын дугаар</label>
+                                                    <input placeholder="Тоолуурын дугаар" class="form-control"
+                                                           name="tooluur_number"
+                                                           value="{{search_dedstants_q.tooluur_number}}" type="number">
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Дэд станцын нэр</label>
+                                                    <input placeholder="Дэд станцын  нэр" class="form-control"
+                                                           name="user_name" value="{{search_dedstants_q.user_name}}"
+                                                           type="text">
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Хэрэглээ эхлэх</label>
+                                                    <input placeholder="Хэрэглээ эхлэх" class="form-control"
+                                                           name="start_usage" value="{{search_dedstants_q.start_usage}}"
+                                                           type="number">
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Хэрэглээ дуусах</label>
+                                                    <input placeholder="Хэрэглээ дуусах" class="form-control"
+                                                           name="end_usage" value="{{search_dedstants_q.end_usage}}"
+                                                           type="number">
+                                                </div>
+                                                <div class="col-md-12 text-center">
+                                                    <button type="submit" name="search_dedstants"
+                                                            class="btn btn-warning btn-fill btn-wd">Шүүж харах
+                                                    </button>
+                                                </div>
+                                                <div class="clearfix"></div>
+
+                                            </div>
+                                            <div class="download_button text-right">
+                                                <button class="btn btn-success btn-fill" type="submit"
+                                                        name="export_xls_deds"><span class="fa fa-file-excel-o"></span>
+                                                    Файлаар татаж авах
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <table id="bootstrap-table1" class="table">
+                                            <thead>
+                                            <th class="text-center">№</th>
+                                            <th data-field="id" class="text-right" data-sortable="true">Тоолуурын №</th>
+                                            <th data-field="name" class="text-right" data-sortable="true">Дэд станцын
+                                                дугаар
+                                            </th>
+                                            <th data-field="bichilt_date" class="text-right" data-sortable="true">
+                                                Бичилтийн огноо
+                                            </th>
+                                            <th data-field="day_bichilt" class="text-right" data-sortable="true">Өдөр
+                                            </th>
+                                            <th data-field="night_bichilt" class="text-right" data-sortable="true">
+                                                Шөнө
+                                            </th>
+                                            <th data-field="rush_bichilt" class="text-right" data-sortable="true">Оргил
+                                                цаг
+                                            </th>
+                                            <th data-field="total_diff" class="text-right" data-sortable="true">Нийт
+                                                зөрүү
+                                            </th>
+                                            <th data-field="view">Харах</th>
+                                            {% if request.user.is_superuser == True %}
+                                            <th data-field="edit">Засах</th>
+                                            <th data-field="remove">Устгах</th>
+                                            {%endif%}
+                                            </thead>
+                                            <tbody>
+                                            {% for item in data_dedstants %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{item.tooluur.tooluur.number}}</td>
+                                                <td>{{item.tooluur.dedstants.name}}</td>
+                                                <td>{{item.bichilt_date|date:"Y-m-d"}}</td>
+                                                {% if item.day_balance != None %}
+                                                <td>{{item.day_balance}}</td>
+                                                {% else %}
+                                                <td>0.0</td>
+                                                {% endif %}
+                                                {% if item.night_balance != None %}
+                                                <td>{{item.night_balance}}</td>
+                                                {% else %}
+                                                <td>0.0</td>
+                                                {% endif %}
+                                                {% if item.rush_balance != None %}
+                                                <td>{{item.rush_balance}}</td>
+                                                {% else %}
+                                                <td>0.0</td>
+                                                {% endif %}
+                                                {% if item.total_diff != None %}
+                                                <td>{{item.total_diff}}</td>
+                                                {% else %}
+                                                <td>0.0</td>
+                                                {% endif %}
+                                                <td>
+                                                    <a href="/home/borluulalt/bichilt_ded_stants_view/{{item.id}}/"
+                                                       class="btn btn-simple btn-info btn-icon table-action view">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </td>
+                                                {% if perms.data.change_bichilt %}
+                                                <td>
+                                                    {% if item.type == "0" %}
+                                                    <a href="/home/borluulalt/bichilt_ded_stants_edit/{{item.id}}/"
+                                                       class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                </td>
+                                                {% endif %}
+                                                {% if perms.data.delete_bichilt %}
+                                                <td>
+                                                    {% if item.type == "0" %}
+                                                    <a href="/home/borluulalt/bichilt_remove/{{item.id}}"
+                                                       class="btn btn-simple btn-danger btn-icon table-action remove"
+                                                    onclick="return confirm('Бичилтийг устгахдаа итгэлтэй байна уу?')">
+                                                        <i class="fa fa-remove"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                </td>
+                                                {% endif %}
+                                            </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% if activeTab == '4' %}
+                                    <div id="bairUserActive" class="tab-pane active">
+                                        {%else %}
+                                        <div id="bairUser" class="tab-pane">
+                                            {% endif %}
+                                            <div class="text-right">
+                                                {% if perms.data.add_bichilt %}
+                                                <a href="/home/borluulalt/bichilt_bair_add"
+                                                   class="btn btn-primary btn-fill btn-wd" type="button">Бичилт
+                                                    оруулах</a>
+                                                {% endif %}
+                                            </div>
+                                            <div class="header">
+                                                Бичилт хийгдсэн байрнууд
+                                            </div>
+                                            <form method="POST" action="/home/borluulalt/bichilt_list/4/">
+                                                <div class="table_search_filter">
+                                                    {% csrf_token %}
+                                                    <div class="form-group col-md-3">
+                                                        <label>Огноо /эхлэх/</label>
+                                                        {% if search_bair_q != None %}
+                                                        <input value="{{search_bair_q.start_date}}"
+                                                               class="form-control datetimepicker" name="start_date"
+                                                               type="text" required="true">
+                                                        {% else %}
+                                                        <input value="{{start_date}}"
+                                                               class="form-control datetimepicker" name="start_date"
+                                                               type="text" required="true">
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label>Огноо /дуусах/</label>
+                                                        {% if search_bair_q != None %}
+                                                        <input value="{{search_bair_q.end_date}}"
+                                                               class="form-control datetimepicker" name="end_date"
+                                                               type="text" required="true">
+                                                        {% else %}
+                                                        <input value="{{end_date}}" class="form-control datetimepicker"
+                                                               name="end_date" type="text" required="true">
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label>Тоолуурын дугаар</label>
+                                                        <input placeholder="Тоолуурын дугаар" class="form-control"
+                                                               name="tooluur_number"
+                                                               value="{{search_bair_q.tooluur_number}}" type="number">
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label>Байрны нэр</label>
+                                                        <input placeholder="Байрны нэр" class="form-control"
+                                                               name="user_name" value="{{search_bair_q.user_name}}"
+                                                               type="text">
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label>Хэрэглээ эхлэх</label>
+                                                        <input placeholder="Хэрэглээ эхлэх" class="form-control"
+                                                               name="start_usage" value="{{search_bair_q.start_usage}}"
+                                                               type="number">
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label>Хэрэглээ дуусах</label>
+                                                        <input placeholder="Хэрэглээ дуусах" class="form-control"
+                                                               name="end_usage" value="{{search_bair_q.end_usage}}"
+                                                               type="number">
+                                                    </div>
+                                                    <div class="col-md-12 text-center">
+                                                        <button type="submit" name="search_bair"
+                                                                class="btn btn-warning btn-fill btn-wd">Шүүж харах
+                                                        </button>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <div class="download_button text-right">
+                                                    <button class="btn btn-success btn-fill" name="export_xls_bair"><span
+                                                            class="fa fa-file-excel-o"></span> Файлаар татаж авах
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            <table id="bootstrap-table1" class="table">
+                                                <thead>
+                                                <th class="text-center">№</th>
+                                                <th data-field="id" class="text-right" data-sortable="true">Тоолуурын
+                                                    №
+                                                </th>
+                                                <th data-field="name" class="text-right" data-sortable="true">Дэд
+                                                    станцын дугаар
+                                                </th>
+                                                <th data-field="bichilt_date" class="text-right" data-sortable="true">
+                                                    Бичилтийн огноо
+                                                </th>
+                                                <th data-field="day_bichilt" class="text-right" data-sortable="true">
+                                                    Өдөр
+                                                </th>
+                                                <th data-field="night_bichilt" class="text-right" data-sortable="true">
+                                                    Шөнө
+                                                </th>
+                                                <th data-field="rush_bichilt" class="text-right" data-sortable="true">
+                                                    Оргил цаг
+                                                </th>
+                                                <th data-field="total_diff" class="text-right" data-sortable="true">Нийт
+                                                    зөрүү
+                                                </th>
+                                                <th data-field="view">Харах</th>
+                                                {% if request.user.is_superuser == True %}
+                                                <th data-field="edit">Засах</th>
+                                                <th data-field="remove">Устгах</th>
+                                                {%endif%}
+
+                                                </thead>
+                                                <tbody>
+                                                {% for item in data_bair %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{item.tooluur.tooluur.number}}</td>
+                                                    <td>{{item.tooluur.bair.name}}</td>
+                                                    <td>{{item.bichilt_date|date:"Y-m-d"}}</td>
+                                                    {% if item.day_balance != None %}
+                                                    <td>{{item.day_balance}}</td>
+                                                    {% else %}
+                                                    <td>0.0</td>
+                                                    {% endif %}
+                                                    {% if item.night_balance != None %}
+                                                    <td>{{item.night_balance}}</td>
+                                                    {% else %}
+                                                    <td>0.0</td>
+                                                    {% endif %}
+                                                    {% if item.rush_balance != None %}
+                                                    <td>{{item.rush_balance}}</td>
+                                                    {% else %}
+                                                    <td>0.0</td>
+                                                    {% endif %}
+                                                    {% if item.total_diff != None %}
+                                                    <td>{{item.total_diff}}</td>
+                                                    {% else %}
+                                                    <td>0.0</td>
+                                                    {% endif %}
+                                                    <td>
+                                                        <a href="/home/borluulalt/bichilt_bair_view/{{item.id}}/"
+                                                           class="btn btn-simple btn-info btn-icon table-action view">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                    </td>
+                                                    {% if perms.data.change_bichilt %}
+                                                    <td>
+                                                        {% if item.type == "0" %}
+                                                        <a href="/home/borluulalt/bichilt_bair_edit/{{item.id}}/"
+                                                           class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% endif %}
+                                                    {% if perms.data.delete_bichilt %}
+                                                    <td>
+                                                        {% if item.type == "0" %}
+                                                        <a href="/home/borluulalt/bichilt_remove/{{item.id}}"
+                                                           class="btn btn-simple btn-danger btn-icon table-action remove"
+                                                        onclick="return confirm('Бичилтийг устгахдаа итгэлтэй байна уу?')">
+                                                            <i class="fa fa-remove"></i>
+                                                        </a>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% endif %}
+                                                </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endblock %}
+                {% block headblock %}
+                <script type="text/javascript">
+        var $table2 = $('#bootstrap-table2');
+
+        $().ready(function(){
+            $table2.bootstrapTable({
+                toolbar: ".toolbar",
+                clickToSelect: true,
+                showRefresh: true,
+                search: true,
+                showToggle: true,
+                showColumns: true,
+                pagination: false,
+                searchAlign: 'left',
+                pageSize: 25,
+                clickToSelect: false,
+                pageList: [8,10,25,50,100],
+
+                formatRecordsPerPage: function(pageNumber){
+                    return pageNumber;
+                },
+                icons: {
+                    refresh: 'fa fa-refresh',
+                    toggle: 'fa fa-th-list',
+                    columns: 'fa fa-columns',
+                    detailOpen: 'fa fa-plus-circle',
+                    detailClose: 'fa fa-minus-circle'
+                }
+            });
+
+            $('[rel="tooltip"]').tooltip();
+
+            $(window).resize(function () {
+                $table2.bootstrapTable('resetView');
+            });
+        });
+</script>
+{% endblock %}

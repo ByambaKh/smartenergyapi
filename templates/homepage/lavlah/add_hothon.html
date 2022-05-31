@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block head_block %}
+<script type="text/javascript">
+$(document).ready(function() {
+
+    $('select#select_aimag').change(function () {
+
+         var optionSelected = $(this).find("option:selected");
+         var valueSelected  = optionSelected.val();
+         data = {'code' : valueSelected };
+
+         ajax('/home/get_duureg',data,function(result){
+            $("#select_duureg option").remove().end();
+            $("#select_horoo option").remove().end();
+            $("#select_hothon option").remove().end();
+            $("#select_block option").remove().end();
+
+            $("#select_duureg").append('<option>- Сонгох -</option>');
+            for (var i = result.length - 1; i >= 0; i--) {
+                $("#select_duureg").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+            };
+         });
+     });
+
+    $('select#select_duureg').change(function () {
+
+         var optionSelected = $(this).find("option:selected");
+         var valueSelected  = optionSelected.val();
+         data = {'code' : valueSelected };
+
+         ajax('/home/get_horoo',data,function(result){
+            $("#select_horoo option").remove().end();
+            $("#select_hothon option").remove().end();
+            $("#select_block option").remove().end();
+
+            $("#select_horoo").append('<option>- Сонгох -</option>');
+            for (var i = result.length - 1; i >= 0; i--) {
+                $("#select_horoo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+            };
+         });
+     });
+
+    $('select#select_horoo').change(function () {
+
+         var optionSelected = $(this).find("option:selected");
+         var valueSelected  = optionSelected.val();
+         data = {'code' : valueSelected };
+
+         ajax('/home/get_hothon',data,function(result){
+            $("#select_hothon option").remove().end();
+            $("#select_block option").remove().end();
+
+            $("#select_hothon").append('<option>- Сонгох -</option>');
+            for (var i = result.length - 1; i >= 0; i--) {
+                $("#select_hothon").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+            };
+         });
+     });
+});
+</script>
+{% endblock%}
+{% block title %}Хотхон{% endblock%}
+{% block link %}/home/lavlagaa/hothon{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+                
+                {% if urlz == "/home/lavlagaa/add_hothon" %}
+	                <legend>Хотхоны мэдээлэл бүртгэх</legend>
+	            {% else %}
+	                <legend>Хотхоны мэдээлэл засах</legend>
+	            {%endif%}
+                <div class="col-md-6">
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Хот / аймаг</label>
+                            <select name="select_aimag" id="select_aimag" class="selectpicker" data-title="- Сонгох -" data-style="btn-default btn-block"
+								data-menu-style="dropdown-blue" required> 
+                                {% for item in aimag %}
+                                    {% if item.code == hothon.horoo.duureg.aimag.code %}
+                                        <option  value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+							</select>
+						</div>
+					</fieldset>
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Баг / Хороо</label>
+							<select class="form-control" id="select_horoo" name="select_horoo" required>
+                                {% for item in horoo %}
+                                    {% if item.code == hothon.horoo.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        	</select>
+						</div>
+					</fieldset>
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Код</label> 
+                            <input class="form-control" type="number" max="9999" name="code" value="{{hothon.code}}" required/>
+                        </div>
+					</fieldset>
+                </div>
+                <div class="col-md-6">
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Дүүрэг / сум</label> 
+							<select class="form-control" id="select_duureg" name="select_duureg" required>
+                                {% for item in duureg %}
+                                    {% if item.code == hothon.horoo.duureg.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        	</select>
+						</div>
+					</fieldset>
+					<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Нэр</label>
+                             <input class="form-control" type="text" name="name" value="{{hothon.name}}"  required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_hothon" %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                   <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

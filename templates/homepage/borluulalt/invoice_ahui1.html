@@ -1,0 +1,993 @@
+{% load staticfiles %}
+{% load humanize %}
+{% load mathfilters %}
+{% load homepage_tags_new %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="robots" content="noindex, nofollow" />
+        <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.ico' %}">
+		<link href="{% static 'assets/css/invoice.css' %}" rel="stylesheet" />
+		<title>Хэрэглэгчийн дансны дэлгэрэнгүй тайлан - Ухаалаг эрчим хүч ХХК</title>
+	</head>
+    <body>
+        {% if show is None %}
+        <div class="actions">
+			<button onclick="window.close()">Хаах</button>
+			<button onclick="window.print()">Хэвлэх</button>
+		</div>
+        {% endif %}
+        {% for customer in customers %}
+        {% make_float customer.total_diff as total_diff %}
+        {% make_float customer.limit as limit %}
+        <div class="page">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td style="text-align: center"><h3><b class="text-align: center">Төлбөрийн нэхэмжлэл</b></h3></td>
+
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" style="font-family: Arial, Verdana, sans-serif; color: #000; font-size: 10px; padding: -5px;">
+                                <tbody>
+                                    <tr>
+                                        <td width="50%">Хэрэглэгчийн код: <b>{{ customer.code }}</b> </td>
+                                        <td width="50%">Нэхэмжлэгч: <b>Ухаалаг эрчим хүч ХХК</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Хэрэглэгчийн овог: <b>{{ customer.last_name }}</b></td>
+                                        <td rowspan="2">Нэхэмжлэгчийн данс: Хаан банк - 5173019075 , Голомт банк - 2105100820 , Худалдаа хөгжлийн банк - 421000275 , Төрийн банк - 240022014300</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Хэрэглэгчийн нэр: <b>{{ customer.first_name }}</b></td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td>Регистр: <b>{{ customer.register }}</b></td>
+                                        <td>Хэмжүүрийн дугаар: <b>{{ customer.number }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Хаяг: <b>{{ customer.address_name }}</b></td>
+                                        <td>Борлуулалтын цикл: <b>{{customer.cycl_name}} &nbsp;&nbsp; Холбогдсон дэд станц: <b>{{ customer.deds_name }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Банкны нэр: <b>{{ customer.bank_name }}</b></td>
+                                        <td>Хамрагдах хугацаа: <b>{{ customer.umnu_bichdate|date:'Y-m-d' }} - {{customer.odoo_bichdate|date:'Y-m-d'}}</b></td>
+                                    </tr>
+                                    <tr><td></td><td style="float:right; text-align: right">Хэвлэсэн: {% now 'Y-m-d' %}</td></tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <hr/><h3><b>Цахилгаан өртгийн талаар хэрэглэгчдэд зориулсан мэдээлэл</b></h3><br/>
+                            <table border="0" style="font-family: Arial, Verdana, sans-serif; color: #000; font-size: 10px; padding: -5px; border: 1px solid black; width:79.5%;">
+                                <tbody>
+                                <tr style="border: 1px solid black;">
+                                    <td width="5%" align="center" style="border-right: solid 1px #000; border-bottom: solid 1px #000;">№</td>
+                                    <td width="50%" align="center" style="border-right: solid 1px #000; border-bottom: solid 1px #000;"><strong>Үзүүлэлт</strong></td>
+                                    <td width="15%" align="center" style="border-bottom: solid 1px #000;"><strong>Хэрэглээ</strong><br/>кВт.ц</td>
+                                    <td width="15%" align="center" style="border-bottom: solid 1px #000;"><strong>Төлбөр тооцох тариф</strong><br/>төг/кВт.ц</td>
+                                    <td width="15%" align="center" style="border-bottom: solid 1px #000;"><strong>Төлбөр</strong><br/>төгрөг</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="border-right: solid 1px #000;">1.1</td>
+                                    <td style="border-right: solid 1px #000; padding-left:20px;"><blockquote>Түлш, нүүрсний зардал</blockquote></td>
+                                    <td align="center">{{ total_diff|floatformat:'2'|intcomma }}</td>
+                                    <td align="center">23.89</td>
+                                    <td align="center">{{ total_diff|mul:23.89|floatformat:2|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="border-right: solid 1px #000;">1.2</td>
+                                    <td style="border-right: solid 1px #000; padding-left:20px;"><blockquote>Үйлдвэрлэл, импортын зардал</blockquote></td>
+                                    <td align="center"></td>
+                                    <td align="center">62.92</td>
+                                    <td align="center">{{ total_diff|mul:62.92|floatformat:2|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="border-right: solid 1px #000;">1.3</td>
+                                    <td style="border-right: solid 1px #000; padding-left:20px;"><blockquote>Дамжуулалтын зардал</blockquote></td>
+                                    <td align="center"></td>
+                                    <td align="center">11.34</td>
+                                    <td align="center">{{ total_diff|mul:11.34|floatformat:2|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="border-right: solid 1px #000;">1.4</td>
+                                    <td style="border-right: solid 1px #000; padding-left:20px;"><blockquote>Түгээлт, хангалтын зардал</blockquote></td>
+                                    <td align="center"></td>
+                                    <td align="center">43.40</td>
+                                    <td align="center">{{ total_diff|mul:43.40|floatformat:2|intcomma }}</td>
+                                </tr>
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-right: solid 1px #000;">1.5</td>-->
+                                    <!--<td style="border-right: solid 1px #000; padding-left:20px;"><blockquote>Баримт үнэ</blockquote></td>-->
+                                    <!--<td align="center"></td>-->
+                                    <!--<td align="center"></td>-->
+                                    <!--<td align="center">{% if forloop.last %}{{customer.barimt_une|floatformat:'2'|intcomma}}{% else %}0.00{% endif %}</td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-right: solid 1px #000;">1.6</td>-->
+                                    <!--<td style="border-right: solid 1px #000; padding-left:20px;"><blockquote>ТВ хураамж</blockquote></td>-->
+                                    <!--<td align="center"></td>-->
+                                    <!--<td align="center"></td>-->
+                                    <!--<td align="center">-->
+                                        <!--{% if forloop.last %}-->
+                                            <!--{% without_nuat customer.tv_huraamj as tv_huraamj %}-->
+                                            <!--{{ tv_huraamj|floatformat:'2'|intcomma }}-->
+                                        <!--{% else %}-->
+                                            <!--0.00-->
+                                        <!--{% endif %}-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <tr>
+                                    <td align="center" style="border-right: solid 1px #000; border-bottom: solid 1px #000;">1</td>
+                                    <td style="border-right: solid 1px #000; border-bottom: solid 1px #000; padding-left:5px;"><b>Нийт өртөг, зардал</b></td>
+                                    <td align="center" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="center" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="center" style="border-bottom: solid 1px #000;">
+                                        {% multiply customer.total_diff 141.55 as result1 %}
+                                        {% if forloop.last %}
+                                            {% return_same result1 as result2 %}
+                                            <b>{{ result2|floatformat:'2'|intcomma }}</b>
+                                        {% else %}
+                                            {% return_same result1 as result2 %}
+                                            <b>{{ result1|floatformat:'2'|intcomma }}</b>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="border-right: solid 1px #000; border-bottom: solid 1px #000;">2</td>
+                                    <td style="border-right: solid 1px #000; border-bottom: solid 1px #000; padding-left:5px;">НӨАТатвар</td>
+                                    <td align="center" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="center" style="border-bottom: solid 1px #000;">10%</td>
+                                    <td align="center" style="border-bottom: solid 1px #000;">
+                                        {% multiply result2 0.1 as result3 %}{{ result3|floatformat:'2'|intcomma }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="border-right: solid 1px #000;">3</td>
+                                    <td style="border-right: solid 1px #000; padding-left:5px;"><b>Өртгөөр тооцсон нийт төлбөр</b></td>
+                                    <td align="center"></td>
+                                    <td align="center"></td>
+                                    <td align="center"><b>{% append result2 result3 as result4 %}{{ result4|floatformat:'2'|intcomma }}</b></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" style="font-family: Arial, Verdana, sans-serif; color: #000; font-size: 10px; padding: -5px;">
+                                <tbody>
+                                <tr>
+                                    <td colspan="6" style="border-bottom: solid 1px #000;"><h3><b>Худалдаж авсан цахилгааны төлбөл зохих төлбөр</b> /батлагдсан тарифаар/</h3></td>
+                                    <td width="2%" rowspan="17"></td>
+                                    <td colspan="2" align="left" style="border-bottom: solid 1px #000;"><h3><b>Тарифын хөнгөлөлт</b></h3></td>
+                                </tr>
+                                <tr>
+                                    <!--<td width="5%" align="center" rowspan="2"  style="border-bottom: solid 1px #000; border-left: solid 1px #000;">№</td>-->
+                                    <td width="30%" align="center" rowspan="2" style="border-bottom: solid 1px #000; text-align:left; border-left: solid 1px #000; padding-left: 5px;"><strong>Үзүүлэлт</strong></td>
+                                    <td width="15%" align="center" colspan="2" style="border-right: solid 1px #000; text-align:center;"><strong>Тоолуурын заалт</strong></td>
+                                    <td width="12%" align="center" rowspan="2" style="border-bottom: solid 1px #000; text-align:right;"><strong>Хэрэглээ</strong><br/>/кВт.ц/</td>
+                                    <td width="12%" align="center" rowspan="2"  style="border-bottom: solid 1px #000; text-align:right;"><strong>Төлбөр тооцох тариф</strong><br/>төг/кВт.ц</td>
+                                    <td width="12%" align="center" rowspan="2"  style="border-bottom: solid 1px #000; border-right: solid 1px #000; text-align:right; padding-right:5px;"><strong>Төлбөр</strong><br/>төгрөг</td>
+                                    <td width="12%" align="center" rowspan="2"  style="border-bottom: solid 1px #000; border-left: solid 1px #000;"><strong>Тариф</strong><br/>/₮ кВт.ц/</td>
+                                    <td width="12%" align="center" rowspan="2"  style="border-bottom: solid 1px #000; border-right: solid 1px #000;"><strong>Төлбөр </strong><br/>/₮-өөр/</td>
+                                </tr>
+                                <tr>
+
+
+                                    <td align="center" style="border-bottom: solid 1px #000; text-align:right; padding-right:5px"><strong>Өмнөх</strong></td>
+                                    <td align="center" style="border-bottom: solid 1px #000; border-right: solid 1px #000; text-align:right; padding-right:5px"><strong>Одоо</strong></td>
+
+                                </tr>
+                                {% if total_diff <= limit and customer.tariff == '0' %}
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">1.1</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">150 кВт.ц хүртэл</td>
+                                    <td align="right" style="padding-right: 5p">{{ customer.day_balance_prev|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-right: solid 1px #000; text-align:right; padding-right: 5px">{{ customer.day_balance|floatformat:'2'|intcomma }}</td>
+                                    <td align="right">{{ customer.total_diff|floatformat:'2'|intcomma }}</td>
+                                    <td align="right">{{ customer.low_limit_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {{ customer.low150_price|floatformat:'2'|intcomma }}
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000; text-align: center;">31.27</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% multiply total_diff 31.27 as result10 %}
+                                        {{ result10|floatformat:'2'|intcomma }}
+                                    </td>
+                                </tr>
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>өмнөх</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_balance_prev|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>одоо</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_balance|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">1.2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">151 кВт.ц-аас дээш</td>
+                                    <td align="right" style="padding-right: 5px">0.00</td>
+                                    <td align="right" style="border-right: solid 1px #000; text-align:right; padding-right: 5px">0.00</td>
+                                    <td align="right">0.00</td>
+                                    <td align="right">{{ customer.high_limit_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">0.00</td>
+                                    <td align="right" style="border-left: solid 1px #000; text-align: center;">11.47</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">0.00</td>
+                                </tr>
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>өмнөх</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">0.00</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>одоо</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">0.00</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">1</td>-->
+                                    <td align="left"  style="border-left: solid 1px #000;padding-left: 5px;"><b>Дүн</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;">  </td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>{{ customer.total_price|floatformat:'2'|intcomma }}</b></td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% return_same result10 as result32 %}
+                                        <b>{{ result32|floatformat:'2'|intcomma }}</b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">ЦЭХ-ний суурь үнэ</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.suuri_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;">-{{ customer.suuri_price|floatformat:'2'|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">3</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;"><b>Цахилгааны төлбөр</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                            <b>{{ customer.tot_pri_suu_cha|floatformat:'2'|intcomma }}</b>
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>{% reduce result32 customer.suuri_price as result33 %}{{ result33|floatformat:'2'|intcomma }}</b></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">4.1</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">НӨАТ</td>
+                                    <td align="right">&nbsp;</td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right">10%</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply customer.tot_pri_suu_cha 0.1 as nuat_tseh %}{{ nuat_tseh|floatformat:'2'|intcomma }}</td>
+
+                                    <td align="right" style="border-left: solid 1px #000; text-align:center;">10%</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply result33 0.1 as result34 %}{{ result34|floatformat:'2'|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">4</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;"><b>Цахилгааны нийт төлбөр</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                            {% append customer.tot_pri_suu_cha nuat_tseh as total_price_tseh %}
+                                            <b>{{ total_price_tseh|floatformat:'2'|intcomma }}</b>
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>
+                                        {% append result33 result34 as result35 %}
+                                        {{ result35|floatformat:'2'|intcomma }}</b></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;"><b>Бусад төлбөр</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"></td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.1</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">Баримт үнэ</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% if forloop.last %}{{ customer.barimt_une|floatformat:'2'|intcomma }}{% else %}0.00{% endif %}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+                                {% if customer.uilchilgeenii_tulbur != 0.00 and customer.uilchilgeenii_tulbur is not None %}
+                                    {% return_same customer.uilchilgeenii_tulbur as uil_tulbur_dotood %}
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">Төлбөрт үйлчилгээ</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{uil_tulbur_dotood|floatformat:'2'|intcomma}}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+                                {% endif %}
+
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.3</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">ТВ хураамж</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% if forloop.last %}
+                                            {% without_nuat customer.tv_huraamj as tv_huraamj %}
+                                            {{ tv_huraamj|floatformat:'2'|intcomma }}
+                                        {% else %}
+                                            0.00
+                                        {% endif %}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.4</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">НӨАТ(үйлч)</td>
+                                    <td align="right">&nbsp;</td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right">10%</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% append tv_huraamj customer.barimt_une as a1 %}
+                                        {% if customer.uilchilgeenii_tulbur != 0.00 and customer.uilchilgeenii_tulbur is not None %}
+                                            {% append a1 customer.uilchilgeenii_tulbur as a1 %}
+                                        {% endif %}
+                                        {% multiply a1 0.1 as nuat_uil %}{{ nuat_uil|floatformat:'2'|intcomma }}
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000; text-align:center;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5</td>-->
+                                    <td align="left"  style="border-left: solid 1px #000;padding-left: 5px;"><b>Дүн</b></td>
+                                    <td align="right">&nbsp;</td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+
+                                        {% append a1 nuat_uil as other_total %}{{ other_total|floatformat:'2'|intcomma }}
+                                    </td>
+
+
+                                    <td align="right" style="border-left: solid 1px #000; text-align:center;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-bottom: solid 1px #000; border-left: solid 1px #000;">6</td>-->
+                                    <td style="border-bottom: solid 1px #000; border-left: solid 1px #000;padding-left: 5px;"><b>Төлбөл зохих нийт төлбөрийн дүн</b></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;border-right: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000; border-right: solid 1px #000; padding-right:5px;">{% append total_price nuat as bichilt_price %}<b>{{ bichilt|floatformat:'2'|intcomma }}</b></td>
+
+                                    <td align="right" style="border-bottom: solid 1px #000; border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom:solid 1px #000; border-right:solid 1px #000; padding-right:5px;"></td>
+                                </tr>
+                                {% elif total_diff > limit and customer.tariff == '0' %}
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">1.1</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">150 кВт.ц хүртэл</td>
+                                    <td align="right" style="padding-right: 5px" >{{ customer.day_balance_prev|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="padding-right: 5px; border-right: solid 1px #000; text-align:right;">{{ customer.day_balance_prev|add:limit|floatformat:'2'|intcomma }}</td>
+
+                                    <td align="right">{{ limit|floatformat:'2'|intcomma }}</td>
+                                    <td align="right">{{ customer.low_limit_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {{ customer.low150_price|floatformat:'2'|intcomma }}
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000; text-align: center;">31.27</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% multiply limit 31.27 as result20 %}{{ result20|floatformat:'2'|intcomma }}
+                                    </td>
+                                </tr>
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>өмнөх</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_balance_prev|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>одоо</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_balance_prev|add:limit|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">1.2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">151 кВт.ц-аас дээш</td>
+                                    <td align="right" style="padding-right: 5px">{{ customer.day_balance_prev|add:limit|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="padding-right: 5px; border-right: solid 1px #000; text-align:right;">{{ customer.day_balance|floatformat:'2'|intcomma }}</td>
+
+                                    <td align="right">{{ total_diff|sub:limit|floatformat:'2'|intcomma }}</td>
+                                    <td align="right">{{ customer.high_limit_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.high150_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-left: solid 1px #000; text-align: center;">11.47</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% reduce total_diff limit as result21 %}{% multiply 11.47 result21 as result22 %}{{ result22|floatformat:'2'|intcomma }}
+                                    </td>
+                                </tr>
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>өмнөх</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_balance_prev|add:limit|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>одоо</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_balance|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">1</td>-->
+                                    <td align="left"  style="border-left: solid 1px #000;padding-left: 5px;"><b>Дүн</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;">  </td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>{{ customer.total_price|floatformat:'2'|intcomma }}</b></td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% append result20 result22 as result32 %}
+                                        <b>{{ result32|floatformat:'2'|intcomma }}</b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">ЦЭХ-ний суурь үнэ</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.suuri_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;">-{{ customer.suuri_price|floatformat:'2'|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">3</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;"><b>Цахилгааны төлбөр</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                            <b>{{ customer.tot_pri_suu_cha|floatformat:'2'|intcomma }}</b>
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>{% reduce result32 customer.suuri_price as result33 %}{{ result33|floatformat:'2'|intcomma }}</b></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">4.1</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">НӨАТ</td>
+                                    <td align="right">&nbsp;</td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right">10%</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply customer.tot_pri_suu_cha 0.1 as nuat_tseh %}{{ nuat_tseh|floatformat:'2'|intcomma }}</td>
+
+                                    <td align="right" style="border-left: solid 1px #000; text-align:center;">10%</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply result33 0.1 as result34 %}{{ result34|floatformat:'2'|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">4</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;"><b>Цахилгааны нийт төлбөр</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                            {% append customer.tot_pri_suu_cha nuat_tseh as total_price_tseh %}
+                                            <b>{{ total_price_tseh|floatformat:'2'|intcomma }}</b>
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>
+                                        {% append result33 result34 as result35 %}
+                                        {{ result35|floatformat:'2'|intcomma }}</b></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">Бусад төлбөр</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"></td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.1</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">Баримт үнэ</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% if forloop.last %}{{ customer.barimt_une|floatformat:'2'|intcomma }}{% else %}0.00{% endif %}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+                                {% if customer.uilchilgeenii_tulbur != 0.00 and customer.uilchilgeenii_tulbur is not None %}
+                                    {% return_same customer.uilchilgeenii_tulbur as uil_tulbur_dotood %}
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">Төлбөрт үйлчилгээ</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{uil_tulbur_dotood|floatformat:'2'|intcomma}}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+                                {% endif %}
+
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.3</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">ТВ хураамж</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% if forloop.last %}
+                                            {% without_nuat customer.tv_huraamj as tv_huraamj %}
+                                            {{ tv_huraamj|floatformat:'2'|intcomma }}
+                                        {% else %}
+                                            0.00
+                                        {% endif %}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.4</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">НӨАТ(үйлч)</td>
+                                    <td align="right">&nbsp;</td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right">10%</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% append tv_huraamj customer.barimt_une as a1 %}
+                                        {% if customer.uilchilgeenii_tulbur != 0.00 and customer.uilchilgeenii_tulbur is not None %}
+                                            {% append a1 customer.uilchilgeenii_tulbur as a1 %}
+                                        {% endif %}
+                                        {% multiply a1 0.1 as nuat_uil %}{{ nuat_uil|floatformat:'2'|intcomma }}
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000; text-align:center;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5</td>-->
+                                    <td align="left"  style="border-left: solid 1px #000;padding-left: 5px;"><b>Дүн</b></td>
+                                    <td align="right">&nbsp;</td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+
+                                        {% append a1 nuat_uil as other_total %}{{ other_total|floatformat:'2'|intcomma }}
+                                    </td>
+
+
+                                    <td align="right" style="border-left: solid 1px #000; text-align:center;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-bottom: solid 1px #000; border-left: solid 1px #000;">6</td>-->
+                                    <td style="border-bottom: solid 1px #000; border-left: solid 1px #000;padding-left: 5px;"><b>Төлбөл зохих нийт төлбөрийн дүн</b></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;border-right: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000; border-right: solid 1px #000; padding-right:5px;">{% append total_price nuat as bichilt_price %}<b>{{ bichilt|floatformat:'2'|intcomma }}</b></td>
+
+                                    <td align="right" style="border-bottom: solid 1px #000; border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom:solid 1px #000; border-right:solid 1px #000; padding-right:5px;"></td>
+                                </tr>
+                                {% elif customer.tariff == '1' %}
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">1.1</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">Өдрийн хэрэглээ</td>
+                                    <td align="right" style="padding-right:5px;">{{ customer.day_balance_prev|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_balance|floatformat:'2'|intcomma }}</td>
+                                    <td align="right">{{ customer.day_diff|floatformat:'2'|intcomma }}</td>
+                                    <td align="right">{{ customer.odor_une|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-left: solid 1px #000; text-align: center;">25.37</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% multiply customer.day_diff 25.37 as result30 %}
+                                        {{ result30|floatformat:'2'|intcomma }}
+                                    </td>
+                                </tr>
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>өмнөх</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_balance_prev|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>одоо</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.day_balance|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">1.2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">Шөнийн хэрэглээ</td>
+                                    <td align="right" style="padding-right:5px;">{{ customer.night_balance_prev|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.night_balance|floatformat:'2'|intcomma }}</td>
+
+                                    <td align="right">{{ customer.night_diff|floatformat:'2'|intcomma }}</td>
+                                    <td align="right">{{ customer.shono_une|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.night_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-left: solid 1px #000; text-align: center;">52.57</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% multiply customer.night_diff 52.57 as result31 %}
+                                        {{ result31|floatformat:'2'|intcomma }}
+                                    </td>
+                                </tr>
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>өмнөх</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.night_balance_prev|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td align="center" style="border-left: solid 1px #000;">&nbsp;</td>-->
+                                    <!--<td><blockquote>одоо</blockquote></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.night_balance|floatformat:'2'|intcomma }}</td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-left: solid 1px #000;"></td>-->
+                                    <!--<td align="right" style="border-right: solid 1px #000;"></td>-->
+                                <!--</tr>-->
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">1</td>-->
+                                    <td align="left"  style="border-left: solid 1px #000;padding-left: 5px;"><b>Дүн</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;">  </td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>{{ customer.total_price|floatformat:'2'|intcomma }}</b></td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% append result30 result31 as result32 %}
+                                        <b>{{ result32|floatformat:'2'|intcomma }}</b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">ЦЭХ-ний суурь үнэ</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{ customer.suuri_price|floatformat:'2'|intcomma }}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;">-{{ customer.suuri_price|floatformat:'2'|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">3</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;"><b>Цахилгааны төлбөр</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                            <b>{{ customer.tot_pri_suu_cha|floatformat:'2'|intcomma }}</b>
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>{% reduce result32 customer.suuri_price as result33 %}{{ result33|floatformat:'2'|intcomma }}</b></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">4.1</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">НӨАТ</td>
+                                    <td align="right">&nbsp;</td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right">10%</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply customer.tot_pri_suu_cha 0.1 as nuat_tseh %}{{ nuat_tseh|floatformat:'2'|intcomma }}</td>
+
+                                    <td align="right" style="border-left: solid 1px #000; text-align:center;">10%</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply result33 0.1 as result34 %}{{ result34|floatformat:'2'|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">4.2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;"><b>Цахилгааны нийт төлбөр</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                            {% append customer.tot_pri_suu_cha nuat_tseh as total_price_tseh %}
+                                            <b>{{ total_price_tseh|floatformat:'2'|intcomma }}</b>
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>
+                                        {% append result33 result34 as result35 %}
+                                        {{ result35|floatformat:'2'|intcomma }}</b></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;"><b>Бусад төлбөр</b></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"></td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.1</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">Баримт үнэ</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% if forloop.last %}{{ customer.barimt_une|floatformat:'2'|intcomma }}{% else %}0.00{% endif %}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+                                {% if customer.uilchilgeenii_tulbur != 0.00 and customer.uilchilgeenii_tulbur is not None %}
+                                    {% return_same customer.uilchilgeenii_tulbur as uil_tulbur_dotood %}
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.2</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">Төлбөрт үйлчилгээ</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{uil_tulbur_dotood|floatformat:'2'|intcomma}}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+                                {% endif %}
+
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.3</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">ТВ хураамж</td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% if forloop.last %}
+                                            {% without_nuat customer.tv_huraamj as tv_huraamj %}
+                                            {{ tv_huraamj|floatformat:'2'|intcomma }}
+                                        {% else %}
+                                            0.00
+                                        {% endif %}</td>
+                                    <td align="right" style="border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                </tr>
+
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5.4</td>-->
+                                    <td style="border-left: solid 1px #000;padding-left: 5px;">НӨАТ(үйлч)</td>
+                                    <td align="right">&nbsp;</td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right">10%</td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+                                        {% append tv_huraamj customer.barimt_une as a1 %}
+                                        {% if customer.uilchilgeenii_tulbur != 0.00 and customer.uilchilgeenii_tulbur is not None %}
+                                            {% append a1 customer.uilchilgeenii_tulbur as a1 %}
+                                        {% endif %}
+                                        {% multiply a1 0.1 as nuat_uil %}{{ nuat_uil|floatformat:'2'|intcomma }}
+                                    </td>
+                                    <td align="right" style="border-left: solid 1px #000; text-align:center;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-left: solid 1px #000;">5</td>-->
+                                    <td align="left" style="border-left: solid 1px #000;padding-left: 5px;" ><b>Дүн</b></td>
+                                    <td align="right">&nbsp;</td>
+                                    <td align="right" style="border-right: solid 1px #000;"></td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;">
+
+                                        {% append a1 nuat_uil as other_total %}{{ other_total|floatformat:'2'|intcomma }}
+                                    </td>
+
+
+                                    <td align="right" style="border-left: solid 1px #000; text-align:center;"></td>
+                                    <td align="right" style="border-right: solid 1px #000; padding-right:5px;"></td>
+                                </tr>
+                                <tr>
+                                    <!--<td align="center" style="border-bottom: solid 1px #000; border-left: solid 1px #000;">6</td>-->
+                                    <td style="border-bottom: solid 1px #000; border-left: solid 1px #000;padding-left: 5px;"><b>Төлбөл зохих нийт төлбөрийн дүн</b></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;border-right: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom: solid 1px #000; border-right: solid 1px #000; padding-right:5px;">{% append total_price nuat as bichilt_price %}<b>{{ bichilt|floatformat:'2'|intcomma }}</b></td>
+
+                                    <td align="right" style="border-bottom: solid 1px #000; border-left: solid 1px #000;"></td>
+                                    <td align="right" style="border-bottom:solid 1px #000; border-right:solid 1px #000; padding-right:5px;"></td>
+                                </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                            <!--{% get_tulburt_uilchilgee customer.customer_code customer.odoo_bichdate as uilchilgee_tulburs %}-->
+                            <!--{% if uilchilgee_tulburs is not None %}<br/>-->
+                            <!--{% for uilchilgee_tulbur in uilchilgee_tulburs %}-->
+                                <!--* {{uilchilgee_tulbur.name}} - {{uilchilgee_tulbur.payment|floatformat:'2'|intcomma}}<br/>-->
+                            <!--{% endfor %}-->
+                            <!--{% endif %}-->
+                            <!--<hr/>-->
+                            <br/>
+                            {% if type == '1' %}
+                                <p align="center">Эхний үлдэгдэл: <b>{{ehnii|floatformat:'2'|intcomma}}</b>
+                                {% if before_payment != '0.00' %}
+                                | Энэ сарын орлого : <b>{{before_payment|floatformat:'2'|intcomma}}</b>
+                                {% endif %}
+                                <!--| Бичилт : <b>{{bichilt_price|floatformat:'2'|intcomma}}</b>-->
+                                <!--{% if customer.uilchilgeenii_tulbur != 0.00 and customer.uilchilgeenii_tulbur is not None %}-->
+                                    <!--{% return_same customer.uilchilgeenii_tulbur as uil_tulbur %}-->
+                                    <!--| Төлбөрт үйлчилгээ: <b>{{uil_tulbur|floatformat:'2'|intcomma}}</b>-->
+                                <!--{% endif %}-->
+                                | Алданги : <b>0.00</b><br/>
+                                Орлого: <b>{{payment|floatformat:'2'|intcomma}}</b>
+                                {% append ehnii bichilt_price as ehn_bich %}{% append ehn_bich uil_tulbur as ehn_bich_uil %}{% reduce ehn_bich_uil before_payment as ehn_bich_bef %}{% reduce ehn_bich_bef payment as ehn_bich_pay %}
+                                | Эцсийн үлдэгдэл : <b>{{ehn_bich_pay|floatformat:'2'|intcomma}}</b></p>
+                            {% else %}
+                                <p align="center">Эхний үлдэгдэл: <b>{{ehnii|floatformat:'2'|intcomma}}</b>
+                                <!--{% if forloop.counter == 1 %}-->
+                                <!--{% if customer.uilchilgeenii_tulbur != 0.00 and customer.uilchilgeenii_tulbur is not None %}-->
+                                    <!--{% return_same customer.uilchilgeenii_tulbur as uil_tulbur %}-->
+                                    <!--| Төлбөрт үйлчилгээ: <b>{{uil_tulbur|floatformat:'2'|intcomma}}</b>-->
+                                    <!--{% reduce bichilt uil_tulbur as bichilt %}-->
+                                    <!--| Нийт бичилт : <b>{{bichilt|floatformat:'2'|intcomma}}</b>-->
+                                <!--{% else %}-->
+                                    <!--| Нийт бичилт : <b>{{bichilt|floatformat:'2'|intcomma}}</b>-->
+                                <!--{% endif %}-->
+                                <!--{% else %}-->
+                                    <!--{% if customer.uilchilgeenii_tulbur != 0.00 and customer.uilchilgeenii_tulbur is not None %}-->
+                                    <!--| Төлбөрт үйлчилгээ: <b>{{customer.uilchilgeenii_tulbur|floatformat:'2'|intcomma}}</b>-->
+                                    <!--{% endif %}-->
+                                    <!--| Нийт бичилт : <b>{{bichilt|floatformat:'2'|intcomma}}</b>-->
+                                <!--{% endif %}-->
+                                | Нийт орлого: <b>{{payment|floatformat:'2'|intcomma}}</b><br/>
+                                Алданги : <b>0.00</b>
+                                | Эцсийн үлдэгдэл : {% reduce payment ehnii as result30 %}{% reduce result30 uil_tulbur as result31 %}{% reduce result31 bichilt as result32 %}{% reduce result32 0.00 as result33 %}{% multiply result33 -1 as result34 %}<b>{{result34|floatformat:'2'|intcomma}}</b></p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            {% if qr_data %}
+            <br/><hr/>
+            <table><tbody>
+            <tr><td>
+            <div>
+                <div style="float:left;">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Сугалааны дугаар: <b>{{lottery}}</b><br/></td>
+                            </tr>
+                            <tr>
+                                <td>НӨАТ : <b>{% multiply amount 10 as vat01 %}{% divide vat01 110 as vat %}{{vat|floatformat:'2'|intcomma}}</b><br/></td>
+                            </tr>
+                            <tr>
+                                <td>Нийт дүн: <b>{{amount|floatformat:'2'|intcomma}}</b><br/></td>
+                            </tr>
+                            <tr>
+                                <td>ТТД: <b>5173531</b><br/></td>
+                            </tr>
+                            <tr>
+                                <td>ДДТД: <b>{{billId}}</b></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="float:right; text-align:center;">
+                    <img src='https://chart.googleapis.com/chart?cht=qr&chl={{qr_data}}&chs=180x180&choe=UTF-8&chld=L|2' width="150" rel='nofollow' alt='qr_data'>
+                </div>
+            </div>
+            </td></tr>
+            </tbody></table>a
+            {% else %}
+            <br>
+            <br>
+            <p>Санамж: Тооцоо гарсанаас хойш 10 хоногийн дотор төлбөрөө төлөөгүй бол алданги тооцох болно. Лавлах утас: 75777777</p>
+            <br>
+            <!--<p><b>Дээрхи хоногоос хэтэрсэн тохиолдолд төлөгдөөгүй үнийн дүнгээс хоногт 0.3%-аар алданги тооцно</b></p>-->
+            {% endif %}
+        </div>
+        {% endfor %}
+    </body>
+</html>

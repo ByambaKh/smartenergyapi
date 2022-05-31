@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+{% block head_block %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+			$('#bootstrap-table1 > tbody  > tr').each(function() {
+				var span = $(this).find('span.phone_num').text(function(i, text) {
+					return text.replace(/(\d{4})(\d{4})/, '$1-$2');
+				});
+			});
+        });
+
+        function get_pin(code){
+			console.log(code)
+			var data = "/home/set_pin_number?" + "customer_code=" + code;
+			var post_data = {customer_code:code};
+			$.ajax({
+				type: 'GET',
+				url: data,
+				dataType : 'json',
+				success: function(response) {
+					console.log(response);
+					if (response.error == null){
+						var text = 'Хэрэглэгчийн дугаар: '  + response.code + '\n' + 'ПИН Код: ' + response.pin;
+						alert(text);
+					}
+					else{
+						alert("Алдаа гарлаа.");
+					}
+				},
+				error: function (data){
+				}
+			});
+		}
+    </script>
+{% endblock %}
+{% block title %}Гэрээ {% endblock%} 
+{% block content %}
+{% if perms.data.view_geree %}
+<div class="container-fluid">
+	{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+	{% if perms.data.add_geree %}
+		<div class="row">
+			<div class="col-md-12">
+				<a href="/home/geree_add" class="btn btn-primary btn-fill btn-wd"
+					type="button">Шинэ гэрээ нэмэх</a>
+			</div>
+			<div class="clearfix"></div>
+			<br />
+		</div>
+	{% endif %}
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+				<div class="header">Нийт гэрээ байгуулсан хэрэглэгчид</div>
+
+				<div class="content content-full-width">
+					<ul role="tablist" class="nav nav-tabs">
+						{% if activeTab == 1 %}
+							<li role="presentation" class="active">
+			            {% else %}
+							<li role="presentation">
+			            {%endif%}
+							<a href="#personalUser" data-toggle="tab">
+								<i class="fa fa-user"></i>Хувь хүн
+							</a>
+						</li>
+						{% if activeTab == 2 %}
+							<li class="active">
+			            {% else %}
+							<li>
+			            {%endif%}
+							<a href="#companyUser" data-toggle="tab">
+								<i class="fa fa-building"></i>Албан байгууллага
+							</a>
+						</li>
+					</ul>
+
+					<div class="tab-content">
+					
+						{% if activeTab == 1 %}
+							<div id="personalUser" class="tab-pane active">
+			            {% else %}
+							<div id="personalUser" class="tab-pane">
+			            {%endif%}
+							<form method="POST" action="/home/geree_list/1/">{% csrf_token %}
+								<div class="table_search_filter">
+									<div class="form-group col-md-4">
+										<label>Хэрэглэгчийн код</label> 
+										<input value="{{search_q.customer_code}}" maxlength="20" placeholder="Хэрэглэгчийн код" class="form-control" name="user_code">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Гэрээний дугаар</label>
+										<input value="{{search_q.contract_number}}" maxlength="20" placeholder="Гэрээний дугаар" class="form-control" name="contract_number">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Хэрэглэгчийн нэр</label> 
+	                                    <input value="{{search_q.customer_name}}" type="text" maxlength="50" placeholder="Хэрэглэгчийн нэр" class="form-control" name="customer_name">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Хаяг</label> 
+	                                    <input value="{{search_q.address}}" type="text" maxlength="100" placeholder="Хаяг" class="form-control" name="address">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Утас</label> 
+	                                    <input value="{{search_q.phone}}" type="tel" maxlength="8" placeholder="Утас" class="form-control" name="phone">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Гэрээ дуусах огноо /эхлэх/</label>
+	                                    <input value="{{search_q.contract_expire_date_start}}" class="form-control datetimepicker" name="contract_expire_date_start" type="text">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Гэрээ дуусах огноо /дуусах/</label>
+	                                    <input value="{{search_q.contract_expire_date_end}}" class="form-control datetimepicker" name="contract_expire_date_end" type="text">
+									</div>
+									<div class="col-md-12 text-center">
+									{% comment %}
+										<a href="/home/geree_list/1/" class="btn btn-info btn-fill btn-wd"
+											type="button">Цэвэрлэх</a>
+									{% endcomment %}
+										<button type="submit" name="homeUserSearch" class="btn btn-warning btn-fill btn-wd">
+											Шүүж харах</button>
+									</div>
+									<div class="clearfix"></div>
+								</div>
+	                
+		                    <div class="download_button text-right">
+			                    <button class="btn btn-success btn-fill" type="submit" name="export_xls_users"><span class="fa fa-file-excel-o"></span>
+									Файлаар татаж авах
+                    			</button>
+		                    </div>
+							</form>
+
+							<table id="bootstrap-table1" class="table">
+								<thead>
+                      	            <th class="text-center">№</th>
+									<th data-field="contract_number" data-sortable="true" class="text-left">Гэрээний №</th>
+									<th data-field="code" data-sortable="true" class="text-left">Код</th>
+									<th data-field="full_name" data-sortable="true" class="text-left">Хэрэглэгчийн нэр</th>
+									<th data-field="register" data-sortable="true" class="text-left">Регистр</th>
+									<th data-field="email" data-sortable="true" class="text-left">Имэйл</th>
+									<th data-field="phone" data-sortable="true" class="text-center">Утасны дугаар</th>
+									<th data-field="address_name" data-sortable="true" class="text-left">Хаяг</th>
+									<th data-field="contract_expire_date" data-sortable="true" class="text-center">Гэрээ дуусах огноо</th>
+                                    <th data-field="actions" class="td-actions text-right">Засвар</th>
+									<th data-field="pass" class="td-actions text-right">Нууц үг авах</th>
+								</thead>
+								<tbody>
+									{% for detail in homeUsers %}
+	                                     <tr>
+	                                         <td>{{ forloop.counter }}</td>
+	                                         <td>{{ detail.contract_number }}</td>
+											 <td>{{ detail.code }}</td>
+											 <td>{{ detail.last_name }} {{ detail.first_name }}</td>
+	                                         <td>{{ detail.register }}</td>
+											 <td>{{ detail.email }}</td>
+											 <td><span class="phone_num">{{ detail.phone }}</span></td>
+	                                         <td>{{ detail.address_name }}</td>
+	                                         <td>{{ detail.contract_expire_date|date:"Y-m-d" }}</td>
+	                                         <td class="td-actions text-right">
+	                                         	 {% if perms.data.change_geree %}
+		                                             <a href="/home/geree_edit/{{detail.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+		                                                 <i class="fa fa-edit"></i>
+		                                             </a>
+	                                             {% endif %}
+	                                             {% if perms.data.delete_geree %}
+		                                             <a href="/home/geree_del/{{detail.id}}/" onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')" class="btn btn-simple btn-danger btn-icon table-action remove">
+		                                                 <i class="fa fa-remove"></i>
+		                                             </a>
+	                                             {% endif %}
+	                                         </td>
+											 <td>
+												 {% if perms.data.view_geree %}
+												 	<button class="btn btn-success btn-fill" onclick="get_pin('{{detail.code}}')"><span class="fa fa-key"></span> Нууц үг</button>
+												 {% endif %}
+											 </td>
+	                                     </tr>
+                                   	{% endfor %}
+								</tbody>
+							</table>
+						</div>
+						{% if activeTab == 2 %}
+							<div id="companyUser" class="tab-pane active">
+			            {% else %}
+							<div id="companyUser" class="tab-pane">
+			            {%endif%}
+
+	                        <form method="POST" action="/home/geree_list/2/">{% csrf_token %}
+								<div class="table_search_filter">
+									<div class="form-group col-md-4">
+										<label>Хэрэглэгчийн код</label> 
+										<input value="{{search_o.customer_code}}" placeholder="Хэрэглэгчийн код" class="form-control" name="user_code">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Гэрээний дугаар</label>
+										<input value="{{search_o.contract_number}}" placeholder="Гэрээний дугаар" class="form-control" name="contract_number">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Хэрэглэгчийн нэр</label> 
+	                                    <input value="{{search_o.customer_name}}" placeholder="Хэрэглэгчийн нэр" class="form-control" name="customer_name">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Хаяг</label> 
+	                                    <input value="{{search_o.address}}" placeholder="Хаяг" class="form-control" name="address">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Утас</label> 
+	                                    <input value="{{search_o.phone}}" placeholder="Утас" class="form-control" name="phone">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Гэрээ дуусах огноо /эхлэх/</label>
+	                                    <input value="{{search_o.contract_expire_date_start}}" class="form-control datetimepicker" name="contract_expire_date_start" type="text">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Гэрээ дуусах огноо /дуусах/</label>
+	                                    <input value="{{search_o.contract_expire_date_end}}" class="form-control datetimepicker" name="contract_expire_date_end" type="text">
+									</div>
+									<div class="col-md-12 text-center">
+									{% comment %}
+										<a href="/home/geree_list/2/" class="btn btn-info btn-fill btn-wd"
+											type="button">Цэвэрлэх</a>
+									{% endcomment %}
+										<button type="submit" name="orgSearch" class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+									</div>
+									<div class="clearfix"></div>
+								</div>
+	                
+		                    <div class="download_button text-right">
+			                    <button class="btn btn-success btn-fill" type="submit" name="export_xls_orgs"><span class="fa fa-file-excel-o"></span>
+									Файлаар татаж авах
+                    			</button>
+		                    </div>
+							</form>
+
+							<table id="bootstrap-table1" class="table">
+								<thead>
+                      	            <th class="text-center">№</th>
+									<th data-field="contract_number" data-sortable="true" class="text-left">Гэрээний №</th>
+									<th data-field="code" data-sortable="true" class="text-left">Код</th>
+									<th data-field="full_name" data-sortable="true" class="text-left">Хэрэглэгчийн нэр</th>
+									<th data-field="register" data-sortable="true" class="text-left">Регистр</th>
+									<th data-field="email" data-sortable="true" class="text-left">Имэйл</th>
+									<th data-field="phone" data-sortable="true" class="text-center">Утасны дугаар</th>
+									<th data-field="address_name" data-sortable="true" class="text-left">Хаяг</th>
+									<th data-field="contract_expire_date" data-sortable="true" class="text-center">Гэрээ дуусах огноо</th>
+                                    <th data-field="actions" class="td-actions text-right">Засвар</th>
+									<th data-field="pass" class="td-actions text-right">Нууц үг авах</th>
+								</thead>
+								<tbody>
+									{% for detail in orgs %}
+	                                     <tr>
+	                                         <td>{{ forloop.counter }}</td>
+	                                         <td>{{ detail.contract_number }}</td>
+											 <td>{{ detail.code }}</td>
+											 <td>{{ detail.last_name }} {{ detail.first_name }}</td>
+	                                         <td>{{ detail.register }}</td>
+											 <td>{{ detail.email }}</td>
+											 <td><span class="phone_num">{{ detail.phone }}</span></td>
+	                                         <td>{{ detail.address_name }}</td>
+	                                         <td>{{ detail.contract_expire_date|date:"Y-m-d" }}</td>
+	                                         <td class="td-actions text-right">
+	                                         	 {% if perms.data.change_geree %}
+		                                             <a href="/home/geree_edit/{{detail.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+		                                                 <i class="fa fa-edit"></i>
+		                                             </a>
+	                                             {% endif %}
+	                                             {% if perms.data.delete_geree %}
+		                                             <a href="/home/geree_del/{{detail.id}}/" onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')" class="btn btn-simple btn-danger btn-icon table-action remove">
+		                                                 <i class="fa fa-remove"></i>
+		                                             </a>
+	                                             {% endif %}
+	                                         </td>
+											 <td>
+												 {% if perms.data.view_geree %}
+												 	<button class="btn btn-success btn-fill" onclick="get_pin('{{detail.code}}')"><span class="fa fa-key"></span> Нууц үг</button>
+												 {% endif %}
+											 </td>
+	                                     </tr>
+                                   	{% endfor %}
+								</tbody>
+							</table>
+						</div>
+						{% if activeTab == 3 %}
+							<div id="report" class="tab-pane active">
+			            {% else %}
+							<div id="report" class="tab-pane">
+			            {%endif%}
+							<div class="table_search_filter">
+								<div class="form-group col-md-12">
+									<label>Тайлангийн нэр</label> <input placeholder="Тайлангийн нэр" class="form-control">
+								</div>
+								<div class="col-md-12 text-center">
+									<button class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+							<div class="download_button text-right">
+								<button class="btn btn-success btn-fill">
+									<span class="fa fa-file-excel-o"></span> Файлаар татаж авах
+								</button>
+							</div>
+							<table id="bootstrap-table1" class="table">
+								<thead>
+									<th data-field="check" data-checkbox="true"></th>
+									<th data-field="id">Тайлангийн нэр</th>
+									<th>Татах</th>
+								</thead>
+								<tbody>
+									<!--<tr>-->
+										<!--<td></td>-->
+										<!--<td>Тайлан - 1</td>-->
+										<!--<td><a class="btn btn-primary btn-fill btn-sm">Татаж-->
+												<!--авах</a></td>-->
+									<!--</tr>-->
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+{% endblock %}

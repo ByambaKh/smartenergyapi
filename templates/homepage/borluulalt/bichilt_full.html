@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% block title %}Хэрэглэгчийн дэлгэрэнгүй{% endblock %}
+{% block head_block %}
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+        <ul class="messagelist">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="row">
+        <form action="/home/borluulalt/bichilt_full/" method="POST" id="allInputsFormValidation"
+              class="form-horizontal">
+            {% csrf_token %}
+            <div class="content content-full-width">
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <input class="form-control" type="number" placeholder="Хэрэглэгчийн код" number="true"
+                                   id="user_code" name="user_code" required maxlength="8"/>
+                        </div>
+                    </fieldset>
+
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label"></label>
+                            <button class="btn btn-warning btn-fill btn-wd" type="submit">Шалгах</button>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    Хэрэглэгчийн дансны дэлгэрэнгүй тайлан
+                </div>
+                <div class="content content-full-width">
+                    <div class="col-md-6">
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хэрэглэгчийн код</label>
+                                <h5>{{ customer.code }}</h5>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хэрэглэгчийн овог</label>
+                                <h5>{{ customer.last_name }}</h5>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Гэрээ байгуулсан огноо</label>
+                                <h5>{{ geree.contract_made_date|date:"Y-m-d" }}</h5>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Гэрээ сунгасан огноо</label>
+                                <h5>{{ geree.contract_extend_date|date:"Y-m-d" }}</h5>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Ангилал</label>
+                                {% if customer.customer_angilal == '0' %}
+                                <h5>Ахуйн хэрэглэгч</h5>
+                                {% elif customer.customer_angilal == '1' %}
+                                <h5>Аж ахуйн нэгж</h5>
+                                {% elif customer.customer_angilal == '2' %}
+                                <h5>Үйлдвэр үйлчилгээ</h5>
+                                {% elif customer.customer_angilal == '3' %}
+                                <h5>Нийтийн эзэмшил</h5>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хот / аймаг</label>
+                                <h5>{{ customer.address.address_name }}</h5>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Гэрээний дугаар</label>
+                                <h5>{{ geree.contract_number }}</h5>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хэрэглэгчийн нэр</label>
+                                <h5>{{ customer.first_name }}</h5>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Гэрээ дуусах огноо</label>
+                                <h5>{{ geree.contract_expire_date|date:"Y-m-d" }}</h5>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Цикл</label>
+                                <h5>{{ cyc.name }}</h5>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Төрөл</label>
+                                <h5>{{ turul }}</h5>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br/>
+                    <div class="col-md-12">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th rowspan="3" class="text-center">Огноо</th>
+                                <th colspan="6" class="text-center">Бичилт</th>
+                                <th class="text-center">Орлого</th>
+                            </tr>
+                            <tr>
+                                <th rowspan="2" class="text-center" class="text-center">Гүйлгээ</th>
+                                <th rowspan="2" class="text-center">Тоолуурын дугаар</th>
+                                <th colspan="2" class="text-center">Тоолуурын заалт</th>
+                                <th rowspan="2" class="text-center">Хэрэглээ кВт.цаг</th>
+                                <th rowspan="2" class="text-center">Мөнгөн дүн</th>
+                                <th rowspan="2" class="text-center">Мөнгөн дүн</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center">Сүүлчийн</th>
+                                <th class="text-center">Одоо</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for b in bichlist %}
+                            <tr>
+                                <td rowspan="6" class="text-center text-top"
+                                    style="vertical-align: top"><strong>{{b.bichilt_date|date:"Y-m-d"}}</strong>
+                                </td>
+                                <td>Хэрэглээний төлбөр</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center">0</td>
+                                <td class="text-right">{{b.total_diff}}</td>
+                                <td class="text-right" class="text-right">0</td>
+                                <td class="text-right">{{b.hereglee_price|floatformat:"2"}}</td>
+                                <td class="text-right">-</td>
+                            </tr>
+                            <tr>
+                                <td>СЭХ дэмжих төлбөр</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center">0</td>
+                                <td class="text-right">{{b.total_diff}}</td>
+                                <td class="text-right" class="text-right">0</td>
+                                <td class="text-right">{{b.sergeegdeh_price|floatformat:"2"}}</td>
+                                <td class="text-right">-</td>
+                            </tr>
+                            <tr>
+                                <td>ЦЭХ суурь төлбөр</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center">0</td>
+                                <td class="text-right">{{b.total_diff}}</td>
+                                <td class="text-right" class="text-right">0</td>
+                                <td class="text-right">{{b.suuri_price|floatformat:"2"}}</td>
+                                <td class="text-right">-</td>
+                            </tr>
+                            <tr>
+                                <td>Чадлын төлбөр</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center">0</td>
+                                <td class="text-right">{{b.total_diff}}</td>
+                                <td class="text-right" class="text-right">0</td>
+                                <td class="text-right">{{b.chadal_price|floatformat:"2"}}</td>
+                                <td class="text-right">-</td>
+                            </tr>
+                            <tr>
+                                <td>НӨАТ</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center">0</td>
+                                <td class="text-right">{{b.total_diff}}</td>
+                                <td class="text-right" class="text-right">0</td>
+                                <td class="text-right">{{b.nuat|floatformat:"2"}}</td>
+                                <td class="text-right">-</td>
+                            </tr>
+                            <tr>
+                                <td>Нийт дүн</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center">0</td>
+                                <td class="text-right">{{b.total_diff}}</td>
+                                <td class="text-right" class="text-right">0</td>
+                                <td class="text-right">{{b.total_price|floatformat:"2"}}</td>
+                                <td class="text-right">-</td>
+                            </tr>
+                            {% if b.uilchilgee != 0 %}
+                            <tr>
+                                <td rowspan="2" class="text-center text-top"
+                                    style="vertical-align: top"><strong>{{b.bichilt_date|date:"Y-m-d"}}</strong>
+                                </td>
+                                <td>Үйлчилгээ</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right">{{b.uilchilgee|floatformat:"2"}}</td>
+                                <td class="text-right"></td>
+                            </tr>
+                            <tr>
+                                <td>НӨАТ</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right">{{b.uil_nuat|floatformat:"2"}}</td>
+                                <td class="text-right"></td>
+                            </tr>
+                            {% endif %}
+                            {% if b.pay_total > 0 %}
+                            <tr>
+                                <td class="text-center text-top"
+                                    style="vertical-align: top"><strong>{{b.pay_date|date:"Y-m-d"}}</strong>
+                                </td>
+                                <td>Орлого</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right">{{b.pay_total|floatformat:"2"}}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                            {% for p in paylist %}
+                             <tr>
+                                <td class="text-center text-top"
+                                    style="vertical-align: top"><strong>{{p.pay_date|date:"Y-m-d"}}</strong>
+                                </td>
+                                <td>Орлого</td>
+                                <td>{{b.tooluur}}</td>
+                                <td class="text-center"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right">{{p.pay_total|floatformat:"2"}}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    <div class="clearfix"></div>
+
+
+                </div>
+
+            </div><!--  end card  -->
+        </div>
+
+    </div>
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Хүчний трансформатор{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if perms.data.add_powertransformator %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/lavlagaa/add_huchnii_trans" class="btn btn-primary btn-fill btn-wd" type="button">Хүчний трансформаторын утга бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй хүчний трансформаторын утгууд</div>
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/lavlagaa/huchnii_trans">
+                        {% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Нэр</label>
+                                <input placeholder="Нэр" class="form-control" name="ner" value="{{search_q.ner}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Чадал /В/</label>
+                                <input placeholder="Чадал /В/" class="form-control" name="chadal" value="{{search_q.chadal}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Тип</label>
+                                <select class="form-control" name="tip">
+                                    <option value="">Сонгох</option>
+                                    <option value="0" {%if search_q.tip == '0'%}selected{%endif%}>Хуурай</option>
+                                    <option value="1" {%if search_q.tip == '1'%}selected{%endif%}>Тосон</option>
+                                </select>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-4">
+                                <label>Дэд станц</label>
+                                <select name="ded_stants" class="form-control" id="ded_stants">
+                                    <option value="">Сонгох</option>
+                                    {% for ded_stant in ded_stants %}
+                                    {% if search_q.ded_stants == ded_stant.id %}
+                                    <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}</option>
+                                    {% else %}
+                                    <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Шугам</label>
+                                <select name="shugam" class="form-control" id="shugam">
+                                    <option value="">Сонгох</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd" type="submit">Шүүж харах</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </form>
+
+                    <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                        <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="ded_stants" data-sortable="true" class="text-center">Дэд станц</th>
+                        <th data-field="shugam" data-sortable="true" class="text-center">Шугам</th>
+                        <th data-field="ner" data-sortable="true" class="text-center">Нэр</th>
+                        <th data-field="chadal" data-sortable="true" class="text-center">Чадал</th>
+                        <th data-field="tip" data-sortable="true" class="text-center">Тип</th>
+                        <th data-field="tuluv" data-sortable="true" class="text-center">Төлөв</th>
+                        <th data-field="uildverlesen_ognoo" data-sortable="true" class="text-center">Үйлдвэрлэсэн огноо</th>
+                        <th data-field="antsaf" data-sortable="true" class="text-center">Анцаф</th>
+                        <th data-field="suuriluulsan_ognoo" data-sortable="true" class="text-center">Суурилуулсан огноо</th>
+                        <th data-field="ajillasan_tsag" data-sortable="true" class="text-center">Ажилсан цаг</th>
+                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                        </thead>
+                        <tbody>
+                        {% for tran in trans %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center">{{ tran.ded_stants.name }}</td>
+                            <td class="text-center">{{ tran.shugam.shugam_ner }}</td>
+                            <td class="text-center">{{ tran.ner }}</td>
+                            <td class="text-center">{{ tran.chadal }} В</td>
+                            <td class="text-center">
+                                {% if tran.tip == '0' %}
+                                Хуурай
+                                {% elif tran.tip == '1' %}
+                                Тосон
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if tran.shugam.shugam_tuluv == '0' %}
+                                <span style="color:#FF0000;">Залгаатай</span>
+                                {% elif tran.shugam.shugam_tuluv == '1' %}
+                                <span style="color:#66FF33;">Тасархай</span>
+                                {% else %}
+                                <span>Бэлтгэлт</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">{{ tran.uildverlesen_ognoo|date:'Y-m-d' }}</td>
+                            <td class="text-center">{{ tran.antsaf }}</td>
+                            <td class="text-center">{{ tran.suuriluulsan_ognoo|date:'Y-m-d H:i' }}</td>
+                            <td class="text-center">{{ tran.ajillasan_tsag }}</td>
+                            <td class="td-actions text-center">
+                                {% if perms.data.change_powertransformator %}
+                                <a href="/home/lavlagaa/edit_huchnii_trans/{{tran.id}}/"
+                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                {% endif %}
+                                {% if perms.data.delete_powertransformator %}
+                                <a href="/home/lavlagaa/del_huchnii_trans/{{tran.id}}/"
+                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td class="text-right"></td>
+                            <td class="text-right"></td>
+                            <td class="text-right"></td>
+                            <td class="text-right">Нийт чадал:</td>
+                            <td class="text-left"><b>{{total_chadal}} B</b></td>
+                            <td class="text-right"></td>
+                            <td class="text-right"></td>
+                            <td class="text-right"></td>
+                            <td class="text-right"></td>
+                            <td class="text-right"></td>
+                            <td class="text-right"></td>
+                            <td class="text-right"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

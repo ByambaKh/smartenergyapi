@@ -1,0 +1,441 @@
+{% load mathfilters %}
+{% load staticfiles %}
+{% load humanize %}
+{% load homepage_tags %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="robots" content="noindex, nofollow" />
+        <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.ico' %}">
+		<link href="{% static 'assets/css/invoice.css' %}" rel="stylesheet" />
+		<title>Хэрэглэгчийн дансны дэлгэрэнгүй тайлан - Ухаалаг эрчим хүч ХХК</title>
+	</head>
+    <body>
+        <div class="actions">
+            <button onclick="{% if payment is not None %}window.history.back(){% else %}window.close(){% endif %}">Хаах</button>
+			<button onclick="window.print()">Хэвлэх</button>
+		</div>
+        {% for avlaga in avlagas %}
+        <div class="page">
+            <h3><b>Хэрэглэгчийн дансны дэлгэрэнгүй тайлан</b></h3>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            {% get_customer_tooluurs avlaga.code avlaga.bichilt_date as tooluurs %}
+                            {% with tooluurs|first as tooluur %}
+                            <table width="100%" border="0" style="font-family: Arial, Verdana, sans-serif; color: #000; font-size: 10px; padding: -5px;">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" align="center" height="40px" style="font-size:12px">Төлбөрийн нэхэмжлэл № - <b>{% now 'ymd' %}{{ avlaga.code }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="30%">Борлуулалтын цикл: <b>R1</b></td>
+                                        <td width="50%">Дэд станц: <b>{{tooluur.deds_name}}</b></td>
+                                        <td width="20%" align="right">Нэхэмжлэл: <b>Ухаалаг эрчим хүч ХХК</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Банк: <b>{{tooluur.bank_name}}</b></td>
+                                        <td>Байгууллагын нэр: <b>{{ avlaga.last_name }} {{ avlaga.first_name }}</b></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Хэрэглэгчийн код: <b>{{ avlaga.code }}</b></td>
+                                        <td>РД: <b>{{ avlaga.register }}</b></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Дансны дугаар: <b>{{tooluur.bank_dans}}</b></td>
+                                        <td>Хаяг: <b>{{ avlaga.address_name }}</b></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Эхний үлдэгдэл: <b>{{ehnii|floatformat:'2'|intcomma}}</b> төгрөг.</td>
+                                        <td>Тооцооны хамрах хугацаа: <b>{{tooluur.u_bichilt_date|date:'Y-m-d'}} - {{tooluur.o_bichilt_date|date:'Y-m-d'}}</b></td>
+                                        <td align="right">Хэвлэсэн: <b>{% now 'Y-m-d' %}</b></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {% set_bef_bich_date tooluur.u_bichilt_date %}
+                            {% endwith %}
+                            <br/>
+                            <table width="100%" border="0" style="font-family: Arial, Verdana, sans-serif; color: #000; font-size: 10px; padding: -5px; border: 1px solid #000;">
+                                <thead>
+                                    <tr height="25px">
+                                        <th rowspan="2" align="center" width="13%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Обьектын нэр</th>
+                                        <th rowspan="2" align="center" width="13%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Хэмжүүрийн дугаар</th>
+                                        <th colspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Тоолуурын заалт</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Зөрүү</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Коэф</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Хэрэглээ Кв.ц</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Кос (Ф)</th>
+                                        <th rowspan="2" align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Тариф төгрөг</th>
+                                        <th rowspan="2" align="center" width="10%" style="border-bottom: solid 1px #000;">Дүн төгрөг</th>
+                                    </tr>
+                                    <tr height="25px">
+                                        <th align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Өмнөх</th>
+                                        <th align="center" width="8%" style="border-bottom: solid 1px #000; border-right: solid 1px #000;">Одоо</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="10" style="border-bottom: solid 1px #000;"><b>Тоолууртай хэрэглээ</b></td>
+                                    </tr>
+                                    {% for tooluur in tooluurs %}
+
+                                    {% make_float tooluur.total_diff as total_diff %}
+                                    {% set_total_diff total_diff %}
+
+                                    {% if tooluur.tariff == '0' %}
+                                    <tr>
+                                        <td>Өдөр</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.day_umnu }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.day_odoo }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% reduce tooluur.day_odoo tooluur.day_umnu as day_zuruu %}{{day_zuruu|floatformat:'2'|intcomma}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{tooluur.coef|floatformat:'3'}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% multiply_coef day_zuruu tooluur.coef as tool_day_diff %}{{ tool_day_diff|floatformat:'2'|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% if tooluur.chadal_price is not None %}{% get_aan_udur_une as aan_udur_une %}{{ aan_udur_une|floatformat:'2'|intcomma }}{% else %}132.45{% endif %}</td>
+                                        <td align="right">
+                                        {% if tooluur.chadal_price is not None %}
+                                            {% multiply tool_day_diff aan_udur_une as day_tool_price %}{{ day_tool_price|floatformat:'2'|intcomma }}
+                                        {% else %}
+                                            {% multiply tool_day_diff 132.45 as day_tool_price %}{{ day_tool_price|floatformat:'2'|intcomma }}
+                                        {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% each_tool_diff day_zuruu %}
+                                    {% each_tool_kvt tool_day_diff %}
+                                    {% each_tool_price day_tool_price %}
+                                    {% elif tooluur.tariff == '1' %}
+                                    <tr>
+                                        <td>Өдөр</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.day_umnu }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.day_odoo }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% reduce tooluur.day_odoo tooluur.day_umnu as day_zuruu %}{{day_zuruu|floatformat:'2'|intcomma}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{tooluur.coef|floatformat:'3'}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% multiply_coef day_zuruu tooluur.coef as tool_day_diff %}{{ tool_day_diff|floatformat:'2'|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% if tooluur.chadal_price is not None %}{% get_aan_udur_une as aan_udur_une %}{{ aan_udur_une|floatformat:'2'|intcomma }}{% else %}132.45{% endif %}</td>
+                                        <td align="right">
+                                        {% if tooluur.chadal_price is not None %}
+                                            {% multiply tool_day_diff aan_udur_une as day_tool_price %}{{ day_tool_price|floatformat:'2'|intcomma }}
+                                        {% else %}
+                                            {% multiply tool_day_diff 132.45 as day_tool_price %}{{ day_tool_price|floatformat:'2'|intcomma }}
+                                        {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% each_tool_diff day_zuruu %}
+                                    {% each_tool_kvt tool_day_diff %}
+                                    {% each_tool_price day_tool_price %}
+                                    <tr>
+                                        <td>Шөнө</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.night_umnu }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.night_odoo }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% reduce tooluur.night_odoo tooluur.night_umnu as night_zuruu %}{{night_zuruu|floatformat:'2'|intcomma}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{tooluur.coef|floatformat:'3'}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% multiply_coef night_zuruu tooluur.coef as tool_night_diff %}{{ tool_night_diff|floatformat:'2'|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% if tooluur.chadal_price is not None %}{% get_aan_shunu_une as aan_shunu_une %}{{ aan_shunu_une|floatformat:'2'|intcomma }}{% else %}81.05{% endif %}</td>
+                                        <td align="right">
+                                        {% if tooluur.chadal_price is not None %}
+                                            {% multiply tool_night_diff aan_shunu_une as night_tool_price %}{{ night_tool_price|floatformat:'2'|intcomma }}
+                                        {% else %}
+                                            {% multiply tool_night_diff 81.05 as night_tool_price %}{{ night_tool_price|floatformat:'2'|intcomma }}
+                                        {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% each_tool_diff night_zuruu %}
+                                    {% each_tool_kvt tool_night_diff %}
+                                    {% each_tool_price night_tool_price %}
+                                    {% elif tooluur.tariff == '2' %}
+                                    <tr>
+                                        <td>Өдөр</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.day_umnu }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.day_odoo }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% reduce tooluur.day_odoo tooluur.day_umnu as day_zuruu %}{{day_zuruu|floatformat:'2'|intcomma}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{tooluur.coef|floatformat:'3'}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% multiply_coef day_zuruu tooluur.coef as tool_day_diff %}{{tool_day_diff|floatformat:'2'|intcomma}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% if tooluur.chadal_price is not None %}{% get_aan_udur_une as aan_udur_une %}{{ aan_udur_une|floatformat:'2'|intcomma }}{% else %}132.45{% endif %}</td>
+                                        <td align="right">
+                                        {% if tooluur.chadal_price is not None %}
+                                            {% multiply tool_day_diff aan_udur_une as day_tool_price %}{{ day_tool_price|floatformat:'2'|intcomma }}
+                                        {% else %}
+                                            {% multiply tool_day_diff 132.45 as day_tool_price %}{{ day_tool_price|floatformat:'2'|intcomma }}
+                                        {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% each_tool_diff day_zuruu %}
+                                    {% each_tool_kvt tool_day_diff %}
+                                    {% each_tool_price day_tool_price %}
+                                    <tr>
+                                        <td>Шөнө</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.night_umnu }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.night_odoo }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% reduce tooluur.night_odoo tooluur.night_umnu as night_zuruu %}{{night_zuruu|floatformat:'2'|intcomma}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{tooluur.coef|floatformat:'3'}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% multiply_coef night_zuruu tooluur.coef as tool_night_diff %}{{ tool_night_diff|floatformat:'2'|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% if tooluur.chadal_price is not None %}{% get_aan_shunu_une as aan_shunu_une %}{{ aan_shunu_une|floatformat:'2'|intcomma }}{% else %}81.05{% endif %}</td>
+                                        <td align="right">
+                                        {% if tooluur.chadal_price is not None %}
+                                            {% multiply tool_night_diff aan_shunu_une as night_tool_price %}{{ night_tool_price|floatformat:'2'|intcomma }}
+                                        {% else %}
+                                            {% multiply tool_night_diff 81.05 as night_tool_price %}{{ night_tool_price|floatformat:'2'|intcomma }}
+                                        {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% each_tool_diff night_zuruu %}
+                                    {% each_tool_kvt tool_night_diff %}
+                                    {% each_tool_price night_tool_price %}
+                                    <tr>
+                                        <td>Оргил</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.rush_umnu }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.rush_odoo }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% reduce tooluur.rush_odoo tooluur.rush_umnu as rush_zuruu %}{{rush_zuruu|floatformat:'2'|intcomma}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{tooluur.coef|floatformat:'3'}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% multiply_coef rush_zuruu tooluur.coef as tool_rush_diff %}{{ tool_rush_diff|floatformat:'2'|intcomma }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% if tooluur.chadal_price is not None %}{% get_aan_orgil_une as aan_orgil_une %}{{ aan_orgil_une|floatformat:'2'|intcomma }}{% else %}81.05{% endif %}</td>
+                                        <td align="right">
+                                        {% if tooluur.chadal_price is not None %}
+                                            {% multiply tool_rush_diff aan_orgil_une as rush_tool_price %}{{ rush_tool_price|floatformat:'2'|intcomma }}
+                                        {% else %}
+                                            {% multiply tool_rush_diff 213.75 as rush_tool_price %}{{ rush_tool_price|floatformat:'2'|intcomma }}
+                                        {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% each_tool_diff tool_rush_diff %}
+                                    {% each_tool_kvt tool_rush_diff %}
+                                    {% each_tool_price rush_tool_price %}
+                                    {% endif %}
+                                    {% endfor %}
+                                    <tr>
+                                        <td colspan="2" align="center" style="border-top: solid 1px #000;"><b>Дүн</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000;"><b>{% get_all_tool_diff as all_tool_diff %}{{all_tool_diff|floatformat:'2'|intcomma}}</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000;"><b>{% get_all_tool_kvt as all_tool_kvt %}{{all_tool_kvt|floatformat:'2'|intcomma}}</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="#000; border-top: solid 1px #000;"><b>{% get_all_tool_price as tool_total_price %}{{tool_total_price|floatformat:'2'|intcomma}}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="10" style="border-bottom: solid 1px #000; border-top: solid 1px #000;"><b>ЦЭХ чадлын төлбөр</b></td>
+                                    </tr>
+                                    {% for tooluur in tooluurs %}
+
+                                    {% if forloop.parentloop.counter == 1 %}
+                                        {% set_before_tooluurs tooluur.number tooluur.day_odoo tooluur.day_umnu tooluur.coef %}
+                                    {% endif %}
+
+                                    {% if avlaga.customer_type != '0' %}
+                                    {% if tooluur.chadal_price is not None %}
+                                    {% if tooluur.tariff == '0' %}
+                                    <tr>
+                                        <td>Энгийн тарифаар</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% get_2days_diff tooluur.u_bichilt_date tooluur.o_bichilt_date as 2days_diff %}{{2days_diff}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% reduce tooluur.day_odoo tooluur.day_umnu as day_zuruu %}
+                                            {% multiply_coef day_zuruu tooluur.coef as aft_day_zuruu %}
+
+                                            {# % if forloop.parentloop.counter == 2 % #}
+                                                {# % get_before_tooluurs tooluur.number as bef_day_zuruu % #}
+                                                {# % append aft_day_zuruu bef_day_zuruu as tool_day_diff % #}
+                                            {# % else % #}
+                                                {% return_same aft_day_zuruu as tool_day_diff %}
+                                            {# % endif % #}
+                                            {{tool_day_diff|floatformat:'2'|intcomma}}
+                                        </td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% divide tool_day_diff 2days_diff as kos %}{% divide kos 12 as kosp %}{{kosp|floatformat:'2'|intcomma}}
+                                        </td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% get_aan_chad_une 2days_diff as aan_chad_une %}{{aan_chad_une|floatformat:'2'|intcomma}}</td>
+                                        <td align="right">{% multiply kosp aan_chad_une as chadal_price %}{{chadal_price|floatformat:'2'|intcomma}}</td>
+                                    </tr>
+                                    {% each_tool_chad_price chadal_price %}
+                                    {% elif tooluur.tariff == '1' %}
+                                    <tr>
+                                        <td>Энгийн тарифаар</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% get_2days_diff tooluur.u_bichilt_date tooluur.o_bichilt_date as 2days_diff %}{{2days_diff}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% reduce tooluur.night_odoo tooluur.night_umnu as night_zuruu %}
+                                            {% reduce tooluur.day_odoo tooluur.day_umnu as day_zuruu %}
+                                            {% append night_zuruu day_zuruu as nd_zuruu %}
+                                            {% multiply_coef nd_zuruu tooluur.coef as tool_day_diff %}{{tool_day_diff|floatformat:'2'|intcomma}}
+                                        </td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% divide tool_day_diff 2days_diff as kos %}{% divide kos 12 as kosp %}{{kosp|floatformat:'2'|intcomma}}
+                                        </td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% get_aan_chad_une 2days_diff as aan_chad_une %}{{aan_chad_une|floatformat:'2'|intcomma}}</td>
+                                        <td align="right">{% multiply kosp aan_chad_une as chadal_price %}{{chadal_price|floatformat:'2'|intcomma}}</td>
+                                    </tr>
+                                    {% each_tool_chad_price chadal_price %}
+                                    {% elif tooluur.tariff == '2' %}
+                                    <tr>
+                                        <td>Оргил тарифаар</td>
+                                        <td align="right" style="border-right: solid 1px #000;">{{ tooluur.number }}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% get_2days_diff tooluur.u_bichilt_date tooluur.o_bichilt_date as 2days_diff %}{{2days_diff}}</td>
+                                        <td align="right" style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% reduce tooluur.rush_odoo tooluur.rush_umnu as rush_zuruu %}
+                                            {% multiply_coef rush_zuruu tooluur.coef as tool_day_diff %}{{tool_day_diff|floatformat:'2'|intcomma}}
+                                        </td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% divide tool_day_diff 2days_diff as kos %}{% divide kos 5 as kosp %}{{kosp|floatformat:'2'|intcomma}}
+                                        </td>
+                                        <td align="right" style="border-right: solid 1px #000;">{% get_aan_chad_une 2days_diff as aan_chad_une %}{{aan_chad_une|floatformat:'2'|intcomma}}</td>
+                                        <td align="right">{% multiply kosp aan_chad_une as chadal_price %}{{chadal_price|floatformat:'2'|intcomma}}</td>
+                                    </tr>
+                                    {% each_tool_chad_price chadal_price %}
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endfor %}
+                                    <tr>
+                                        <td colspan="2" align="center" style="border-top: solid 1px #000;"><b>Дүн</b></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td style="border-top: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000;"><b>{% get_all_tool_chad_price as total_chad_price %}{{total_chad_price|floatformat:'2'|intcomma}}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="10" style="border-top: solid 1px #000; border-bottom: solid 1px #000;"><b>Бусад</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: solid 1px #000;">НӨАТ</td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% append tool_total_price total_chad_price as sub_total%}
+                                            {% multiply sub_total 0.1 as nuat %}{{ nuat|floatformat:'2'|intcomma }}
+                                        </td>
+                                    </tr>
+                                    {% if avlaga.chadal_price is not None %}
+                                    <tr>
+                                        <td style="border-right: solid 1px #000;">Баримтын үнэ</td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% get_total_diff as get_total_diff %}
+                                            {% if get_total_diff > 0 %}
+                                                {% if forloop.last %}
+                                                    {% get_aan_barimt_une as barimt_une %}{{barimt_une|floatformat:'2'|intcomma}}
+                                                {% else %}
+                                                    0.00
+                                                {% endif %}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: solid 1px #000;">НӨАТ(үйлч)</td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td style="border-right: solid 1px #000;"></td>
+                                        <td align="right" style="border-right: solid 1px #000;">
+                                            {% if get_total_diff > 0 %}
+                                                {% multiply barimt_une 0.1 as barimt_nuat %}{{ barimt_nuat|floatformat:'2'|intcomma }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td colspan="2" align="center" style="border-top: solid 1px #000; border-bottom: solid 1px #000;"><b>Дүн</b></td>
+                                        <td colspan="7" style="border-top: solid 1px #000; border-bottom: solid 1px #000;"></td>
+                                        <td align="right" style="border-top: solid 1px #000; border-bottom: solid 1px #000;"><b>{% append nuat barimt_une as sub_total1 %}{% append sub_total1 barimt_nuat as other_total %}{{ other_total|floatformat:'2'|intcomma }}</b></td>
+                                    </tr>
+                                    <tr height="25px">
+                                        <td colspan="2" align="center"><b>Нийт:</b></td>
+                                        <td colspan="4"></td>
+                                        <td align="right"><b></b></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td align="right"><b>
+                                            {% append tool_total_price total_chad_price as total_price1 %}
+                                            {% append total_price1 other_total as total_total_price %}
+                                            {{total_total_price|floatformat:'2'|intcomma}}
+                                        </b></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {% get_tulburt_uilchilgee avlaga.code avlaga.bichilt_date as uilchilgee_tulburs %}
+                            {% if uilchilgee_tulburs is not None %}<br/>
+                            {% for uilchilgee_tulbur in uilchilgee_tulburs %}
+                                * {{uilchilgee_tulbur.name}} - {{uilchilgee_tulbur.payment|floatformat:'2'|intcomma}}<br/>
+                            {% endfor %}
+                            {% endif %}
+                            <hr/><br/>
+                            {% if type == '1' %}
+                                <p>Өмнөх орлого: <b>{{before_payment|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                                <p>Нийт алданги: <b>0.00</b> төгрөг.</p>
+                                <p>Төлбөрт үйлчилгээ: <b>{% if avlaga.uilchilgeenii_tulbur %}{{avlaga.uilchilgeenii_tulbur|floatformat:'2'|intcomma}}{% else %}0.00{% endif %}</b> төгрөг.</p>
+                                <p>Нийт бичилт: <b>{{bichilt|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                                <p>Орлого: <b>{{payment|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                                {% append before_payment payment as result31 %}
+                                {% append ehnii bichilt as result30 %}{% append result30 uil_tulbur as result32 %}
+                                <p>Эцсийн үлдэгдэл: <b>{% reduce result32 result31 as result33 %}{{result33|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                            {% else %}
+                                <p>Нийт орлого: <b> {{payment|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                                <p>Нийт алданги: <b>0.00</b> төгрөг.</p>
+                                <p>Төлбөрт үйлчилгээ: <b>{% if avlaga.uilchilgeenii_tulbur %}{{avlaga.uilchilgeenii_tulbur|floatformat:'2'|intcomma}}{% else %}0.00{% endif %}</b> төгрөг.</p>
+                                <p>Нийт бичилт: <b>{{bichilt|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                                <p>Эцсийн үлдэгдэл: <b>{% append ehnii bichilt as result30 %}{% append result30 uil_tulbur as result31 %}{% reduce result31 payment as result32 %}{{result32|floatformat:'2'|intcomma}}</b> төгрөг.</p>
+                            {% endif %}
+                            <br/>
+                            <p>Нэхэмжлэгчийн данс: Худалдаа хөгжлийн банк төв - 499208431. Лавлах утас: 77226269.</p>
+                            <p>Санамж: Тооцоо гарсанаас хойш 10 хоногийн дотор төлбөрөө төлөхгүй бол алданги тооцох болно.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        {% del_before_tooluurs %}
+        {% del_bef_bich_date %}
+        {% del_total_diff %}
+    </body>
+</html>

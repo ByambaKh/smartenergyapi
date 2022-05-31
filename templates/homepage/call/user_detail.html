@@ -1,0 +1,470 @@
+{% extends "base.html" %}
+{% block head_block %}
+	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="http://yourjavascript.com/7174319415/script.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            console.log("called javascript")
+            $('select#select_general_types').change(function () {
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 var country_name   = optionSelected.text();
+
+                 console.log(optionSelected.val());
+                 data = {'name' : valueSelected };
+                 ajax('/home/get_sub_call_types',data,function(result){
+
+                        console.log(result);
+                        $("#select_sub_type option").remove();
+                        $("#select_sub_type").append('<option value=\'\'>Сонгох</option>');
+                        for (var i = result.length - 1; i >= 0; i--) {
+                            $("#select_sub_type").append('<option>'+ result[i].name +'</option>');
+                        };
+                 });
+             });
+        });
+        
+          $(document).ready(function() {
+
+        function fill_last_zaalts(result){
+            $('input#suuliin_zaalt').val(result.last_bichilt.day);
+            $('input#t_mark').val(result.last_bichilt.mark);
+            $('input#install_date').val(result.last_bichilt.installed_date);
+            $('input#verify_date').val(result.last_bichilt.verified_date);
+            $('input#t_amper').val(result.last_bichilt.amper);
+            $('input#t_voltage').val(result.last_bichilt.voltage);
+            $('input#t_tariff').val(result.last_bichilt.tariff);
+            $('input#t_status').val(result.last_bichilt.status);
+            $('input#t_initial').val(result.last_bichilt.initial);
+            $('input#t_balance').val(result.last_bichilt.balance);
+            $('input#t_tr_koef').val(result.last_bichilt.tr_koef);
+            $('input#t_u_koef').val(result.last_bichilt.u_koef);
+            $('input#t_angilal').val(result.last_bichilt.angilal);
+        }
+
+       
+        $('select#tooluur_select').change(function () {
+            var option_len = $(this).length + 1;
+            if (option_len > 1){
+                var optionSelected = $(this).find("option:selected");
+                var valueSelected  = optionSelected.val();
+                var user_id = 88888888;
+                data = {'tooluur_id' : valueSelected , 'code':{{customer.code}},};
+                ajax('/home/get_detail_bytooluur/',data,function(result){
+                    fill_last_zaalts(result)
+                });
+            }
+        });
+    }); 
+        
+        
+    </script>
+{% endblock %}
+{% block link %}/home/call_list{% endblock%}
+{% block title %}Дуудлага{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+    <div class="card">
+        <div class="content">
+            <legend>Гэрээт хэрэглэгчийн дэлгэрэнгүй мэдээлэл</legend>
+            <div class="content">
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-target="#collapseOne" href="#" data-toggle="collapse">
+                                    Гэрээний мэдээлэл
+                                    <b class="caret"></b>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <div class="col-md-6">
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Хэрэглэгчийн код</label>
+                                            <h5>{{customer.code}}</h5>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Хэрэглэгчийн овог</label>
+                                            <h5>{{customer.last_name}}</h5>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Гэрээ байгуулсан огноо</label>
+                                            <h5>{{geree.contract_made_date|date:"SHORT_DATE_FORMAT"}}</h5>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Гэрээ сунгасан огноо</label>
+                                            <h5>{{geree.contract_extend_date|date:"SHORT_DATE_FORMAT"}}</h5>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Ангилал</label>
+                                            <h5>
+                                                {% if customer.customer_angilal == "0" %}
+                                                    Аж ахуй нэгж
+                                                {% elif customer.customer_angilal == "1" %}
+                                                    Ахуйн хэрэглэгч
+                                                {% elif customer.customer_angilal == "2" %}
+                                                    Үйлдвэр үйлчилгээ
+                                                {% else %}
+                                                    Нийтийн эзэмшил
+                                                {% endif %}
+                                            </h5>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Дэд станц</label>
+                                            <h5>
+                                            {% if ded != None %}
+                                                    {{ded.name}}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </h5>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Хаяг</label>
+                                            <h5>{{customer.address_name}}</h5>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Утасны дугаар</label>
+                                            <h5>{{customer.phone}}</h5>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-6">
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Гэрээний дугаар</label>
+                                            <h5>{{geree.contract_number}}</h5>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Хэрэглэгчийн нэр</label>
+                                            <h5>{{customer.first_name}} {{customer.last_name}}</h5>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Гэрээ дуусах огноо</label>
+                                            <h5>{{geree.contract_expire_date|date:"SHORT_DATE_FORMAT"}}</h5>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Цикл</label>
+                                            <h5>{{cycle.name}}</h5>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Төрөл</label>
+                                            <h5>
+                                            {% if customer.customer_type == "1" %}
+                                                    Ахуйн хэрэглэгч
+                                                {% else %}
+                                                    Аж ахуйн нэгж
+                                                {% endif %}
+                                            </h5>
+                                        </div>
+                                    </fieldset>
+                                    <!-- <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Эзэмшилийн зааг</label>
+                                            <h5>Зааг</h5>
+                                        </div>
+                                    </fieldset> -->
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Төлбөр төлөх банк</label>
+                                            <h5>{{bank.name|default_if_none:"-"}}</h5>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Төлбөр төлөх данс</label>
+                                            <h5>{{geree.bank_account|default_if_none:"-"}}</h5>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Мэйл хаяг</label>
+                                            <h5>{{customer.email|default_if_none:"-"}}</h5>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-target="#collapseTwo" href="#" data-toggle="collapse">
+                                    Төлбөрийн мэдээлэл
+                                    <b class="caret"></b>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="col-md-6">
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Тоолуурын заалт</label>
+                                            <h5>
+                                             Өдөр: {{day}}, Шөнө: {{night}}, Оргил: {{rush}}
+                                            </h5>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Эхний үлдэгдэл</label>
+                                            <h5>{{first_uld}} төгрөг</h5>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Сүүлийн сарын бичилт</label>
+                                            <h5>{{bichilt}} төгрөг</h5>
+                                        </div>
+                                    </fieldset>
+
+                                </div>
+
+                                <div class="col-md-6">
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Тоолуурын заалт авсан огноо</label>
+                                            <h5>{{zdate|date:'Y-m-d'}}</h5>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Эцсийн үлдэгдэл</label>
+                                            <h5>{{last_uld}} төгрөг</h5>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="control-label">Сүүлийн сарын нийт орлого</label>
+                                            <h5>{{tulbur}} төгрөг</h5>
+                                        </div>
+                                    </fieldset>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-target="#collapseThree" href="#" data-toggle="collapse">
+                                    Тоолуурын мэдээлэл
+                                    <b class="caret"></b>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                              <div id="tooluur_div">
+
+
+                            <div class="col-md-6">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Тоолуурын дугаар</label>
+                                        <select
+                                            name="tooluur_select" id="tooluur_select" class="selectpicker"
+                                            data-title="- Сонгох -" data-style="btn-default btn-block"
+                                            data-menu-style="dropdown-blue" required >
+                                            {% for item in tooluur %}
+                                            <option value="{{item.number}}">{{item.number}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Эхний заалт</label>
+                                        <h5><input class="form-control" style="border: none;background: none;" type="text" id="t_initial" name="t_initial" value="{{tooluur.}}" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Баталгаажсан огноо</label>
+                                        <h5><input style="border: none;background: none;" type="text" id="verify_date" name="verify_date" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Хэрэглэгч</label>
+                                        <h5>{{customer.code}}</h5>
+                                    </div>
+                                </fieldset>
+
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Ампер</label>
+                                        <h5><input style="border: none;background: none;" type="text" id="t_amper" name="t_amper" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label"> трансформаторын коеффициент</label>
+                                        <h5><input style="border: none;background: none;" type="text" id="t_tr_koef" name="t_tr_koef" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+                                                                                    <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Хүчдэлийн коеффициент</label>
+                                        <h5><input style="border: none;background: none;" type="text" id="t_u_koef" name="t_u_koef" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Тоолуурын марк</label>
+                                        <h5><input style="border: none;background: none;" type="text" id="t_mark" name="t_mark" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Сүүлчийн заалт</label>
+                                        <h5><input class="form-control" style="border: none;background: none;" type="text" id="t_balance" name="t_balance" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Тоолуур суурилуулсан огноо</label>
+                                        <h5><input style="border: none;background: none;" type="text" id="install_date" name="install_date" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Тариф</label>
+                                        <h5><input style="border: none;background: none;" type="text" id="t_tariff" name="t_tariff" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Төлөв</label>
+                                        <h5><input style="border: none;background: none;" type="text" id="t_status" name="t_status" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Хүчдэл</label>
+                                        <h5><input style="border: none;background: none;" type="text" id="t_voltage" name="t_voltage" disabled="true"/></h5>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-target="#collapseFour" href="#" data-toggle="collapse">
+                                    Сүүлд ирсэн дуудлагын мэдээлэл
+
+                                    <b class="caret"></b>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <table id="bootstrap-table1" class="table">
+                                    <thead>
+                                        <th data-field="check" data-sortable="false"></th>
+                                        <th data-field="latest_vldegdel" data-sortable="false">Бүртгэгдсэн огноо</th>
+                                        <th data-field="vldegdel" data-sortable="false">Төрөл</th>
+                                        <th data-field="tuluv" data-sortable="false">Төлөв</th>
+                                        <th data-field="ognoo" data-sortable="false">Шийдвэрлэсэн огноо</th>
+                                        <th class="text-center"  data-field="orlogo" data-sortable="false">Тайлбар</th>
+                                        <th data-field="actions">Харах</th>
+                                    </thead>
+                                    <tbody>
+                                       {% for detail in call_list %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ detail.call_created_date|date:"Y-m-d" }}</td>
+                                            <td>{{ detail.call_sub_type.name}}</td>
+                                            {% if detail.status == "0" %}
+                                                <td>Шийдвэрлээгүй </td>
+                                            {% elif detail.status == "1" %}
+                                                <td>Шийдвэрлэсэн</td>
+                                            {% else %}
+                                                <td> - </td>
+                                            {% endif %}
+                                            {% if detail.completed_date != None %}
+                                                <td>{{ detail.completed_date|date:"Y-m-d"}}</td>
+                                            {% else %}
+                                                <td> - </td>
+                                            {% endif %}
+                                            {% if detail.note != None and detail.note != '' %}
+                                                <td>{{ detail.note }}</td>
+                                            {% else %}
+                                                <td> - </td>
+                                            {%endif %}
+                                            <td class="td-actions text-center">
+                                                 <a href="/home/call_detail/{{detail.id}}/" class="btn btn-simple btn-info btn-icon table-action view">
+                                                    <i class="fa fa-eye"></i>
+                                                 </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="footer text-center">
+            <a href="/home/call_add/{{customer.code}}/" class="btn btn-primary btn-fill btn-wd" type="button" >Дуудлага бүртгэх</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

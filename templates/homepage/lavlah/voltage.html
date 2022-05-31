@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Хүчдэл
+{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% if perms.data.add_voltage %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/lavlagaa/add_voltage" class="btn btn-primary btn-fill btn-wd"
+               type="button">Хүчдэлийн утга бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+{% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй хүчдэлийн утгууд </div>
+                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                    <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="une_type" data-sortable="true" class="text-center">Хүчдэл/В/</th>
+                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                    </thead>
+                    <tbody>
+                    {% for detail in datas %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-right">{{ detail.value }}</td>
+                            <td class="td-actions text-center">
+                            {% if perms.data.change_voltage %}
+                                <a href="/home/lavlagaa/edit_voltage/{{detail.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                            {% endif %}
+                            {% if perms.data.delete_voltage %}
+                                <a href="/home/lavlagaa/del_voltage/{{detail.id}}/" onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')" class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!--  end card  -->
+        </div>
+
+    </div>
+</div>
+{% endblock %}

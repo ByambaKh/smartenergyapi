@@ -1,0 +1,174 @@
+\{% extends "base.html" %}
+{% block head_block %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+        	
+        	var role =  {{ add_q.role_select }};
+        	
+        	if(role == '1') {
+            	$("#group_select_fs").hide();
+        	} else {
+            	$("#group_select_fs").show();
+            }
+        	
+        	$('select#role_select').change(function () {
+            	
+                var optionSelected = $(this).find("option:selected");
+                var valueSelected  = optionSelected.val();
+                
+                if(valueSelected == "1"){
+                	$("#group_select_fs").hide();
+                } else {
+                	$("#group_select_fs").show();
+                }
+                
+            });
+        });
+    </script>
+{% endblock %}
+{% block link %}{% url 'user_list' %}{% endblock%}
+{% block title %}Ажилтан нэмэх{% endblock %}
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="card">
+            <form class="form-horizontal" action="{{ urlz }}" method="POST">{% csrf_token %}
+                <div class="content">
+                
+                    {% if urlz != "/home/user_add" %}
+                        <legend>Ажилтны мэдээлэл засах </legend>
+                    {% else %}
+                        <legend>Ажилтны мэдээлэл бүртгэх</legend>
+                    {% endif %}
+                    
+                    {% if error.error_code != 100 %}
+                        <div>
+                             <font color="red">Алдаа гарлаа. {{error.name}}</font>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="col-md-6">
+
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Нэвтрэх нэр</label>
+                                {% if urlz == "/home/user_add" %}
+                                	<input class="form-control" type="text" name="username" value="{{add_q.username}}" required/>
+			                    {% else %}
+                                	<input class="form-control" type="text" name="username" value="{{add_q.username}}" disabled/>
+			                    {% endif %}
+                            </div>
+                        </fieldset>
+                        
+                        {% if urlz == "/home/user_add" %}
+	                        <fieldset>
+	                            <div class="form-group">
+	                                <label class="control-label">Нууц үг</label>
+	                                    <input class="form-control" type="password" name="password" required />
+	                            </div>
+	                        </fieldset>
+                        {% endif %}
+                        
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хэрэглэгчийн овог</label>
+                                <input class="form-control" type="text" name="last_name" value="{{add_q.last_name}}" required/>
+                            </div>
+                        </fieldset>
+                        
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Имэйл хаяг</label>
+                                <input class="form-control" type="text" name="email" value="{{add_q.email}}" required/>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хэрэглэгчийн төрөл</label>
+                                <select class="form-control" name="role_select" id="role_select" required>
+                                    {% if add_q.role_select == '0' %}
+                                        <option value="0" selected>Энгийн хэрэглэгч</option>
+                                    {% else %}
+                                        <option value="0">Энгийн хэрэглэгч</option>
+                                    {% endif %}
+                                    {% if add_q.role_select == '1' %}
+                                       <option value="1" selected>Админ</option>
+                                    {% else %}
+                                        <option value="1">Админ</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </fieldset>
+                   	</div>
+                    <div class="col-md-6">
+                    
+                        <fieldset>
+                        	<div class="form-group">
+                      			<label class="control-label">Байгууллага сонгох</label>
+                                <select class="form-control" name="org_select" id="org_select" required>
+                                    {% for detail in orgs %}
+                                        {% if detail.register == add_q.org_select %}
+                                            <option value="{{detail.register}}" selected>{{detail.name}}</option>
+                                        {% else %}
+                                            <option value="{{detail.register}}">{{detail.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                        	</div>
+                        </fieldset>
+                        
+                        {% if urlz == "/home/user_add" %}
+	                        <fieldset>
+	                            <div class="form-group">
+	                                <label class="control-label">Нууц үг давтан оруулах</label>
+	                                    <input class="form-control" type="password" name="password_check" required />
+	                            </div>
+	                        </fieldset>
+                        {% endif %}
+                        
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хэрэглэгчийн нэр</label>
+                                <input class="form-control" type="text" name="first_name" value="{{add_q.first_name}}" required/>
+                            </div>
+                        </fieldset>
+                        
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Утас</label>
+                                <input class="form-control" type="text" name="phone" value="{{add_q.phone}}" required/>
+                            </div>
+                        </fieldset>
+                        
+                		{% if user.is_superuser %}
+	                        <fieldset name="group_select_fs" id="group_select_fs">
+	                        	<div class="form-group">
+	                      			<label class="control-label">Хэрэглэгчийн эрх</label>
+	                                <select class="form-control" name="group_select" id="group_select" required>
+	                                	{% for gp in groups %}
+	                                	
+		                                    {% if app_user.groups.all.0 == gp %}
+		                                        <option value="{{gp.id}}" selected>{{gp.name}}</option>
+		                                    {% else %}
+		                                        <option value="{{gp.id}}">{{gp.name}}</option>
+		                                    {% endif %}
+	                                    
+										{% endfor %}
+	                                </select>
+	                        	</div>
+	                        </fieldset>
+                		{% endif %}
+
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                </div>
+                <div class="footer text-center">
+                    <button type="submit" class="btn btn-info btn-fill">Хадгалах</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

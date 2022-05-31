@@ -1,0 +1,58 @@
+{% extends "base.html" %} 
+{% block title %}Аймаг/Нийслэл{% endblock %}
+{% block link %}/home/lavlagaa/aimag_niislel{% endblock%}
+{% block content %}
+
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+	<div class="card">
+		<form id="allInputsFormValidation" class="form-horizontal" action="{{urlz}}"
+			method="post" novalidate="">{% csrf_token %}
+			<div class="content">
+				{% if urlz == "/home/lavlagaa/add_niislel" %}
+	                <legend>Аймаг/Нийслэлийн мэдээлэл бүртгэх</legend>
+	            {% else %}
+	                <legend>Аймаг/Нийслэлийн мэдээлэл засах</legend>
+	            {%endif%}
+				<div class="col-md-6">
+                	<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Аймаг/Нийслэлийн нэр</label>
+                            <input class="form-control" type="text" name="name" value="{{aimag.name}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+				<div class="col-md-6">
+                	<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Аймаг/Нийслэлийн дугаар</label>
+                            {% if urlz == "/home/lavlagaa/add_niislel" %}
+                                <input class="form-control" type="text" name="code" value="{{aimag.code}}" number="true" required/>
+                            {% else %}
+                                <input class="form-control" type="text" name="code" value="{{aimag.code}}" number="true" readonly/>
+                            {%endif%}
+                        </div>
+                    </fieldset>
+                </div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="clearfix"></div>
+			<div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_niislel" %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                   <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% endif %}
+			</div>
+		</form>
+	</div>
+</div>
+
+{% endblock %}

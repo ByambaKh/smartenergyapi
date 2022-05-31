@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".orlogo_file").click(function(){
+            $("#file").click();
+        });
+
+        $("#file").change(function(){
+            $("#orlogo_form").submit();
+        })
+    });
+</script>
+{% endblock %}
+{% block link %}{% url 'orlogo_list' %}{% endblock%}
+{% block title %}Орлого{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="card">
+        <form id="orlogo_form" name="orlogo_import" class="form-horizontal" method="post" novalidate="" enctype="multipart/form-data">{% csrf_token %}
+            <input type="file" style="display: none" name="file" id="file"/>
+            <a href="#" class="btn btn-primary btn-fill btn-wd orlogo_file" type="button">Excel file сонгох</a>
+            {% if orlogo is not None %}
+
+            <input type="hidden" style="display: none" name="values" value="{{json_string}}" />
+            <button type="submit" class="btn btn-success btn-fill btn-wd" name="save" >Хадгалах</button>
+            {% endif %}
+
+
+
+            <br>
+            <div class="row">
+                <div class="col-md-4"><h3>Excel ийн тайлбар</h3>
+                    <ul><li><h5>1: огноо</h5></li>
+                    <li><h5>2: Хэрэглэгчийн код</h5></li>
+                    <li><h5>3: Мөнгөн дүн</h5></li>
+                    <li><h5>4: Банк </h5></li>
+                    </ul>
+            </div>
+            <div class="col-md-4">
+                <pre>
+                ХХБ         	1
+                Төрийн банк  	2
+                Голомт банк	3
+                Хаан банк	4
+                Посын гүйлгээ	5
+                Бусад	        6
+                Номин Пос	7
+                </pre>
+            </div>
+
+            </div>
+            <p><i>Эхний мөр буюу толгой хэсгийг оруулахгүй уншина</i></p>
+        </form>
+
+        <table id="bootstrap-table1" class="table">
+                    <thead>
+                        <th class="text-center">№</th>
+                        <th  data-sortable="true">Огноо</th>
+                        <th  data-sortable="true">Хэрэглэгчийн нэр</th>
+                        <th  data-sortable="true">Хэрэглэгчийн код</th>
+                        <th class="text-right"  data-sortable="true">Мөнгөн дүн</th>
+                        <th class="text-right" data-sortable="true">Банк</th>
+                        <th class="text-right"  data-sortable="true"></th>
+                    </thead>
+                    <tbody>
+                    {% for item in orlogo %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{item.date}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.code}}</td>
+                        <td>{{item.amount}}</td>
+                        <td>{{item.bank}}</td>
+                        <td>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+    </div>
+    {{strtest}}
+</div>
+{% endblock %}

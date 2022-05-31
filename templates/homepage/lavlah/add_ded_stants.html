@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('select#select_aimag').change(function () {
+
+             var optionSelected = $(this).find("option:selected");
+             var valueSelected  = optionSelected.val();
+             data = {'code' : valueSelected };
+             {% if valueSelected != selected_station.s_aimag %}
+                $("#select_duureg option").remove().end();
+                $("#select_horoo option").remove().end();
+             {%endif %}
+
+             ajax('/home/get_duureg',data,function(result){
+                $("#select_duureg option").remove().end();
+                $("#select_horoo option").remove().end();
+                $("#select_duureg").append('<option value="">-Сонгох-</option>');
+                for (var i = result.length - 1; i >= 0; i--) {
+                    $("#select_duureg").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                };
+             });
+         });
+
+        $('select#select_duureg').change(function () {
+
+             var optionSelected = $(this).find("option:selected");
+             var valueSelected  = optionSelected.val();
+             data = {'code' : valueSelected };
+             {% if valueSelected != selected_station.s_duureg %}
+                $("#select_horoo option").remove().end();
+             {%endif %}
+             ajax('/home/get_horoo',data,function(result){
+                $("#select_horoo option").remove().end();
+                for (var i = result.length - 1; i >= 0; i--) {
+                    $("#select_horoo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                };
+             });
+         });
+    });
+</script>
+{% endblock%}
+{% block title %}Дэд станц{% endblock%}
+{% block link %}/home/lavlagaa/ded_stants{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+		<ul class="messagelist">
+			{% for message in messages %}
+			<li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+                {% if urlz == "/home/lavlagaa/add_ded_stants" %}
+	                <legend>Дэд станцын мэдээлэл бүртгэх</legend>
+	            {% else %}
+	                <legend>Дэд станцын мэдээлэл засах</legend>
+	            {%endif%}
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ангилал</label>
+                            <select name="angilal" class="selectpicker" data-title="- Сонгох -" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+                                {% for ded_stants_angilal in ded_stants_angilals %}
+                                    {% if ded_stants_angilal.id == selected_station.angilal_id %}
+                                        <option value="{{ded_stants_angilal.id}}" selected>{{ded_stants_angilal.name}}</option>
+                                    {% else %}
+                                        <option value="{{ded_stants_angilal.id}}">{{ded_stants_angilal.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Толгой дэд станц</label>
+                            <select name="ds" id="ds" class="selectpicker"
+								data-title="- Сонгох -" data-style="btn-default btn-block"
+								data-menu-style="dropdown-blue">
+                                {% for item in dedstants %}
+                                    {% if item.id|stringformat:'i'  == selected_station.etseg_ded_stants %}
+                                        <option value="{{item.id}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+							</select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Нэр</label>
+                             <input class="form-control" type="text" name="name"
+                                   value="{{selected_station.name}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Код</label>
+                             <input class="form-control" type="text" name="code"  value="{{selected_station.code}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Чадал (kBa)</label>
+                            <input class="form-control" type="text" name="chadal" value="{{selected_station.chadal}}" number="true" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хот / аймаг</label>
+                            <select name="select_aimag" id="select_aimag" class="selectpicker"
+                                    data-title="- Сонгох -" data-style="btn-default btn-block"
+                                    data-menu-style="dropdown-blue" required>
+                                {% for item in aimags %}
+                                    {% if item.code == selected_station.s_aimag %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Дүүрэг / сум</label>
+                            <select class="form-control" id="select_duureg" name="select_duureg" required>
+                                 {% for item in duuregs %}
+                                    {% if item.code == selected_station.s_duureg %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Баг / Хороо</label>
+                            <select class="form-control" id="select_horoo" name="select_horoo" required>
+                                {% for item in horoos %}
+                                    {% if item.code == selected_station.s_horoo %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-12">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Байршил</label>
+                            <input class="form-control" type="text" name="s_address"
+                                   value="{{selected_station.s_address}}"/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_ded_stants" %}
+                    <button type="submit" class="btn btn-info btn-fill" name="save">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                    <button type="submit" class="btn btn-info btn-fill" name="save">Засах</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

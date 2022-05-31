@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block link %}{% url 'orlogo_list' %}{% endblock%}
+{% block title %}Орлого засах{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card">
+        <form id="allInputsFormValidation" name="orlogo_add" class="form-horizontal" action="" method="post" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хэрэглэгчийн код</label>
+                            <input class="form-control" type="number" placeholder="Хэрэглэгчийн дугаар" name="user_code" value="{{payment_history.customer.code}}" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төлбөр хийсэн банк</label>
+                            <select class="form-control" name="select_bank"  required>
+                                <option value="">- Сонгох -</option>
+                                {% for item in banks %}
+                                    {% if item.id == payment_history.bank_id %}
+                                        <option value="{{item.id}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+
+                 <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Огноо</label>
+                            <input class="form-control datetimepicker" placeholder="Огноо" type="text" value="{{payment_history.pay_date|date:'Y-m-d'}}" name="orlogo_date" required/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төлсөн төлбөр</label>
+                            <input class="form-control" type="number" name="orlogo_total" value="{{payment_history.pay_total}}" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Овог</label>
+                            <input class="form-control" type="text" placeholder="Овог"
+                                   value="{{payment_history.customer.last_name}}" name="last_name" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Нэр</label>
+                            <input class="form-control" type="text" placeholder="Нэр"
+                                   value="{{payment_history.customer.first_name}}" name="first_name" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Регистр</label>
+                            <input class="form-control" type="text" placeholder="Регистр" value="{{payment_history.customer.register}}" name="register" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-8">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хаяг</label>
+                            <input class="form-control" type="text" placeholder="Хаяг" value="{{address}}" name="address" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="footer text-center">
+                    <button type="submit" class="btn btn-info btn-fill">Хадгалах</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

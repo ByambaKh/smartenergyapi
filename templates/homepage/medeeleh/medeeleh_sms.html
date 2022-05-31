@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}SMS-ээр мэдээлэх{% endblock%}
+{% block content %}
+{% if perms.data.view_medeelehzagvar %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li
+        {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт sms явуулах хэрэглэгчид</div>
+                <div class="content content-full-width">
+                    <form method="post" action="/home/medeeleh_sms_send">{% csrf_token %}
+                    {% if perms.data.send_sms_medeelehzagvar %}
+                    {% for phone, sms_text in data_texts %}
+                        <input type="hidden" name="phones" value="{{phone}}">
+                        <input type="hidden" name="sms_texts" value="{{sms_text}}">
+                    {% endfor %}
+                    <div class="download_button text-right">
+                        <button class="btn btn-success btn-fill" type="button" id="send"><i class="fa fa-paper-plane" aria-hidden="true"></i>Илгээх</button>
+                    </div>
+                    {% endif %}
+                    </form>
+                    <table id="bootstrap-table" class="table" style="margin-left: 10px;">
+                        <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="phone" data-sortable="true" class="text-center">Утас</th>
+                        <th data-field="text" data-sortable="true" class="text-center">SMS текст</th>
+                        </thead>
+                        <tbody>
+                        {% for phone, sms_text in sms_texts %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center">{{ phone }}</td>
+                            <td class="text-center">{{ sms_text }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block additionalblock %}
+<style>
+    tr.red{
+        background:#FB404B;
+        color: #fff;
+    }
+    tr.green{
+        background:#87CB16;
+        color: #fff;
+    }
+</style>
+ <div class="modal fade all-tailan" tabindex="-1" role="dialog" aria-labelledby="ehzh1ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Нийт явуулах мессеж <span id="all_sms"></span></h4>
+            </div>
+            <div class="modal-body" id="msgs" style="max-height: 500px; overflow-y: auto">
+                <table class="table msgtable" style="margin-left: 10px;">
+                        <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="phone" data-sortable="true" class="text-center">Утас</th>
+                        <th data-field="text" data-sortable="true" class="text-center">SMS текст</th>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var type = false;
+    $("#send").click(function(event){
+
+
+        i = 1;
+        count = 0;
+        event.preventDefault();
+        $(".all-tailan").modal();
+
+        $("#msgs table tbody").html("");
+        $("input[name=phones]").each(function( index ) {
+          //console.log($( this ).val() + ":" + $( "input[name=sms_texts]" ).eq( index ).val());
+
+          var sms = $( this ).val();
+          var text = $( "input[name=sms_texts]" ).eq( index ).val();
+          $.ajax({
+            type      : 'POST',
+            url       : '/home/medeeleh_sms_send',
+            data      : {'sms': sms, 'text': text, 'csrfmiddlewaretoken':$("input[name=csrfmiddlewaretoken]").val()},
+            dataType  : 'json',
+            success   : function(data) {
+                //type = true;
+                className = "red";
+                if(data.status){
+                    className = "green";
+                    count++;
+                }
+                $("#all_sms").text(count + "/" + $("input[name=phones]").length)
+                 $("#msgs table tbody").prepend("<tr class='"+className+"'><td class='text-center'>"+(i)+"</td><td class='text-center'>"+sms+"</td><td class='text-center'>"+text+"</td></tr>");
+                i++;
+            }
+        });
+        });
+
+    })
+</script>
+{% endblock %}

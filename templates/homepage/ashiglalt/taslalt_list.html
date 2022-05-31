@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+{% load homepage_tags %}
+{% block title %}Таслалт{% endblock%}
+{% block link %}/home/ashiglalt/taslalt_list/1/{% endblock %}
+{% block content %}
+{% if perms.data.view_tasralt %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if perms.data.add_tasralt %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/ashiglalt/taslalt_add" class="btn btn-primary btn-fill btn-wd" type="button">Таслалт бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="content content-full-width">
+                    <ul role="tablist" class="nav nav-tabs">
+                        {% if activeTab == '1' %}
+                        <li role="presentation" class="active">
+                            {% else %}
+                        <li role="presentation">
+                            {%endif%}
+                            <a href="#TASLALT" data-toggle="tab"><i class="fa fa-list"></i>Нийт бүртгэлтэй таслалт</a>
+                        </li>
+                        {% if activeTab == '2' %}
+                        <li class="active">
+                            {% else %}
+                        <li>
+                            {%endif%}
+                            <a href="#YEAR" data-toggle="tab"><i class="fa fa-calendar"></i>Товч тайлан</a>
+                        </li>
+                        <!--{% if activeTab == '3' %}-->
+                        <!--<li class="active">-->
+                            <!--{% else %}-->
+                        <!--<li>-->
+                            <!--{%endif%}-->
+                            <!--<a href="#SEASON" data-toggle="tab"><i class="fa fa-calendar"></i>{% get_current_season %}-р улирал</a>-->
+                        <!--</li>-->
+                        <!--{% if activeTab == '4' %}-->
+                        <!--<li class="active">-->
+                            <!--{% else %}-->
+                        <!--<li>-->
+                            <!--{%endif%}-->
+                            <!--<a href="#MONTH" data-toggle="tab"><i class="fa fa-calendar"></i>{% now 'm' %}-р сар</a>-->
+                        <!--</li>-->
+                    </ul>
+                    <div class="tab-content">
+                        {% if activeTab == '1' %}
+                        <div id="TASLALT" class="tab-pane active">
+                            {% else %}
+                            <div id="TASLALT" class="tab-pane">
+                                {%endif%}
+                                <form method="POST" action="/home/ashiglalt/taslalt_list/1/">
+                                    {% csrf_token %}
+                                    <div class="table_search_filter">
+                                        <div class="form-group col-md-4">
+                                            <label>Дэд станцын нэр</label>
+                                            <select name="ded_stants" class="form-control" id="ded_stants">
+                                                <option value="">Сонгох</option>
+                                                {% for ded_stant in ded_stants %}
+                                                {% if qry.ded_stants == ded_stant.id %}
+                                                <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}</option>
+                                                {% else %}
+                                                <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Шугамын нэр</label>
+                                            <select name="shugam" class="form-control" id="shugam">
+                                                <option value="">Сонгох</option>
+                                                {% if shugams is not None %}
+                                                {% for shugam in shugams %}
+                                                {% if qry.shugam == shugam.id %}
+                                                <option value="{{shugam.id}}" selected>{{shugam.shugam_ner}}</option>
+                                                {% else %}
+                                                <option value="{{shugam.id}}">{{shugam.shugam_ner}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Тасалсан огноо</label>
+                                            <input placeholder="Тасалсан огноо" type="text"
+                                                   class="form-control datetimepicker1"
+                                                   name="tasalsan_date" value="{{qry.tasalsan_date}}">
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="form-group col-md-4">
+                                            <label>Залгасан огноо</label>
+                                            <input placeholder="Залгасан огноо" type="text"
+                                                   class="form-control datetimepicker1"
+                                                   name="zalgasan_date" value="{{qry.zalgasan_date}}">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Тасалсан хугацаа /цаг/</label>
+                                            <input placeholder="Тасалсан хугацаа /цаг/" type="number"
+                                                   class="form-control" name="tasalsan_hugatsaa"
+                                                   value="{{qry.tasalsan_hugatsaa}}">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Диспетчер</label>
+                                            <select class="form-control" name="dispetcher">
+                                                <option value="">Сонгох</option>
+                                                {% for dispetcher in dispetchers %}
+                                                {% if qry.dispetcher == dispetcher.id %}
+                                                <option value="{{dispetcher.id}}" selected>{{dispetcher.first_name}}
+                                                    {{dispetcher.last_name}}
+                                                </option>
+                                                {% else %}
+                                                <option value="{{dispetcher.id}}">{{dispetcher.first_name}}
+                                                    {{dispetcher.last_name}}
+                                                </option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="col-md-12 text-center">
+                                            <button class="btn btn-warning btn-fill btn-wd" type="submit">Шүүж харах</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <table id="bootstrap-table1" class="table">
+                                    <thead>
+                                    <th class="text-center">№</th>
+                                    <th data-field="ded_stants" data-sortable="true" class="text-left">Дэд
+                                        станц
+                                    </th>
+                                    <th data-field="shugam" data-sortable="true" class="text-left">Шугам</th>
+                                    <th data-field="amper" data-sortable="true" class="text-center">Гүйдэл</th>
+                                    <th data-field="voltage" data-sortable="true" class="text-center">Хүчдэл
+                                    </th>
+                                    <th data-field="power" data-sortable="true" class="text-center">Чадал</th>
+                                    <th data-field="tasalsan_date" data-sortable="true" class="text-left">
+                                        Тасалсан огноо
+                                    </th>
+                                    <th data-field="zalgasan_date" data-sortable="true" class="text-left">
+                                        Залгасан огноо
+                                    </th>
+                                    <th data-field="tasalsan_hugatsaa" data-sortable="true" class="text-left">
+                                        Тасалсан хугацаа
+                                    </th>
+                                    <th data-field="dutuu_tugeesen" data-sortable="true" class="text-left">Дутуу
+                                        түгээсэн
+                                    </th>
+                                    <th data-field="taslalt_shaltgaan" data-sortable="true" class="text-left">
+                                        Таслалтын шалтгаан
+                                    </th>
+                                    <th data-field="dispetcher" data-sortable="true" class="text-left">
+                                        Диспетчер
+                                    </th>
+                                    <th class="td-actions text-right">Засвар</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for detail in taslalt_list %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ detail.ded_stants_name }}</td>
+                                        <td>{{ detail.shugam_ner }}</td>
+                                        <td>{{ detail.amper }} А</td>
+                                        <td>{{ detail.voltage }} В</td>
+                                        <td>{{ detail.chadal }} кВт</td>
+                                        <td>{{ detail.tasalsan_date|date:"Y-m-d H:i" }}</td>
+                                        <td>{{ detail.zalgasan_date|date:"Y-m-d H:i" }}</td>
+                                        <td>{{ detail.tasalsan_hugatsaa }} цаг</td>
+                                        <td>{{ detail.dutuu_tugeesen }} кВт/цаг</td>
+                                        <td>{{ detail.taslalt_shaltgaan }}</td>
+                                        <td>{{ detail.dispetcher.first_name }} {{ detail.dispetcher.last_name }}</td>
+                                        <td class="td-actions text-right">
+                                            {% if perms.data.change_tasralt %}
+                                            <a href="/home/ashiglalt/taslalt_edit/{{detail.id}}/"
+                                               class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            {% endif %}
+                                            {% if perms.data.delete_tasralt %}
+                                            <a href="/home/ashiglalt/taslalt_del/{{detail.id}}/"
+                                               onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                               class="btn btn-simple btn-danger btn-icon table-action remove">
+                                                <i class="fa fa-remove"></i>
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="clearfix"></div>
+                            </div>
+                            {% if activeTab == '2' %}
+                            <div id="YEAR" class="tab-pane active">
+                                {% else %}
+                                <div id="YEAR" class="tab-pane">
+                                    {%endif%}
+                                    <div class="text-right">
+                                        <a href="{% url 'taslalt_list_xls' %}" class="btn btn-success btn-fill btn-wd" type="button"><span class="fa fa-file-excel-o"></span>Файлаар татах</a>
+                                    </div><div class="clearfix"></div>
+
+                                    <div class="card">
+                                        <div style="font-size:15pt; margin-left:10px; margin-top:10px;">НИЙТ</div><br/>
+                                        <div class="col-md-4">
+                                            <div class="card" style="padding-left:10px; padding-button:5px;">
+                                                <div class="text-center" style="font-size:15pt;">{% now 'Y' %} он</div><br/>
+                                                {% for taslalt_year in taslalts_year  %}
+                                                <label class="control-label">Нийт таларсан тоо : </label> {{taslalt_year.too}}<br/>
+                                                <label class="control-label">Нийт таларсан хугацаа : </label> {{taslalt_year.hugatsaa}} цаг<br/>
+                                                <label class="control-label">Нийт чадал : </label> {{taslalt_year.chadal}} кВт<br/>
+                                                <label class="control-label">Нийт дутуу түгээсэн ЭХ : </label> {{taslalt_year.dutuu}} кВт/цаг<br/>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card" style="padding-left:10px;">
+                                                <div class="text-center" style="font-size:15pt;">{% get_current_season %}-р улирал</div><br/>
+                                                {% for taslalt_season in taslalts_season  %}
+                                                <label class="control-label">Нийт тасалсан тоо : </label> {{taslalt_season.too}}<br/>
+                                                <label class="control-label">Нийт тасалсан хугацаа : </label> {{taslalt_season.hugatsaa}} цаг<br/>
+                                                <label class="control-label">Нийт чадал : </label> {{taslalt_season.chadal}} кВт<br/>
+                                                <label class="control-label">Нийт дутуу түгээсэн ЭХ : </label> {{taslalt_season.dutuu}} кВт/цаг<br/>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card" style="padding-left:10px; padding-button:5px;">
+                                                <div class="text-center" style="font-size:15pt;">{% now 'm' %}-р сар</div><br/>
+                                                {% for taslalt_month in taslalts_month  %}
+                                                <label class="control-label">Нийт тасалсан тоо : </label> {{taslalt_month.too}}<br/>
+                                                <label class="control-label">Нийт тасалсан хугацаа : </label> {% if taslalt_month.hugatsaa %}{{taslalt_month.hugatsaa}}{%else%}0{%endif%} цаг<br/>
+                                                <label class="control-label">Нийт чадал : </label> {% if taslalt_month.chadal %}{{taslalt_month.chadal}}{%else%}0{%endif%} кВт<br/>
+                                                <label class="control-label">Нийт дутуу түгээсэн ЭХ : </label> {% if taslalt_month.dutuu %}{{taslalt_month.dutuu}}{%else%}0{%endif%} кВт/цаг<br/>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div class="card">
+                                        <div style="font-size:15pt; margin-left:10px; margin-top:10px;">ДЭД СТАНЦ</div><br/>
+                                        {% for dedstants_id in dedstants_ids %}
+                                        <div class="text-center" style="font-size:15pt; text-decoration: underline;">{% get_dedstants_name dedstants_id %}</div><br/>
+                                        <div class="col-md-4">
+                                            <div class="card" style="padding-left:10px; padding-button:5px;">
+                                                <div class="text-center" style="font-size:15pt;">{% now 'Y' %} он</div><br/>
+                                                {% item_by_index year_taslalts_ded forloop.counter as year_taslalts_deds %}
+                                                <label class="control-label">Нийт тасалсан тоо : </label> {% if year_taslalts_deds.too %}{{year_taslalts_deds.too}}{%else%}0{%endif%}<br/>
+                                                <label class="control-label">Нийт тасалсан хугацаа : </label> {% if year_taslalts_deds.hugatsaa %}{{year_taslalts_deds.hugatsaa}}{%else%}0{%endif%} цаг<br/>
+                                                <label class="control-label">Нийт чадал : </label> {% if year_taslalts_deds.chadal %}{{year_taslalts_deds.chadal}}{%else%}0{%endif%} кВт<br/>
+                                                <label class="control-label">Нийт дутуу түгээсэн ЭХ : </label> {% if year_taslalts_deds.dutuu %}{{year_taslalts_deds.dutuu}}{%else%}0{%endif%} кВт/цаг<br/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card" style="padding-left:10px; padding-button:5px;">
+                                                <div class="text-center" style="font-size:15pt;">{% get_current_season %}-р улирал</div><br/>
+                                                {% item_by_index season_taslalts_ded forloop.counter as season_taslalts_deds %}
+                                                <label class="control-label">Нийт тасалсан тоо : </label> {% if season_taslalts_deds.too %}{{season_taslalts_deds.too}}{%else%}0{%endif%}<br/>
+                                                <label class="control-label">Нийт тасалсан хугацаа : </label> {% if season_taslalts_deds.hugatsaa %}{{season_taslalts_deds.hugatsaa}}{%else%}0{%endif%} цаг<br/>
+                                                <label class="control-label">Нийт чадал : </label> {% if season_taslalts_deds.chadal %}{{season_taslalts_deds.chadal}}{%else%}0{%endif%} кВт<br/>
+                                                <label class="control-label">Нийт дутуу түгээсэн ЭХ : </label> {% if season_taslalts_deds.dutuu %}{{season_taslalts_deds.dutuu}}{%else%}0{%endif%} кВт/цаг<br/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card" style="padding-left:10px; padding-button:5px;">
+                                                <div class="text-center" style="font-size:15pt;">{% now 'm' %}-р сар</div><br/>
+                                                {% item_by_index month_taslalts_ded forloop.counter as month_taslalts_deds %}
+                                                <label class="control-label">Нийт тасалсан тоо : </label> {% if month_taslalts_deds.too %}{{month_taslalts_deds.too}}{%else%}0{%endif%}<br/>
+                                                <label class="control-label">Нийт тасалсан хугацаа : </label> {% if month_taslalts_deds.hugatsaa %}{{month_taslalts_deds.hugatsaa}}{%else%}0{%endif%} цаг<br/>
+                                                <label class="control-label">Нийт чадал : </label> {% if month_taslalts_deds.chadal %}{{month_taslalts_deds.chadal}}{%else%}0{%endif%} кВт<br/>
+                                                <label class="control-label">Нийт дутуу түгээсэн ЭХ : </label> {% if month_taslalts_deds.dutuu %}{{month_taslalts_deds.dutuu}}{%else%}0{%endif%} кВт/цаг<br/>
+                                            </div>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <!--{% if activeTab == '3' %}-->
+                                <!--<div id="SEASON" class="tab-pane active">-->
+                                    <!--{% else %}-->
+                                    <!--<div id="SEASON" class="tab-pane">-->
+                                        <!--{%endif%}-->
+
+                                        <!--<div class="clearfix"></div>-->
+                                    <!--</div>-->
+                                    <!--{% if activeTab == '4' %}-->
+                                    <!--<div id="MONTH" class="tab-pane active">-->
+                                        <!--{% else %}-->
+                                        <!--<div id="MONTH" class="tab-pane">-->
+                                            <!--{%endif%}-->
+
+                                            <!--<div class="clearfix"></div>-->
+                                        <!--</div>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{% endif %}
+{% endblock %}

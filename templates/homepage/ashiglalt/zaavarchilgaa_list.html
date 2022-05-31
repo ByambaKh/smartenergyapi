@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load homepage_tags %}
+{% block title %}Зааварчилгаа{% endblock%}
+{% block link %}/home/ashiglalt/zaavarchilgaa_list{% endblock %}
+{% block content %}
+{% if perms.data.view_ashiglaltzaavarchilgaa %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if perms.data.add_ashiglaltzaavarchilgaa %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/ashiglalt/zaavarchilgaa_add" class="btn btn-primary btn-fill btn-wd" type="button">Зааварчилгаа бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/ashiglalt/zaavarchilgaa_list">
+                        {% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Заавар өгсөн</label>
+                                <select class="form-control" name="zaavar_ugsun">
+                                    <option value="">Сонгох</option>
+                                    {% for ugsun in ugsuns %}
+                                    {% if qry.zaavar_ugsun == ugsun.id %}
+                                        <option value="{{ugsun.id}}" selected>{{ugsun.first_name}} {{ugsun.last_name}}</option>
+                                    {% else %}
+                                        <option value="{{ugsun.id}}">{{ugsun.first_name}} {{ugsun.last_name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Эхлэх огноо</label>
+                                <input type="text" class="form-control datetimepicker" placeholder="Эхлэх огно" name="start_ognoo" id="start_ognoo" value="{{qry.start_ognoo}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Дуусах огноо</label>
+                                <input type="text" class="form-control datetimepicker" placeholder="Дуусах огноо" name="end_ognoo" id="end_ognoo" value="{{qry.end_ognoo}}">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd" type="submit">Шүүж харах</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+
+                    <form action="/home/ashiglalt/zaavarchilgaa_list/taniltsah" method="post">
+                    {% csrf_token %}
+
+                    {% if zaavarchilgaas %}
+                    <div class="download_button text-right">
+                        <button type="submit" class="btn btn-success btn-fill">
+                            <span class="fa fa-check-square-o"></span>Танилцах
+                        </button>
+                    </div>
+                    {% endif %}
+
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                            <th class="text-center">№</th>
+                            <th data-field="zaavar_ugsun" data-sortable="true" class="text-left">Заавар өгсөн</th>
+                            <th data-field="zaavar_avsan" data-sortable="true" class="text-left">Заавар авсан</th>
+                            <th data-field="ognoo" data-sortable="true" class="text-center">Огноо</th>
+                            <th data-field="title" data-sortable="true" class="text-center">Гарчиг</th>
+                            <th data-field="taniltssan_eseh" data-sortable="true" class="text-center">Танилцсан эсэх</th>
+                            <th class="td-actions text-right">Засвар</th>
+                        </thead>
+                        <tbody>
+                        {% for zaavarchilgaa in zaavarchilgaas %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ zaavarchilgaa.zaavar_ugsun.first_name }} {{ zaavarchilgaa.zaavar_ugsun.last_name }}</td>
+                            <td>
+                                {% for zaavar_avsan in zaavarchilgaa.zaavar_avsan_list %}
+                                {% if forloop.last %}
+                                    {{ zaavar_avsan.first_name }} {{ zaavar_avsan.last_name }}
+                                {% else %}
+                                    {{ zaavar_avsan.first_name }} {{ zaavar_avsan.last_name }}<br/>
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{ zaavarchilgaa.ognoo|date:'Y-m-d H:i' }}</td>
+                            <td>
+                                {% for zaavar_title in zaavarchilgaa.zaavarchilgaa_list %}
+                                {% if forloop.last %}
+                                    {{ zaavar_title.title }}
+                                {% else %}
+                                    {{ zaavar_title.title }}<br/>
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if zaavarchilgaa.zaavar_ugsun.id != request.user.id %}
+                                    {% for zaavar_avsan in zaavarchilgaa.zaavar_avsan_list %}
+                                    {% if zaavar_avsan.id == request.user.id %}
+                                        {% get_zaavar_taniltssan_eseh zaavarchilgaa.id request.user.id as taniltssan_eseh %}
+                                        {% if taniltssan_eseh == '0' %}
+                                            <input type="checkbox" name="zaavarchilgaa_id" value="{{zaavarchilgaa.id}}">
+                                        {% else %}
+                                            Танилцсан
+                                        {% endif %}
+                                    {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    {% all_zaavar_taniltssan_eseh zaavarchilgaa.id as all_taniltssan_eseh %}
+                                    {% if all_taniltssan_eseh == 1 %}
+                                        Бүгд танилцсан
+                                    {% else %}
+                                        Бүгд танилцаагүй
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td class="td-actions text-right">
+                                {% if zaavarchilgaa.zaavar_ugsun.id == request.user.id %}
+                                    {% all_zaavar_taniltssan_eseh zaavarchilgaa.id as all_taniltssan_eseh %}
+                                    {% if all_taniltssan_eseh != 1 %}
+                                    {% if perms.data.change_ashiglaltzaavarchilgaa %}
+                                    <a href="/home/ashiglalt/zaavarchilgaa_edit/{{zaavarchilgaa.id}}/"
+                                       class="btn btn-simple btn-warning btn-icon table-action edit">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if perms.data.delete_ashiglaltzaavarchilgaa %}
+                                    <a href="/home/ashiglalt/zaavarchilgaa_del/{{zaavarchilgaa.id}}/"
+                                       onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                       class="btn btn-simple btn-danger btn-icon table-action remove">
+                                        <i class="fa fa-remove"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

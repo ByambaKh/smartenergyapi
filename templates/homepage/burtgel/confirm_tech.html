@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+{% block title %}Техникийн нөхцөл{% endblock%}
+{% block content %}
+    <div class="container-fluid">
+        <div class="card">
+            <form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">
+                {% csrf_token %}
+                <div class="content">
+                    <legend>Техникийн нөхцөл гаргуулах хүсэлт</legend>
+                    <div class="col-md-6">
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хүсэлт гаргаж буй байгууллага, иргэний нэр</label>
+                                <input class="form-control" type="text" name="name" value="{{requests.name}}" disabled/>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хүсэлт гаргаж буй байгууллага, иргэний хаяг</label>
+							    <textarea class="form-control" rows="2" name="address" value="{{requests.address}}" disabled ></textarea>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хүсэлт гаргаж буй байгууллага, иргэний утас</label>
+                                <input class="form-control" type="tel" name="phone" value="{{requests.phone}}" disabled/>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Объектийн байршил, хаягийн тодорхойлолт</label>
+							    <textarea class="form-control" rows="2" name="obj_address" value="{{requests.obj_address}}" disabled ></textarea>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Техникийн нөхцөл авах шалтгаан</label>
+							    <textarea class="form-control" rows="2" name="tech_shaltgaan" value="{{requests.tech_shaltgaan}}" disabled ></textarea>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Өргөдөл</label>
+							    <textarea class="form-control" rows="3" name="urgudul" value="{{requests.urgudul}}" disabled ></textarea>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хэрэглэгчийн зэрэглэл</label>
+                                <input class="form-control" type="text" name="zereglel" value="{{requests.zereglel}}" disabled/>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">ЦЭХ-ний тооцоо хийх хэлбэр</label>
+
+                                {% if requests.tseh_tulbur == "0" %}
+                                    <input class="form-control" type="text" name="tseh_tulbur" value="Бэлнээр" disabled/>
+                                {% endif %}
+                                {% if requests.tseh_tulbur == "1" %}
+                                    <input class="form-control" type="text" name="tseh_tulbur" value="Дансаар" disabled/>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Хэрэглэгчийн ажлын горим</label>
+
+                                {% if requests.ajil_gorim == "0" %}
+                                    <input class="form-control" type="text" name="ajil_gorim" value="Өдөр" disabled/>
+                                {% endif %}
+                                {% if requests.ajil_gorim == "1" %}
+                                    <input class="form-control" type="text" name="ajil_gorim" value="Шөнө" disabled/>
+                                {% endif %}
+                                {% if requests.ajil_gorim == "2" %}
+                                    <input class="form-control" type="text" name="ajil_gorim" value="24 цагаар" disabled/>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="col-md-8">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Өргөтгөх огноо</label>
+                                    <input class="form-control" type="text" name="urgutguh_eseh_date" value="{{requests.urgutguh_eseh_date|date:'Y-m-d'}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Газрын зөвшөөрлийн дугаар</label>
+                                    <input class="form-control" type="text" name="gazar_zuv_dugaar" value="{{requests.gazar_zuv_dugaar}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Ү/Ү/Я зөвшөөрлийн дугаар</label>
+                                    <input class="form-control" type="text" name="ua_zuv_dugaar" value="{{requests.ua_zuv_dugaar}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Цахилгаан хөдөлгүүрийн тоо</label>
+                                    <input class="form-control" type="text" name="tsah_hud_too" value="{{requests.tsah_hud_too}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Цахилгаан халаах хэрэгслийн тоо</label>
+                                    <input class="form-control" type="text" name="hal_her_too" value="{{requests.hal_her_too}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Гэрэлтүүлгийн тоо</label>
+                                    <input class="form-control" type="text" name="gerel_too" value="{{requests.gerel_too}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Гагнуурын аппаратны тоо</label>
+                                    <input class="form-control" type="text" name="gag_ap_too" value="{{requests.gag_ap_too}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Бусад цахилгаан багаж төхөөрөмжийн тоо</label>
+                                    <input class="form-control" type="text" name="bus_tsah_too" value="{{requests.bus_tsah_too}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Тооцооны нийт чадал</label>
+                                    <input class="form-control" type="text" name="toots_niit_chadal" value="{{requests.toots_niit_chadal}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Тодруулах хуудас бичсэн</label>
+                                    <input class="form-control" type="text" name="tod_hud_name" value="{{requests.tod_hud_name}}" disabled/>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">- Чадал</label>
+                                    <input class="form-control" type="text" name="urgutguh_eseh_chadal" value="{{requests.urgutguh_eseh_chadal}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">- Огноо</label>
+                                    <input class="form-control" type="text" name="gazar_zuv_date" value="{{requests.gazar_zuv_date|date:'Y-m-d'}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">- Огноо</label>
+                                    <input class="form-control" type="text" name="ua_zuv_date" value="{{requests.ua_zuv_date|date:'Y-m-d'}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">- Чадал</label>
+                                    <input class="form-control" type="text" name="tsah_hud_chadal" value="{{requests.tsah_hud_chadal}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">- Чадал</label>
+                                    <input class="form-control" type="text" name="hal_her_chadal" value="{{requests.hal_her_chadal}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">- Чадал</label>
+                                    <input class="form-control" type="text" name="gerel_chadal" value="{{requests.gerel_chadal}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">- Чадал</label>
+                                    <input class="form-control" type="text" name="gag_ap_chadal" value="{{requests.gag_ap_chadal}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">- Чадал</label>
+                                    <input class="form-control" type="text" name="bus_tsah_chadal" value="{{requests.bus_tsah_chadal}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Суурилагдсан чадал</label>
+                                    <input class="form-control" type="text" name="niit_suuri_chadal" value="{{requests.niit_suuri_chadal}}" disabled/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">- Албан тушаал</label>
+                                    <input class="form-control" type="text" name="tod_hud_position" value="{{requests.tod_hud_position}}" disabled/>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <legend>Хавсаргасан файлууд</legend>
+
+                    <div class="col-md-12">
+
+                        {% if requests.ger_unem_file != "" %}
+                            <fieldset>
+                                <div class="form-group">
+                                    <a href="/media/{{requests.ger_unem_file}}">Гэрчилгээ</a>
+                                </div>
+                            </fieldset>
+                        {% endif %}
+                        {% if requests.obj_todor_file != "" %}
+                            <fieldset>
+                                <div class="form-group">
+                                    <a href="/media/{{requests.obj_todor_file}}">Обьектын тодорхойлолт</a>
+                                </div>
+                            </fieldset>
+                        {% endif %}
+                        {% if requests.gazar_zuv_file != "" %}
+                            <fieldset>
+                                <div class="form-group">
+                                    <a href="/media/{{requests.gazar_zuv_file}}">Газрын зөвшөөрөл файл</a>
+                                </div>
+                            </fieldset>
+                        {% endif %}
+                        {% if requests.ua_zuv_file != "" %}
+                            <fieldset>
+                                <div class="form-group">
+                                    <a href="/media/{{requests.ua_zuv_file}}">Үйлдвэрлэл үйлчилгээ явуулах зөвшөөрөл файл</a>
+                                </div>
+                            </fieldset>
+                        {% endif %}
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    {% if perms.data.change_technicalproposal and is_edit == '1'%}
+
+                    <legend>Техникийн нөхцөл баталгаажуулах</legend>
+
+                    <div class="col-md-12">
+
+                        <div class="col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Техникийн нөхцлийн дугаар</label>
+                                    <input class="form-control" type="text" name="tech_number" maxlength="40" required/>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Дэд станц</label>
+                                    <select name="tech_dedstants" class="selectpicker" data-title="- Сонгох -"
+                                            data-style="btn-default btn-block" data-menu-style="dropdown-blue"
+                                            id="tech_ded" required>
+                                        {% for item in dedstants %}
+                                            <option value={{ item.id }}>{{ item.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Техникийн нөхцөл олгосон огноо</label>
+                                    <input type="date" class="form-control datetimepicker" name="approve_date" required />
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Үйл ажиллагааны чиглэл</label>
+                                    <input class="form-control" type="text" name="zoriulalt" required/>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Зөвшөөрсөн чадал</label>
+                                    <input class="form-control" type="text" name="approve_chadal" required/>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <div class="footer text-center">
+                            <button type="submit" class="btn btn-info btn-fill">Баталгаажуулах</button>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock%}

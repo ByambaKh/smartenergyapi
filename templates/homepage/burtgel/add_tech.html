@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Техникийн нөхцөл{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+                <legend>Техникийн нөхцөл бүртгэх</legend>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Техникийн нөхцлийн дугаар</label>
+                            <input class="form-control" type="text" name="tech_code" value="{{tech.tech_code}}" required/>
+                        </div>
+                    </fieldset>
+                     <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хэрэглэгчийн нэр</label>
+                            <input class="form-control" type="text" name="tech_name" maxlength="200" value="{{tech.tech_name}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Утасны дугаар</label>
+                            <input class="form-control" type="tel" name="tech_utas"
+                                   maxlength="40" value="{{tech.tech_utas}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Хаяг</label>
+							<textarea class="form-control" rows="3" name="tech_address" required>{{tech.tech_address}}</textarea>
+						</div>
+					</fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ажил үйлчилгээний зориулалт</label>
+                            <input class="form-control" type="text" name="zoriulalt" maxlength="200" value="{{tech.zoriulalt}}" required/>
+                        </div>
+                    </fieldset>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хүссэн чадал</label>
+                            <input class="form-control" type="number" name="req_chadal"
+                                   value="{{tech.req_chadal}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хүсэлт ирсэн огноо</label>
+                            <input type="text" class="form-control datetimepicker" name="req_date" value="{{req_date}}" required />
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Суурилагдсан чадал</label>
+                            <input class="form-control" type="number" name="approve_chadal" value="{{tech.approve_chadal}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Техникийн нөхцөл олгосон огноо</label>
+                            <input type="text" class="form-control datetimepicker" name="approve_date" value="{{approve_date}}" required />
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Дэд станц</label>
+                            <select name="dedstants" class="selectpicker" data-title="- Сонгох -"
+                                    data-style="btn-default btn-block" data-menu-style="dropdown-blue"
+                                    id="tech_ded" required>
+                                {% for element in dedstants %}
+                                    {% if tech.dedstants != None %}
+                                        {% if element.id == tech.dedstants.id %}
+                                        <option value={{ element.id }} selected>{{element.name}}</option>
+                                        {% else %}
+                                        <option value={{ element.id }}>{{ element.name }}</option>
+                                        {% endif %}
+                                    {% else %}
+                                    <option value={{ element.id }}>{{ element.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Файл хавсаргах</label>
+                            <select name="file" class="selectpicker" data-title="- Сонгох -"
+                                    data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+                                {% for item in files %}
+                                    {% if tech.file != None %}
+                                        {% if item.id == tech.file.id %}
+                                        <option value="{{item.id}}" selected>{{item.name}}</option>
+                                        {% else %}
+                                        <option value="{{item.id}}">{{item.name}}2</option>
+                                        {% endif %}
+                                    {% else %}
+                                    <option value="{{item.id}}">{{item.name}}1</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill">Хадгалах</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

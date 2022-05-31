@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Хүчдэлийн трансформатор
+{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if perms.data.add_transformator %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/lavlagaa/add_huchdeliin_trans" class="btn btn-primary btn-fill btn-wd" type="button">Хүчдэлийн трансформатор бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй хүчдэлийн трансформаторууд</div>
+
+                <div class="content content-full-width">
+
+                    <form method="POST" action="/home/lavlagaa/huchdeliin_trans">{% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Дэд станцын нэр</label>
+                                <input placeholder="Дэд станцын нэр" class="form-control" name="name"
+                                       value="{{search_q.name}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Тип-Марк</label>
+                                <input placeholder="Марк" class="form-control" name="tip"
+                                       value="{{search_q.tip}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>ХТ-н дугаар</label>
+                                <input placeholder="Сериал дугаар" class="form-control" name="number"
+                                       value="{{search_q.number}}">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-4">
+                                <label>Нэршил</label>
+                                <input placeholder="Нэршил" class="form-control" name="trans_name"
+                                       value="{{search_q.trans_name}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Трансформацлах коэфицент</label>
+                                <input placeholder="Трансформацлах коэфицент" class="form-control" name="coefficient"
+                                       value="{{search_q.coefficient}}">
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd" type="submit">Шүүж харах</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </form>
+
+                    <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                        <thead>
+                        <th class="text-center">№</th>
+                        <th data-field="name" data-sortable="true" class="text-left">Дэд станцын нэр</th>
+                        <th data-field="tip" data-sortable="true" class="text-left">Марк</th>
+                        <th data-field="number" data-sortable="true" class="text-right">Сериал дугаар</th>
+                        <th data-field="trans_name" data-sortable="true" class="text-right">Нэршил</th>
+                        <th data-field="multiply_coef" data-sortable="true" class="text-right">Үржүүлэх коэфицент</th>
+                        <th data-field="coefficient" data-sortable="true" class="text-right">Трансформацлах коэфицент
+                        </th>
+                        <th class="text-center">Засвар</th>
+                        </thead>
+                        <tbody>
+                        {% for detail in datas %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ detail.ds_name }}</td>
+                            <td>{{ detail.mark_name }}</td>
+                            <td>{{ detail.number}}</td>
+                            {% if detail.trans_name == None %}
+                                <td> - </td>
+                            {% else %}
+                                <td>{{ detail.trans_name}}</td>
+                            {%endif%}
+                            <td>{{ detail.multiply_coef|floatformat:"0" }}</td>
+                            <td>{{ detail.coefficient }}</td>
+                            <td class="td-actions text-center">
+                                {% if perms.data.change_transformator %}
+                                <a href="/home/lavlagaa/huchdel_edit/{{detail.id}}/"
+                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                {% endif %}
+                                {% if perms.data.delete_transformator %}
+                                <a href="/home/lavlagaa/huchdel_del/{{detail.id}}/"
+                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

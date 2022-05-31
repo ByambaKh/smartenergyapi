@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %}Нарядын мэдээлэл{% endblock%}
+{% block link %}/home/ashiglalt/naryad_medeelel_list{% endblock %}
+{% block content %}
+{% if perms.data.view_naryadmedeelel %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if perms.data.add_naryadmedeelel %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/ashiglalt/naryad_medeelel_add" class="btn btn-primary btn-fill btn-wd" type="button">Нарядын мэдээлэл бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/ashiglalt/naryad_medeelel_list">
+                        {% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Дэд станц</label>
+                                <select name="ded_stants" class="form-control">
+                                    <option value="">Сонгох</option>
+                                    {% for ded_stant in ded_stants %}
+                                    {% if qry.ded_stants == ded_stant.id %}
+                                    <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}</option>
+                                    {% else %}
+                                    <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+							<div class="form-group col-md-4">
+                                <label>Ажлын нэр</label>
+                                <input type="text" class="form-control" placeholder="Ажлын нэр" name="ajil_name" value="{{qry.ajil_name}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Ажил эхэлсэн огноо</label>
+                                <input type="text" class="form-control datetimepicker1" placeholder="Ажил эхэлсэн огноо" name="ajil_start_date" value="{{qry.ajil_start_date}}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Ажил дууссан огноо</label>
+                                <input type="text" class="form-control datetimepicker1" placeholder="Ажил дууссан огноо" name="ajil_end_date" value="{{qry.ajil_end_date}}">
+                            </div>
+							<div class="form-group col-md-4">
+                                <label>Наряд олгогч</label>
+                                <select class="form-control" name="naryad_olgogch">
+                                    <option value="">Сонгох</option>
+                                    {% for naryad_member in naryad_members %}
+                                    {% if qry.naryad_olgogch == naryad_member.id %}
+                                    <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% else %}
+                                    <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+							<div class="form-group col-md-4">
+                                <label>Зөвшөөрөл олгогч</label>
+                                <select class="form-control" name="zuv_olgogch">
+                                    <option value="">Сонгох</option>
+                                    {% for naryad_member in naryad_members %}
+                                    {% if qry.zuv_olgogch == naryad_member.id %}
+                                    <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% else %}
+                                    <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+							<div class="form-group col-md-4">
+                                <label>Удирдагч</label>
+                                <select class="form-control" name="udirdagch">
+                                    <option value="">Сонгох</option>
+                                    {% for naryad_member in naryad_members %}
+                                    {% if qry.udirdagch == naryad_member.id %}
+                                    <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% else %}
+                                    <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+							<div class="form-group col-md-4">
+                                <label>Гүйцэтгэгч</label>
+                                <select class="form-control" name="guitsedgegch">
+                                    <option value="">Сонгох</option>
+                                    {% for naryad_member in naryad_members %}
+                                    {% if qry.guitsedgegch == naryad_member.id %}
+                                    <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% else %}
+                                    <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+							<div class="form-group col-md-4">
+                                <label>Ажилд оруулагч</label>
+                                <select class="form-control" name="ajil_oruulagch">
+                                    <option value="">Сонгох</option>
+                                    {% for naryad_member in naryad_members %}
+                                    {% if qry.ajil_oruulagch == naryad_member.id %}
+                                    <option value="{{naryad_member.id}}" selected>{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% else %}
+                                    <option value="{{naryad_member.id}}">{{naryad_member.first_name}} {{naryad_member.last_name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd" type="submit">Шүүж харах</button>
+                            </div>
+                        </div>
+                    </form>
+                    <table id="bootstrap-table" class="table">
+                        <thead>
+                        <th class="text-center">№</th>
+                        <th data-field="ded_stants_name" data-sortable="true" class="text-left">Дэд станц</th>
+                        <th data-field="naryad_dugaar" data-sortable="true" class="text-center">Нарядын дугаар</th>
+                        <th data-field="ajil_name" data-sortable="true" class="text-center">Ажлын нэр</th>
+                        <th data-field="ajil_start_date" data-sortable="true" class="text-center">Ажил эхэлсэн огноо</th>
+                        <th data-field="ajil_end_date" data-sortable="true" class="text-center">Ажил дууссан огноо</th>
+                        <th data-field="ayulgui_baidal" data-sortable="true" class="text-center">Ажлын аюулгүй байдал</th>
+						<th data-field="narolg_first_name" data-sortable="true" class="text-center">Наряд олгогч</th>
+                        <th data-field="udird_first_name" data-sortable="true" class="text-center">Удирдагч</th>
+                        <th data-field="guitsed_first_name" data-sortable="true" class="text-center">Гүйцэтгэгч</th>
+						<th data-field="ajig_first_name" data-sortable="true" class="text-center">Ажиглагч</th>
+                        <th data-field="zuvolg_first_name" data-sortable="true" class="text-center">Зөвшөөрөл олгогч</th>
+                        <th data-field="oruul_first_name" data-sortable="true" class="text-center">Ажилд оруулагч</th>
+						<th data-field="" data-sortable="true" class="text-center">Бригадын гишүүд</th>
+                        <th class="td-actions text-right">Засвар</th>
+                        </thead>
+                        <tbody>
+                        {% for detail in naryad_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ detail.ded_stants_name }}</td>
+                            <td>{{ detail.naryad_dugaar }}</td>
+							<td>{{ detail.ajil_name }}</td>
+							<td>{{ detail.ajil_start_date|date:'Y-m-d H:i' }}</td>
+							<td>{{ detail.ajil_end_date|date:'Y-m-d H:i' }}</td>
+                            <td>{% if detail.ayulgui_baidal %}{{ detail.ayulgui_baidal }}{% endif %}</td>
+							<td>{{ detail.narolg_first_name }} {{ detail.narolg_last_name }}</td>
+							<td>{{ detail.udird_first_name }} {{ detail.udird_last_name }}</td>
+							<td>{{ detail.guitsed_first_name }} {{ detail.guitsed_last_name }}</td>
+							<td>{% if detail.ajig_first_name %}{{ detail.ajig_first_name }} {{ detail.ajig_last_name }}{% endif %}</td>
+							<td>{{ detail.zuvolg_first_name }} {{ detail.zuvolg_last_name }}</td>
+							<td>{{ detail.oruul_first_name }} {{ detail.oruul_last_name }}</td>
+							<td>
+                                {% for member in detail.brigad_members_list %}
+                                    {{member.last_name}} {{member.first_name}},<br/>
+                                {% endfor %}
+                                {% for other_member in detail.other_members_list %}
+                                {% if forloop.last %}
+                                    {{other_member}}
+                                {% else %}
+                                    {{other_member}},<br/>
+                                {% endif %}
+                                {% endfor %}
+							</td>
+                            <td class="td-actions text-right">
+                                {% if perms.data.change_naryadmedeelel %}
+                                <a href="/home/ashiglalt/naryad_medeelel_edit/{{detail.id}}/"
+                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                {% endif %}
+                                {% if perms.data.delete_naryadmedeelel %}
+                                <a href="/home/ashiglalt/naryad_medeelel_del/{{detail.id}}/"
+                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

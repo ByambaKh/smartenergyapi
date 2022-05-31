@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %}Оролт гаралт{% endblock %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('select#select_angilal').change(function () {
+
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            data = {'code' : valueSelected };
+            if(valueSelected == 0) {
+                $("#user_label").text("Дэд станц");
+            }
+            if(valueSelected == 1) {
+                $("#user_label").text("Хэрэглэгч");
+            }
+            if(valueSelected == 2) {
+                $("#user_label").text("Байр");
+            }
+            $("#select_customer option").remove().end();
+            $("#select_customer").append('<option>- Сонгох -</option>');
+            ajax('/home/get_cus',data,function(result){
+                $("#select_customer option").remove().end();
+                $("#select_customer").append('<option>- Сонгох -</option>');
+                for (var i = 0; i < result.length; i++) {
+                    if(valueSelected == 1) {
+                        $("#select_customer").append('<option value="'+ result[i].id +'">'+ result[i].code +'</option>');
+                    }
+                    else {
+                        $("#select_customer").append('<option value="'+ result[i].id +'">'+ result[i].name +'</option>');
+                    }
+                };
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="row">
+
+        <div class="col-md-12">
+            <a href="/home/add_orolt_garalt" class="btn btn-primary btn-fill btn-wd"
+                type="button">Оролт гаралт бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+			<div class="card">
+				<div class="header">Оролт гаралт мэдээлэл хайх</div>
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/geree_list/1/">{% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Ангилал</label>
+                                <select id="select_angilal" name="select_angilal" class="selectpicker" data-title="- Сонгох -" data-style="btn-default btn-block"  data-menu-style="dropdown-blue" required>
+                                    <option value="0">Дэд станц</option>
+                                    <option value="1">Хэрэглэгч</option>
+                                    <option value="2">Байр</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label id="user_label">Хэрэглэгч</label>
+                                <select class="form-control" id="select_customer" name="select_customer" required>
+                                    <option value="">- Сонгох -</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 text-center">
+                            {% comment %}
+                                <a href="/home/geree_list/1/" class="btn btn-info btn-fill btn-wd"
+                                    type="button">Цэвэрлэх</a>
+                            {% endcomment %}
+                                <button type="submit" name="homeUserSearch" class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </form>
+                    <div  class="form-group col-md-12">
+                        <table class="table table-bordered" id="nehemjleh_tbl" name="nehemjleh_tbl">
+                            <thead>
+                                <tr>
+                                    <th rowspan="3" class="text-center">Ангилал</th>
+                                    <th colspan="6" class="text-center">Тоолуурын дэлгэрэнгүй</th>
+                                </tr>
+                                <tr>
+                                    <th rowspan="2" class="text-center" class="text-center">Толгой тоолуур</th>
+                                    <th colspan="2" class="text-center">Тоолуурын дугаар</th>
+                                    <th rowspan="2" class="text-center">Өөрийн тоолуурын дугаар</th>
+                                    <th rowspan="2" class="text-center">Мөнгөн дүн</th>
+                                </tr><span class="glyphicon glyphicon-arrow-left"></span>
+                                <tr>
+                                    <th class="text-center">Өмнөх</th>
+                                    <th class="text-center">Одоо</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nehemjleh_tbl_body" name="nehemjleh_tbl_body">
+                                <tr>
+                                    <td colspan="8">ГАРАЛТ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

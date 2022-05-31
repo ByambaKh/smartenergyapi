@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Тоолуур{% endblock%}
+{% block content %}
+
+<div class="container-fluid">
+
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li
+                {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if perms.data.add_tooluur %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/lavlagaa/add_tooluur" class="btn btn-primary btn-fill btn-wd"
+               type="button">Шинэ тоолуур бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй тоолуур
+                </div>
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/lavlagaa/tooluur">{% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Тоолуурын дугаар</label>
+                                <input value="{{search_q.tooluur_number}}" placeholder="Тоолуурын дугаар"
+                                       class="form-control" name="tooluur_number">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Тоолуурын нэршил</label>
+                                <input value="{{search_q.tooluur_name}}" placeholder="Тоолуурын нэршил"
+                                       class="form-control" name="tooluur_name">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Тоолуурын марк</label>
+                                <select name="tooluur_mark" class="form-control">
+                                    <option value="">Сонгох</option>
+                                    {% for mark in marks %}
+                                    {% if mark.mark != '' %}
+                                    {% if search_q.tooluur_mark == mark.mark %}
+                                    <option value="{{mark.mark}}" selected>{{mark.mark}}</option>
+                                    {% else %}
+                                    <option value="{{mark.mark}}">{{mark.mark}}</option>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Төлөв</label>
+                                <select class="form-control" name="select_status">
+                                    <option value="">Сонгох</option>
+                                    {% for k,v in status_all %}
+                                    <option
+                                            {% if k == search_q.status %}
+                                            selected
+                                            {% endif %}
+                                            value="{{k}}">{{v}}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Тариф</label>
+                                <select class="form-control" name="select_tariff">
+                                    <option value="">Сонгох</option>
+                                    <option value="0" {% if search_q.tariff == '0' %} selected {% endif %}>1 тарифт</option>
+                                    <option value="1" {% if search_q.tariff == '1' %} selected {% endif %}>2 тарифт</option>
+                                    <option value="2" {% if search_q.tariff == '2' %} selected {% endif %}>3 тарифт</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Баталгаажилт дуусах огноо /дээш/</label>
+                                <input value="{{search_q.expire_date}}" class="form-control datetimepicker"
+                                       name="expire_date" type="text">
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd" name="search">Шүүж харах</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="download_button text-right">
+                            <button class="btn btn-success btn-fill" name="download"><span class="fa fa-file-excel-o"></span>Файлаар
+                                татаж авах
+                            </button>
+                        </div>
+                    </form>
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                        <th class="text-center">№</th>
+                        <th data-field="number" data-sortable="true" class="text-left">Тоолуурын дугаар</th>
+                        <th data-field="name" data-sortable="true" class="text-left">Тоолуурын нэршил</th>
+                        <th data-field="mark" data-sortable="true" class="text-left">Тоолуурын марк</th>
+                        <th data-field="status" data-sortable="true" class="text-left">Төлөв</th>
+                        <th data-field="tariff" data-sortable="true" class="text-left">Тариф</th>
+                        <th data-field="amper" data-sortable="true" class="text-right">Гүйдэл</th>
+                        <th data-field="voltage" data-sortable="true" class="text-right">Хүчдэл</th>
+                        <th data-field="expire_date" data-sortable="true" class="text-center">Баталгаа дуусах огноо</th>
+                        <th data-field="stamp_number" data-sortable="true" class="text-center">Лацны дугаар</th>
+                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                        </thead>
+                        <tbody>
+                        {% for detail in tooluur %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-left">{{ detail.number }}</td>
+                            <td class="text-left">{{ detail.name }}</td>
+                            <td class="text-left">{{ detail.mark }}</td>
+                            <td class="text-left">
+                                {% if detail.status == "0" %}
+                                Ашиглагдаагүй
+                                {% elif detail.status == "1" %}
+                                Ашиглагдаж байгаа
+                                {% else %}
+                                Ашиглалтаас гарсан
+                                {% endif %}
+                            </td>
+                            <td class="text-left">
+                                {% if detail.tariff == "0" %}
+                                1 тарифт
+                                {% elif detail.tariff == "1" %}
+                                2 тарифт
+                                {% else %}
+                                3 тарифт
+                                {% endif %}
+                            </td>
+                            <td class="text-right">{{ detail.guidel }}A</td>
+                            <td class="text-right">{{ detail.huchdel }}B</td>
+                            <td class="text-center">{{ detail.expire_date|date:"Y-m-d" }}</td>
+                            {% if detail.stamp_number != None %}
+                            <td class="text-center">{{ detail.stamp_number }}</td>
+                            {% else %}
+                            <td class="text-center"> -</td>
+                            {% endif %}
+                            <td class="td-actions text-center">
+                                {% if perms.data.change_tooluur %}
+                                <a href="/home/lavlagaa/t_edit/{{detail.id}}/"
+                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                {% endif %}
+                                {% if perms.data.delete_tooluur %}
+                                <a href="/home/lavlagaa/t_del/{{detail.id}}/"
+                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

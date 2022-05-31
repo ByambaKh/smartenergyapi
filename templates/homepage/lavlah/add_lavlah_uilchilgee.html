@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Үйлчилгээ{% endblock%}
+{% block link %}/home/lavlagaa/uilchilgee{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+                {% if urlz == "/home/lavlagaa/add_service" %}
+	                <legend>Үйлчилгээний мэдээлэл бүртгэх</legend>
+	            {% else %}
+	                <legend>Үйлчилгээний мэдээлэл засах</legend>
+	            {%endif%}
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Нэр</label>
+                             <input class="form-control" type="text" name="name"  value="{{service.name}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Төлбөр/₮/</label> 
+                            <input class="form-control" type="number" name="payment" value="{{payment}}" step="0.01" required/>
+                        </div>
+					</fieldset>
+                </div>
+                <div class="col-md-6">
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Код</label>
+                            <input class="form-control" type="number" name="code"  value="{{service.code}}" required/>
+                        </div>
+					</fieldset>
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн ангилал</label>
+							<select id="select_angilal" name="select_angilal" class="selectpicker" data-title="- Сонгох -"
+									data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+								{% if service.angilal == "0" %}
+                                    <option value="1" selected>Ахуйн хэрэглэгч</option>
+                                {% else %}
+                                    <option value="1">Ахуйн хэрэглэгч</option>
+                                {%endif%}
+                                {% if service.angilal == "1" %}
+                                    <option value="0" selected>Аж ахуй нэгж</option>
+                                {% else %}
+                                    <option value="0">Аж ахуй нэгж</option>
+                                {%endif%}
+                        	</select>
+						</div>
+					</fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_service" %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                   <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

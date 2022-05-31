@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Дэд станц ангилал{% endblock %}
+{% block link %}/home/lavlagaa/list_ded_stants_angilal{% endblock %}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% if perms.data.add_dedstantsangilal %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/lavlagaa/add_ded_stants_angilal" class="btn btn-primary btn-fill btn-wd" type="button">Дэд станц ангилал бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+{% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй дэд станцын ангилал</div>
+                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                    <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="name" data-sortable="true" class="text-center">Нэр</th>
+                        <th data-field="description" data-sortable="true" class="text-center">Тайлбар</th>
+                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                    </thead>
+                    <tbody>
+                    {% for ded_stants_angilal in ded_stants_angilals %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center">{{ ded_stants_angilal.name }}</td>
+                            <td class="text-center">{{ ded_stants_angilal.description }}</td>
+                            <td class="td-actions text-center">
+                            {% if perms.data.change_dedstantsangilal %}
+                                <a href="/home/lavlagaa/edit_ded_stants_angilal/{{ded_stants_angilal.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                            {% endif %}
+                            {% if perms.data.delete_dedstantsangilal %}
+                                <a href="/home/lavlagaa/del_ded_stants_angilal/{{ded_stants_angilal.id}}/" onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')" class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!--  end card  -->
+        </div>
+
+    </div>
+</div>
+{% endblock %}

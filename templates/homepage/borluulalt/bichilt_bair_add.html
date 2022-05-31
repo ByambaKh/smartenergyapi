@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+
+{% block title %}Шинэ байрны бичилт үүсгэх{% endblock %}
+
+{% block head_block %}
+
+<script type="text/javascript">
+
+    function validateForm() {
+        var day_balance = parseInt($('input#day').val());
+        var last_day_balance = parseInt($('input#last_day').val());
+        var night_balance = parseInt($('input#night').val());
+        var last_night_balance = parseInt($('input#last_night').val());
+        var rush_balance = parseInt($('input#night').val());
+        var last_rush_balance = parseInt($('input#last_night').val());
+        console.log("called from validation");
+        var last_date = new Date($('input#last_zaalt_date').val());
+        var new_date = new Date($('input#bichilt_date').val());
+        var station = $('#station_code_select').find("option:selected").val();
+        var tooluur = $('#tooluur_select').find("option:selected").val();
+        if (station == ""){
+            alert("Та дэд станцаа сонгоно уу!");
+            return false;
+        }
+        if (tooluur == ""){
+            alert("Та тоолуураа сонгоно уу!");
+            return false;
+        }
+        if(new_date < last_date){
+            alert("Та бичилтийн огноогоо зөв оруулна уу!");
+            return false;
+        }
+        if (day_balance < last_day_balance){
+            alert("Та өдрийн заалтаа зөв оруулна уу!");
+            return false;
+        }
+        else if (last_night_balance > 0){
+            if (night_balance < last_night_balance){
+                alert("Та шөнийн заалтаа зөв оруулна уу!");
+                return false;
+            }
+        }
+        else if (last_rush_balance > 0){
+            if (rush_balance < last_rush_balance){
+                alert("Та оргил цагийн заалтаа зөв оруулна уу!");
+                return false;
+            }
+        }
+    }
+
+    $(document).ready(function() {
+
+        function fill_last_zaalts(result){
+            $('input#last_zaalt_date').val(result.last_bichilt.last_date);
+            $('input#last_day').val(result.last_bichilt.day);
+            $('input#last_night').val(result.last_bichilt.night);
+            $('input#last_rush').val(result.last_bichilt.rush);
+        }
+
+        function change_fields_disablation(tooluur_type){
+            if (tooluur_type == "0"){
+                $("input#day").prop('disabled', false);
+                $("input#rush").prop('disabled', true);
+                $("input#rush").val('0');
+                $('input#last_rush').val('0');
+                $("input#night").prop('disabled', true);
+                $("input#night").val('0');
+                $('input#last_night').val('0');
+            }
+            else if (tooluur_type == "1"){
+                $("input#day").prop('disabled', false);
+                $("input#rush").prop('disabled', true);
+                $("input#rush").val('0');
+                $('input#last_rush').val('0');
+                $("input#night").prop('disabled', false);
+            }
+            else{
+                $("input#day").prop('disabled', false);
+                $("input#rush").prop('disabled', false);
+                $("input#night").prop('disabled', false);
+            }
+        }
+
+        $('select#tooluur_select').change(function () {
+            var option_len = $(this).length + 1;
+            if (option_len > 1){
+                var optionSelected = $(this).find("option:selected");
+                var valueSelected  = optionSelected.val();
+                var user_id = $('#station_code_select').find("option:selected").val();
+                data = {'tooluur_id' : valueSelected, 'code':user_id, 'type':2 };
+                ajax('/home/get_zaalt_bytooluur',data,function(result){
+                    fill_last_zaalts(result)
+                    change_fields_disablation(result.tooluur_type)
+                });
+            }
+        });
+
+        $('select#station_code_select').change(function () {
+            var option_len = $(this).length + 1;
+            if (option_len > 1){
+                var optionSelected = $(this).find("option:selected");
+                var valueSelected  = optionSelected.val();
+                console.log(valueSelected);
+                data = {'bair_id' : valueSelected};
+                ajax('/home/get_bair_tooluur',data,function(result){
+                    $("#tooluur_select option").remove();
+                    $("#tooluur_select").append('<option value=\"\">Сонгох</option>')
+                    for (var i = result.tooluurs.length - 1; i >= 0; i--) {
+                        $("#tooluur_select").append('<option value=\"' +result.tooluurs[i].tooluur_code + '\">' + result.tooluurs[i].tooluur_code + '-' + result.tooluurs[i].tooluur_name + '</option>');
+                    };
+                });
+            }
+        });
+
+        function calculate_day(){
+            var last_val = $('#last_day').val()
+            var day_zaalt = $('#day').val()
+            var diff = day_zaalt - last_val
+            $("input#day_diff").val(diff)
+        }
+
+        function calculate_night(){
+            var last_val = $('#last_night').val()
+            var day_zaalt = $('#night').val()
+            var diff = day_zaalt - last_val
+            $("input#night_diff").val(diff)
+        }
+        function calculate_rush(){
+            var last_val = $('#last_rush').val()
+            var day_zaalt = $('#rush').val()
+            var diff = day_zaalt - last_val
+            $("input#rush_diff").val(diff)
+        }
+
+        $('input#day').focusout(function() {
+            calculate_day()
+        });
+        $('input#night').focusout(function() {
+           calculate_night()
+        });
+        $('input#rush').focusout(function() {
+            calculate_rush()
+        });
+
+        {% if type == "1" %}
+        calculate_day()
+        calculate_night()
+        calculate_rush()
+        {% endif %}
+    });
+
+
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+<ul class="messagelist">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<form name="bichilt_form" class="form-horizontal" action="{{urlz}}" method="post" onsubmit="return validateForm()">
+    {%csrf_token %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="content">
+                <legend>Бичилтийн огноо</legend>
+                <div class="col-md-12">
+                    {% if error != None %}
+                    <font color="red">{{error.description}}</font>
+                    {% else %}
+                    {% if success == "True" %}
+                    <font color="green">Амжилттай хадгалагдлаа.</font>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Өмнөх заалт оруулсан огноо</label>
+                            <input class="form-control" type="text" id="last_zaalt_date" name="last_zaalt_date"
+                                   value="{{prev_data.created_date}}" disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Бичилтийн огноо<span style="color:red">*</span></label>
+                            {% if type != "1" %}
+                            <input type="text" class="form-control datetimepicker" placeholder="Он сар өдөр"
+                                   name="bichilt_date" required="true" id="bichilt_date" value="{{add_q.bichilt_date}}">
+                            {% else %}
+                            <input type="text" class="form-control datetimepicker" placeholder="Он сар өдөр"
+                                   name="bichilt_date" required="true" id="bichilt_date" value="{{add_q.bichilt_date}}"
+                                   disabled>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card">
+            <div class="content">
+                {% if edit_data != None %}
+                {% if type == "1" %}
+                <legend>Бичилт харах</legend>
+                {% else %}
+                <legend>Бичилт засах</legend>
+                {% endif %}
+                {% else %}
+                <legend>Бичилт оруулах</legend>
+                {% endif %}
+                <div class="col-md-12">
+                    <font color="red" id="error_text"></font>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Байрны нэр<span style="color:red">*</span></label>
+                            {% if edit_data == None %}
+                            <select class="form-control" name="station_code_select" id="station_code_select"
+                                    required="true" oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                    oninput="setCustomValidity('')">
+                                <option value="">Сонгох</option>
+                                {% for item in bairs %}
+                                {% if item.id == search_q.id %}
+                                <option value="{{item.id}}" selected>{{item.name}}</option>
+                                {% else %}
+                                <option value="{{item.id}}">{{item.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                            {% else %}
+                            <input class="form-control" type="number" placeholder="Хэрэглэгчийн дугаар" number="true"
+                                   id="user_code" name="user_code" required="true"
+                                   value="{{edit_data.tooluur.customer_code}}" disabled/>
+                            {% endif %}
+                            <!--<input class="form-control" type="number" placeholder="Хэрэглэгчийн дугаар" number="true" id="user_code" name="user_code" required="true"/>-->
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тоолуур<span style="color:red">*</span></label>
+                            {% if edit_data == None %}
+                            <select class="form-control" name="tooluur_select" id="tooluur_select" required="true"
+                                    oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                    oninput="setCustomValidity('')"> </select>
+                            {% else %}
+                            <input class="form-control" type="number" placeholder="Тоолуурын дугаар" number="true"
+                                   id="tooluur_code" name="tooluur_code" required="true"
+                                   value="{{edit_data.tooluur.tooluur.number}}" disabled/>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Өмнөх өдрийн заалт</label>
+                            <input class="form-control" type="text" name="last_day" id="last_day"
+                                   value="{{prev_data.day}}" disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Өдрийн заалт<span style="color:red">*</span></label>
+                            {% if type == "1" %}
+                            <input class="form-control" type="number" step="0.0001" required name="day_zaalt" id="day"
+                                   required="true" value="{{edit_data.day_balance}}" disabled/>
+                            {% else %}
+                            <input class="form-control" type="number" step="0.0001" required name="day_zaalt" id="day"
+                                   required="true" value="{{edit_data.day_balance}}"
+                                   oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                   oninput="setCustomValidity('')"/>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Өдрийн зөрүү</label>
+                            <input class="form-control" type="number" required name="day_diff" id="day_diff" disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Өмнөх Шөнийн заалт</label>
+                            <input class="form-control" type="text" name="last_night" id="last_night"
+                                   value="{{prev_data.night}}" disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Шөнийн заалт<span style="color:red">*</span></label>
+                            {% if edit_data == None %}
+                            <input class="form-control" type="number" step="0.0001" required name="night_zaalt"
+                                   id="night" required="true"
+                                   oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                   oninput="setCustomValidity('')"/>
+                            {% else %}
+                            {% if edit_data.tooluur.tooluur.tariff == "0" %}
+                            <input class="form-control" type="number" step="0.0001" required name="night_zaalt"
+                                   id="night" required="true" value="0.0" disabled/>
+                            {% else %}
+                            {% if type == "1" %}
+                            <input class="form-control" type="number" step="0.0001" required name="night_zaalt"
+                                   id="night" required="true" value="{{edit_data.night_balance}}" disabled/>
+                            {% else %}
+                            <input class="form-control" type="number" step="0.0001" required name="night_zaalt"
+                                   id="night" required="true" value="{{edit_data.night_balance}}"
+                                   oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                   oninput="setCustomValidity('')"/>
+                            {% endif %}
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Шөнийн зөрүү</label>
+                            <input class="form-control" type="number" required name="day_diff" id="night_diff"
+                                   disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Өмнөх Оргил цагийн заалт</label>
+                            <input class="form-control" type="text" name="last_rush" id="last_rush"
+                                   value="{{prev_data.rush}}" disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Оргил цагийн заалт<span style="color:red">*</span></label>
+                            {% if edit_data == None %}
+                            <input class="form-control" type="number" step="0.0001" required name="rush_zaalt" id="rush"
+                                   required="true" oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                   oninput="setCustomValidity('')"/>
+                            {% else %}
+                            {% if edit_data.tooluur.tooluur.tariff == "0" or edit_data.tooluur.tooluur.tariff == "1" %}
+                            <input class="form-control" type="number" step="0.0001" required name="rush_zaalt" id="rush"
+                                   required="true" value="0.0" disabled/>
+                            {% else %}
+                            {% if type == "1" %}
+                            <input class="form-control" type="number" step="0.0001" required name="rush_zaalt" id="rush"
+                                   required="true" value="{{edit_data.rush_balance}}" disabled/>
+                            {% else %}
+                            <input class="form-control" type="number" step="0.0001" required name="rush_zaalt" id="rush"
+                                   required="true" value="{{edit_data.rush_balance}}"
+                                   oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                   oninput="setCustomValidity('')"/>
+                            {% endif %}
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Оргил цагийн зөрүү</label>
+                            <input class="form-control" type="number" required name="day_diff" id="rush_diff" disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label">Асуудалтай эсэх</label>
+                        <input type="checkbox" class="form-control" value="1" name="is_problem" title="Асуудалтай эсэх"
+                               {% if '1' in edit_data.is_problem %}
+                        checked
+                        {% endif %}
+                        >
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            {% if type == "1" %}
+            <div class="footer text-center">
+                <a class="btn btn-info btn-fill" href="/home/borluulalt/bichilt_list/4/">Буцах</a>
+                {% if request.user.is_superuser == True %}
+                {% if edit_data.type == '0' %}
+                <a href="{{urlz}}">
+                    <button type="button" class="btn btn-info btn-fill">Засах</button>
+                </a>
+                {% endif %}
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill" onsubmit="return validateForm()">Бүртгэх</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</form>
+{% endblock %}

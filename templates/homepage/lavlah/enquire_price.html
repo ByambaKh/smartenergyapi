@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Лавлагаа{% endblock %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <a href="add_lavlagaa_une.html" class="btn btn-primary btn-fill btn-wd" type="button" >Үнэ тариф бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    Нийт бүртгэлтэй үнэ тарифууд
+                </div>
+
+                <div class="content content-full-width">
+                    <div class="table_search_filter">
+                        <div class="form-group col-md-4">
+                            <label>Ангилал</label>
+                            <select class="form-control">
+                            <option>Аж ахуйн нэгж</option>
+                            <option>Хувь хүн</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Төрөл</label>
+                             <select class="form-control">
+                            <option>Өдөр</option>
+                            <option>Шөнө</option>
+                            <option>Оргил цаг</option>
+                        </select>
+                        </div>
+                         <div class="form-group col-md-4">
+                            <label>Тариф</label>
+                            <input placeholder="Тариф" class="form-control">
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+                        </div>
+                    </div>
+
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                            <th data-field="check" data-checkbox="true"></th>
+                            <th data-field="name" data-sortable="true">Ангилал</th>
+                            <th data-field="address" data-sortable="true">Төрөл</th>
+                            <th data-field="phone">Тариф</th>
+                            <th data-field="status">Төлөв</th>
+                            <th data-field="actions" class="td-actions text-right" data-events="operateEvents" data-formatter="operateFormatter">Засвар</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td>Аж ахуйн нэгж</td>
+                                <td>Өдөр</td>
+                                <td>65₮</td>
+                                <td><span class="tag"><span>Идэвхитэй</span></span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Аж ахуйн нэгж</td>
+                                <td>Шөнө</td>
+                                <td>45₮</td>
+                                <td><span class="tag"><span>Идэвхитэй</span></span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Хувь хүн</td>
+                                <td>Өдөр</td>
+                                <td>55₮</td>
+                                <td><span class="tag"><span>Идэвхитэй</span></span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Хувь хүн</td>
+                                <td>Шөнө</td>
+                                <td>35₮</td>
+                                <td><span class="tag"><span>Идэвхитэй</span></span></td>
+                                <td></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div><!--  end card  -->
+        </div>
+   </div>
+</div>
+{% endblock %}

@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+{% block head_block %}
+{% endblock %}
+{% block title %}Зарлан мэдээлэх{% endblock%}
+{% block content %}
+{% if perms.data.view_medeelehzagvar %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Мэдээлэх загвар</div>
+                <div class="content content-full-width">
+                    <ul role="tablist" class="nav nav-tabs">
+                        {% if activeTab == '1' %}
+                        <li role="presentation" class="active">
+                            {% else %}
+                        <li role="presentation">
+                            {%endif%}
+                            <a href="#SMS" data-toggle="tab"><i class="fa fa-user"></i>SMS</a>
+                        </li>
+                        {% if activeTab == '2' %}
+                        <li class="active">
+                            {% else %}
+                        <li>
+                            {%endif%}
+                            <a href="#EMAIL" data-toggle="tab"><i class="fa fa-building"></i>Имэйл</a>
+                        </li>
+                        {% if activeTab == '3' %}
+                        <li class="active">
+                            {% else %}
+                        <li>
+                            {%endif%}
+                            <a href="#PRINT" data-toggle="tab"><i class="fa fa-building"></i>Хэвлэх</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        {% if activeTab == '1' %}
+                        <div id="SMS" class="tab-pane active">
+                            {% else %}
+                            <div id="SMS" class="tab-pane">
+                                {%endif%}
+                                {% if perms.data.add_medeelehzagvar %}
+                                <form method="POST" action="{{sms_action}}">
+                                    {% csrf_token %}
+                                    <div class="table_search_filter">
+                                        <div class="form-group col-md-4">
+                                            <label class="control-label"><strong>Түлхүүр үгнүүд</strong></label><br/><br/>
+                                            <label>Хэрэглэгчийн код: </label> &#123;&#123;code&#125;&#125;<br/>
+                                            <label>Хаалганы дугаар: </label> &#123;&#123;toot&#125;&#125;<br/>
+                                            <label>Төлбөр: </label> &#123;&#123;tulbur&#125;&#125;
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <div class="form-group">
+                                                <label class="control-label">Нэр</label>
+                                                <input class="form-control" type="text" name="sms_name"
+                                                       value="{{smsMedeel.name}}" required/>
+                                            </div>
+                                            <div class="form-group">
+                                            <label class="control-label">Текст</label>
+                                            <textarea class="form-control" cols="50" maxlength="200" rows="3"
+                                                      name="sms_text"  required>{{smsMedeel.text}}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                            <label class="control-label">Идэвхитэй эсэх</label>
+                                            <select class="form-control" name="sms_is_active">
+                                                <option value="1" {% if smsMedeel.is_active == '1'%} selected {% endif %}>Идэвхитэй</option>
+                                                <option value="0" {% if smsMedeel.is_active == '0'%} selected {% endif %}>Идэвхигүй</option>
+                                            </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="control-label"><strong>Жишээ</strong></label><br/><br/>
+                                            <span>&#123;&#123;code&#125;&#125; codetoi &#123;&#123;toot&#125;&#125; tootiin orshin suugch tanii</span><br/>
+                                            <span>tulbur tuluh hugatsaa unuudur duusch baina.</span><br/>
+                                            <span>Tanii tulbur &#123;&#123;tulbur&#125;&#125; garsan baina.</span><br/>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <button type="submit" class="btn btn-primary btn-fill btn-wd">
+                                                {% if 'edit' in sms_action %}
+                                                    Засварлах
+                                                {% else %}
+                                                    Бүртгэх
+                                                {% endif %}
+                                            </button>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </form>
+                                {% endif %}
+                                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                                    <thead>
+                                    <th data-field="check" class="text-center">№</th>
+                                    <th data-field="sms_created_date" data-sortable="true" class="text-center">Огноо</th>
+                                    <th data-field="sms_name" data-sortable="true" class="text-center">Нэр</th>
+                                    <th data-field="sms_text" data-sortable="true" class="text-center">Текст</th>
+                                    <th data-field="sms_is_active" data-sortable="true" class="text-center">Идэвхитэй эсэх
+                                    </th>
+                                    <th data-field="actions" class="td-actions text-center">Засвар</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for smsMedeeleh in smsMedeelehs %}
+                                    <tr>
+                                        <td class="text-center">{{ forloop.counter }}</td>
+                                        <td class="text-center">{{ smsMedeeleh.created_date|date:'Y-m-d' }}</td>
+                                        <td class="text-center">{{ smsMedeeleh.name }}</td>
+                                        <td class="text-center">{{ smsMedeeleh.text }}</td>
+                                        <td class="text-center">
+                                            {% if smsMedeeleh.is_active == '0' %}
+                                            Идэвхигүй
+                                            {% else %}
+                                            Идэвхитэй
+                                            {% endif %}
+                                        </td>
+                                        <td class="td-actions text-center">
+                                            {% if perms.data.change_medeelehzagvar %}
+                                            <a href="/home/medeeleh/zagvar/edit/1/{{smsMedeeleh.id}}/"
+                                               class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            {% endif %}
+                                            {% if perms.data.delete_medeelehzagvar %}
+                                            <a href="/home/medeeleh/zagvar/delete/1/{{smsMedeeleh.id}}/"
+                                               onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                               class="btn btn-simple btn-danger btn-icon table-action remove">
+                                                <i class="fa fa-remove"></i>
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% if activeTab == '2' %}
+                            <div id="EMAIL" class="tab-pane active">
+                                {% else %}
+                                <div id="EMAIL" class="tab-pane">
+                                    {%endif%}
+                                    {% if perms.data.add_medeelehzagvar %}
+                                    <form method="POST" action="{{email_action}}" novalidate>
+                                        {% csrf_token %}
+                                        <div class="table_search_filter">
+                                            <div class="form-group col-md-4">
+                                                <label class="control-label"><strong>Түлхүүр үгнүүд</strong></label><br/><br/>
+                                                <label>Овог: </label> &#123;&#123;last_name&#125;&#125;<br/>
+                                                <label>Нэр: </label> &#123;&#123;first_name&#125;&#125;<br/>
+                                                <label>Хаяг: </label> &#123;&#123;address&#125;&#125;<br/>
+                                                <label>Хэрэглэгчийн код: </label> &#123;&#123;code&#125;&#125;<br/>
+                                                <label>Хаалганы дугаар: </label> &#123;&#123;toot&#125;&#125;<br/>
+                                                <label>Төлбөр: </label> &#123;&#123;tulbur&#125;&#125;
+                                            </div>
+                                            <div class="form-group col-md-8">
+                                                <div class="form-group">
+                                                    <label class="control-label">Нэр</label>
+                                                    <input class="form-control" type="text" name="email_name"
+                                                           value="{{emailMedeel.name}}" required/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Текст</label>
+                                                    <textarea class="form-control email_print" name="email_text">{{emailMedeel.text}}</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Идэвхитэй эсэх</label>
+                                                    <select class="form-control" name="email_is_active">
+                                                        <option value="1" {% if emailMedeel.is_active == '1'%} selected {% endif %}>Идэвхитэй</option>
+                                                        <option value="0" {% if emailMedeel.is_active == '0'%} selected {% endif %}>Идэвхигүй</option>
+                                                </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 text-center">
+                                                <button type="submit" class="btn btn-primary btn-fill btn-wd">
+                                                    {% if 'edit' in email_action %}
+                                                        Засварлах
+                                                    {% else %}
+                                                        Бүртгэх
+                                                    {% endif %}
+                                                </button>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </form>
+                                    {% endif %}
+                                    <table id="bootstrap-table2" class="table" style="margin-left: 10px;">
+                                        <thead>
+                                        <th data-field="check" class="text-center">№</th>
+                                        <th data-field="email_created_date" data-sortable="true" class="text-center">Огноо</th>
+                                        <th data-field="email_name" data-sortable="true" class="text-center">Нэр</th>
+                                        <th data-field="email_text" data-sortable="true" class="text-center">Текст</th>
+                                        <th data-field="email_is_active" data-sortable="true" class="text-center">Идэвхитэй эсэх
+                                        </th>
+                                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                                        </thead>
+                                        <tbody>
+                                        {% for emailMedeeleh in emailMedeelehs %}
+                                        <tr>
+                                            <td class="text-center">{{ forloop.counter }}</td>
+                                            <td class="text-center">{{ emailMedeeleh.created_date|date:'Y-m-d' }}</td>
+                                            <td class="text-center">{{ emailMedeeleh.name }}</td>
+                                            <td class="text-center">{{ emailMedeeleh.text|safe }}</td>
+                                            <td class="text-center">
+                                                {% if emailMedeeleh.is_active == '0' %}
+                                                Идэвхигүй
+                                                {% else %}
+                                                Идэвхитэй
+                                                {% endif %}
+                                            </td>
+                                            <td class="td-actions text-center">
+                                                {% if perms.data.change_medeelehzagvar %}
+                                                <a href="/home/medeeleh/zagvar/edit/2/{{emailMedeeleh.id}}/"
+                                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                {% endif %}
+                                                {% if perms.data.delete_medeelehzagvar %}
+                                                <a href="/home/medeeleh/zagvar/delete/2/{{emailMedeeleh.id}}/"
+                                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                                    <i class="fa fa-remove"></i>
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% if activeTab == '3' %}
+                                <div id="PRINT" class="tab-pane active">
+                                    {% else %}
+                                    <div id="PRINT" class="tab-pane">
+                                        {%endif%}
+                                        {% if perms.data.add_medeelehzagvar %}
+                                        <div class="table_search_filter">
+                                           <div class="form-group col-md-4">
+                                               <label class="control-label"><strong>Түлхүүр үгнүүд</strong></label><br/><br/>
+                                                <label>Овог: </label> &#123;&#123;last_name&#125;&#125;<br/>
+                                                <label>Нэр: </label> &#123;&#123;first_name&#125;&#125;<br/>
+                                                <label>Хаяг: </label> &#123;&#123;address&#125;&#125;<br/>
+                                                <label>Хэрэглэгчийн код: </label> &#123;&#123;code&#125;&#125;<br/>
+                                                <label>Хаалганы дугаар: </label> &#123;&#123;toot&#125;&#125;<br/>
+                                                <label>Байрны дугаар: </label> &#123;&#123;bair&#125;&#125;<br/>
+                                                <label>Төлбөр: </label> &#123;&#123;tulbur&#125;&#125;
+                                            </div>
+                                            <form method="POST" action="{{print_action}}" novalidate>
+                                            {% csrf_token %}
+                                            <div class="form-group col-md-8">
+                                                <div class="form-group">
+                                                <label class="control-label">Нэр</label>
+                                                <input class="form-control" type="text" name="print_name" value="{{printMedeel.name}}" required/>
+                                                </div>
+                                                <div class="form-group">
+                                                <label class="control-label">Текст</label>
+                                                <textarea class="form-control email_print" name="print_text">{{printMedeel.text}}</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                <label class="control-label">Идэвхитэй эсэх</label>
+                                                <select class="form-control" name="print_is_active">
+                                                    <option value="1" {% if printMedeel.is_active == '1'%} selected {% endif %}>Идэвхитэй</option>
+                                                    <option value="0" {% if printMedeel.is_active == '0'%} selected {% endif %}>Идэвхигүй</option>
+                                                </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 text-center">
+                                                <button type="submit" class="btn btn-primary btn-fill btn-wd">
+                                                    {% if 'edit' in print_action %}
+                                                        Засварлах
+                                                    {% else %}
+                                                        Бүртгэх
+                                                    {% endif %}
+                                                </button>
+                                            </div>
+                                            </form>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    {% endif %}
+                                    <table id="bootstrap-table3" class="table" style="margin-left: 10px;">
+                                        <thead>
+                                        <th data-field="check" class="text-center">№</th>
+                                        <th data-field="print_created_date" data-sortable="true" class="text-center">Огноо</th>
+                                        <th data-field="print_name" data-sortable="true" class="text-center">Нэр</th>
+                                        <th data-field="print_text" data-sortable="true" class="text-center">Текст</th>
+                                        <th data-field="print_is_active" data-sortable="true" class="text-center">Идэвхитэй эсэх
+                                        </th>
+                                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                                        </thead>
+                                        <tbody>
+                                        {% for ptintMedeeleh in ptintMedeelehs %}
+                                        <tr>
+                                            <td class="text-center">{{ forloop.counter }}</td>
+                                            <td class="text-center">{{ ptintMedeeleh.created_date|date:'Y-m-d' }}</td>
+                                            <td class="text-center">{{ ptintMedeeleh.name }}</td>
+                                            <td class="text-center">{{ ptintMedeeleh.text|safe }}</td>
+                                            <td class="text-center">
+                                                {% if ptintMedeeleh.is_active == '0' %}
+                                                    Идэвхигүй
+                                                {% else %}
+                                                    Идэвхитэй
+                                                {% endif %}
+                                            </td>
+                                            <td class="td-actions text-center">
+                                                {% if perms.data.change_medeelehzagvar %}
+                                                <a href="/home/medeeleh/zagvar/edit/3/{{ptintMedeeleh.id}}/"
+                                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                {% endif %}
+                                                {% if perms.data.delete_medeelehzagvar %}
+                                                <a href="/home/medeeleh/zagvar/delete/3/{{ptintMedeeleh.id}}/"
+                                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                                    <i class="fa fa-remove"></i>
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endif %}
+{% endblock %}

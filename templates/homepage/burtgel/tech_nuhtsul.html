@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#bootstrap-table1 > tbody  > tr').each(function() {
+            var span = $(this).find('span.phone_num').text(function(i, text) {
+                return text.replace(/(\d{4})(\d{4})/, '$1-$2');
+            });
+        });
+    });
+
+</script>
+{% endblock %}
+
+{% block title %}Техникийн нөхцөл{% endblock%}
+
+{% block content %}
+{% if perms.data.view_technicalproposal %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if perms.data.add_technicalproposal %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/add_tech" class="btn btn-primary btn-fill btn-wd"
+               type="button">Техникийн нөхцөл нэмэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт техникийн нөхцлүүд</div>
+
+                <div class="content content-full-width">
+
+                    <ul role="tablist" class="nav nav-tabs">
+                        {% if activeTab == 1 %}
+                        <li role="presentation" class="active">
+                            {% else %}
+                        <li role="presentation">
+                            {%endif%}
+                            <a href="#TECH" data-toggle="tab"><i class="fa fa-file-o"></i>Техникийн нөхцөл</a>
+                        </li>
+                        {% if activeTab == 2 %}
+                        <li class="active">
+                            {% else %}
+                        <li>
+                            {%endif%}
+                            <a href="#REQUEST" data-toggle="tab"><i class="fa fa-envelope-o"></i>Ирсэн хүсэлтүүд</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+
+                        {% if activeTab == 1 %}
+                            <div id="TECH" class="tab-pane active">
+                        {% else %}
+                            <div id="TECH" class="tab-pane">
+                        {%endif%}
+                            <form action="/home/tech_nuhtsul/1/" method="POST">{% csrf_token %}
+                                <div class="table_search_filter">
+                                    <div class="form-group col-md-4">
+                                        <label>Техникийн нөхцөлийн дугаар</label>
+                                        <input placeholder="Дугаар" class="form-control" name="code"
+                                               value="{{search_q.code}}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Хэрэглэгчийн нэр</label> <input
+                                            placeholder="Овог нэр" class="form-control" name="name"
+                                            value="{{search_q.name}}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Зөвшөөрсөн чадал кВт /хүртэл/</label> <input
+                                            placeholder="Чадал /кВт/" class="form-control" name="approve_chadal"
+                                            type="number" value="{{search_q.approve_chadal}}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Хүссэн чадал кВт /хүртэл/</label> <input
+                                            placeholder="Чадал /кВт/" class="form-control" name="req_chadal"
+                                            type="number" value="{{search_q.req_chadal}}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Хэрэглэгчийн байршил</label> <input
+                                            placeholder="Байршил" class="form-control" name="address"
+                                            value="{{search_q.address}}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Утасны дугаар</label>
+                                        <input placeholder="Утасны дугаар"
+                                               class="form-control" name="phone"
+                                               value="{{search_q.phone}}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Үйл ажиллагааны зориулалт</label>
+                                        <input placeholder="Үйл ажиллагааны зориулалт"
+                                               class="form-control" name="zoriulalt"
+                                               value="{{search_q.zoriulalt}}">
+                                    </div>
+                                    <div class="col-md-12 text-center">
+                                        <button class="btn btn-warning btn-fill btn-wd" type="submit"  name="tech_search">Шүүж харах
+                                        </button>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="download_button text-right">
+                                    <button class="btn btn-success btn-fill" type="submit" name="export_xls_1"><span class="fa fa-file-excel-o"></span>
+                                        Файлаар татаж авах
+                                    </button>
+                                </div>
+                            </form>
+
+                            <table id="bootstrap-table1" class="table">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">№</th>
+                                    <th class="text-left" data-sortable="true">Дугаар</th>
+                                    <th data-sortable="true">Нэр</th>
+                                    <th class="text-center">Утасны дугаар</th>
+                                    <th>Байршил</th>
+                                    <th data-sortable="true" class="text-right">Хүссэн чадал</th>
+                                    <th data-sortable="true" class="text-right">Зөвшөөрсөн чадал</th>
+                                    <th class="text-center">Хүсэлт</th>
+                                    <th data-field="actions" class="td-actions text-center">Засвар</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for detail in datas %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ detail.tech_code }}</td>
+                                    <td>{{ detail.tech_name|default_if_none:"-" }}</td>
+                                    <td><span class="phone_num">{{ detail.tech_utas|default_if_none:"-" }}</span>
+                                    </td>
+                                    <td>{{ detail.tech_address|default_if_none:"-" }}</td>
+                                    <td>{{ detail.req_chadal|default_if_none:"-" }}кВт</td>
+                                    <td>{{ detail.approve_chadal|default_if_none:"-" }}кВт</td>
+                                    <td>
+                                        {% if detail.request_id != None %}
+                                            <a href="/home/tech_confirm/{{detail.request_id}}/"
+                                               class="btn btn-simple btn-warning btn-icon table-action view">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if perms.data.change_technicalproposal %}
+                                        <a href="/home/tech_add/{{detail.id}}/"
+                                           class="btn btn-simple btn-warning btn-icon table-action edit">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if activeTab == 2 %}
+                        <div id="REQUEST" class="tab-pane active">
+                        {% else %}
+                        <div id="REQUEST" class="tab-pane">
+                        {%endif%}
+                            <form action="/home/tech_nuhtsul/2/" method="POST" >{% csrf_token %}
+                                <div class="table_search_filter">
+                                    <div class="form-group col-md-4">
+                                        <label>Хэрэглэгчийн нэр</label> <input
+                                            placeholder="Хэрэглэгчийн нэр" class="form-control" name="req_name"
+                                            value="{{search_req.name}}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Утасны дугаар</label> <input placeholder="Утасны дугаар"
+                                                                            class="form-control" name="req_phone"
+                                                                            value="{{search_req.phone}}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Хэрэглэгчийн байршил</label> <input
+                                            placeholder="Байршил" class="form-control" name="req_address"
+                                            value="{{search_req.address}}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Олгогдсон эсэх</label>
+                                        <select name="req_is_active" class="selectpicker" data-title="- Сонгох -"
+                                                data-style="btn-default btn-block" data-menu-style="dropdown-blue" >
+                                            <option value="2" selected>- Сонгох -</option>
+                                            {% if search_req.req_is_active == "1" %}
+                                                <option value="1" selected>Олгогдоогүй</option>
+                                            {% else %}
+                                                <option value="1">Олгогдоогүй</option>
+                                            {% endif %}
+                                            {% if search_req.req_is_active == "0" %}
+                                                <option value="0" selected>Олгогдсон</option>
+                                            {% else %}
+                                                <option value="0">Олгогдсон</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-12 text-center">
+                                        <button class="btn btn-warning btn-fill btn-wd" type="submit" name="req_search">Шүүж
+                                            харах
+                                        </button>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="download_button text-right">
+                                    <button class="btn btn-success btn-fill" type="submit" name="export_xls_2"><span class="fa fa-file-excel-o"></span>
+                                        Файлаар татаж авах
+                                    </button>
+                                </div>
+                            </form>
+
+                            <table id="bootstrap-table1" class="table">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">№</th>
+                                    <th data-sortable="true">Нэр</th>
+                                    <th data-sortable="true">Утас</th>
+                                    <th data-sortable="true">Обьектын байршил</th>
+                                    <th data-sortable="true">Хэрэглэгчийн зэрэглэл</th>
+                                    <th data-sortable="true">Олгогдсон эсэх</th>
+                                    <th data-field="actions" class="td-actions text-center">Засвар</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for detail in requests %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ detail.name }}</td>
+                                    <td>{{ detail.phone }}</td>
+                                    <td>{{ detail.obj_address }}</td>
+                                    <td>{{ detail.zereglel }}</td>
+                                    <td>{% if detail.is_active == '1' %}
+                                        Олгогдоогүй
+                                        {% else %}
+                                        Олгогдсон
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if perms.data.view_technicalproposal %}
+                                        <a href="/home/tech_confirm/{{detail.id}}/"
+                                           class="btn btn-simple btn-warning btn-icon table-action view">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

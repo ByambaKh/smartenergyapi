@@ -1,0 +1,504 @@
+{% extends "base.html" %} 
+{% block head_block %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+        	var ang = {{angilal}};
+
+        	if( ang === 0) {
+               	$("#lastname_fs").hide();
+        	} else {
+               	$("#lastname_fs").show();
+        	}
+
+            $('select#select_angilal').change(function () {
+            	
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+                 
+                 if(valueSelected == '0'){
+                	$("#lastname_fs").hide();
+                 } else {
+                	$("#lastname_fs").show();
+                 }
+                 
+                 ajax('/home/get_type',data,function(result){
+                 	$("#select_type option").remove().end();
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      	$("#select_type").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+            
+            $('select#select_aimag').change(function () {
+            	
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+                 
+                 ajax('/home/get_duureg', data, function(result){
+                 	$("#select_duureg option").remove().end();
+                 	$("#select_horoo option").remove().end();
+                 	$("#select_hothon option").remove().end();
+                 	$("#select_block option").remove().end();
+                 	
+                  	$("#select_duureg").append('<option>- Сонгох -</option>');
+                    for (var i=0; i<result.length; i++) {
+                    	console.log(result[i].name);
+                      	$("#select_duureg").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+          
+            $('select#select_duureg').change(function () {
+            	
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+                 
+                 ajax('/home/get_horoo',data,function(result){
+                 	$("#select_horoo option").remove().end();
+                 	$("#select_hothon option").remove().end();
+                 	$("#select_block option").remove().end();
+                 	
+                  	$("#select_horoo").append('<option>- Сонгох -</option>');
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      	$("#select_horoo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+          
+            $('select#select_horoo').change(function () {
+            	
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+                 
+                 ajax('/home/get_hothon',data,function(result){
+                 	$("#select_hothon option").remove().end();
+                 	$("#select_block option").remove().end();
+                 	
+                  	$("#select_hothon").append('<option value="">- Сонгох -</option>');
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      	$("#select_hothon").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+          
+            $('select#select_hothon').change(function () {
+            	
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+                 
+                 ajax('/home/get_block',data,function(result){
+                  	$("#select_block option").remove().end();
+                 	
+                  	$("#select_block").append('<option value="">- Сонгох -</option>');
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      	$("#select_block").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+            
+            $('select#select_bank').change(function () {
+            	
+                var optionSelected = $(this).find("option:selected");
+                var valueSelected  = optionSelected.val();
+                data = {'code' : valueSelected };
+                
+                ajax('/home/get_dans',data,function(result){
+                   $('#bank_account').val(result.dans);
+                });
+            });
+        });
+    </script>
+{% endblock %}
+{% block link %}/home/geree_list/1/{% endblock%}
+{% block title %}Гэрээ {% endblock%} 
+{% block content %}
+
+<div class="container-fluid">
+
+	{% if messages %}
+		<ul class="messagelist">
+			{% for message in messages %}
+			<li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+
+	<div class="card">
+		<form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">{% csrf_token %}
+			<div class="content">
+				{% if urlz == "/home/geree_add" %}
+	                <legend>Шинэ гэрээ бүртгэх</legend>
+	            {% else %}
+	                <legend>Гэрээний мэдээлэл засах</legend>
+	            {%endif%}
+			
+				<div class="col-md-4">
+
+					{% if customer is not None %}
+					<input type="hidden" name="customer_id" value="{{customer.id}}">
+					{% endif %}
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн ангилал</label> 
+							<select id="select_angilal" name="select_angilal" class="form-control" required>
+								<option value="">- Сонгох -</option>
+								{% if customer.customer_angilal == "0" %}
+                                    <option value="0" selected>Аж ахуй нэгж</option>
+                                {% else %}
+                                    <option value="0">Аж ахуй нэгж</option>
+                                {%endif%}
+                                {% if customer.customer_angilal == "1" %}
+                                    <option value="1" selected>Ахуйн хэрэглэгч</option>
+                                {% else %}
+                                    <option value="1">Ахуйн хэрэглэгч</option>
+                                {%endif%}
+                        	</select>
+						</div>
+					</fieldset>
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн төрөл</label>
+							<select class="form-control" id="select_type" name="select_type" required>
+								<option value="">- Сонгох -</option>
+                                {% for item in customer_type %}
+                                    {% if customer.customer_type == item.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        	</select>
+						</div>
+					</fieldset>
+
+					<fieldset name="lastname_fs" id="lastname_fs">
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн овог</label> <input
+								class="form-control" type="text" name="last_name" id="last_name"
+								maxlength="50" value="{{customer.last_name}}"/>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн нэр</label> <input
+								class="form-control" type="text" name="first_name"
+								maxlength="50" value="{{customer.first_name}}" required/>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн код</label> <input
+								class="form-control" type="number" name="code"  maxlength="8" minlength="7"
+								value="{{customer.code}}" required/>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн регистер</label> <input
+								class="form-control" type="text" name="register"
+								maxlength="10" value="{{customer.register}}" required/>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн үндсэн утасны дугаар</label> <input
+								class="form-control" type="tel" name="phone" number="true"
+								maxlength="8" value="{{customer.phone}}" required />
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн нэмэлт утасны дугаар</label>
+							<input class="form-control" type="tel" name="phone2" maxlength="8" value="{{customer.phone2}}" />
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хэрэглэгчийн мэйл хаяг</label>
+							<input class="form-control" type="email" name="email" maxlength="50" value="{% if customer.email %}{{customer.email}}{% endif %}"/>
+						</div>
+					</fieldset>
+				</div>
+
+				<div class="col-md-4">
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Цикл</label>
+							<select name="select_cycle" id="select_cycle" class="form-control" required>
+								<option value="">- Сонгох -</option>
+                                {% for item in cycle %}
+									{% if geree.cycle_code == item.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+							</select>
+						</div>
+					</fieldset>
+					
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Бүс</label> 
+							<select id="select_bus" name="select_bus" class="form-control" required>
+								<option value="">- Сонгох -</option>
+								{% if geree.bus_type == "0" %}
+                                    <option value="0" selected>Өмнөд</option>
+                                {% else %}
+                                    <option value="0">Өмнөд</option>
+                                {%endif%}
+                                {% if geree.bus_type == "1" %}
+                                    <option value="1" selected>Хойд</option>
+                                {% else %}
+                                    <option value="1">Хойд</option>
+                                {%endif%}
+                                {% if geree.bus_type == "2" %}
+                                    <option value="2" selected>Баруун</option>
+                                {% else %}
+                                    <option value="2">Баруун</option>
+                                {%endif%}
+                                {% if geree.bus_type == "3" %}
+                                    <option value="3" selected>Зүүн</option>
+                                {% else %}
+                                    <option value="3">Зүүн</option>
+                                {%endif%}
+                                {% if geree.bus_type == "4" %}
+                                    <option value="4" selected>Төв</option>
+                                {% else %}
+                                    <option value="4">Төв</option>
+                                {%endif%}
+                        	</select>
+						</div>
+					</fieldset>
+					
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хот / аймаг</label>
+							<select name="select_aimag" id="select_aimag" class="form-control" required>
+								<option value="">- Сонгох -</option>
+                                {% for item in aimag %}
+                                    {% if address.aimag_code == item.code %}
+                                        <option  value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+							</select>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Дүүрэг / сум</label>
+							<select name="select_duureg" id="select_duureg" class="form-control" required>
+								<option value="">- Сонгох -</option>
+                                {% for item in duureg %}
+                                    {% if address.duureg_code == item.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        	</select>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Баг / Хороо</label>
+							<select name="select_horoo" id="select_horoo" class="form-control" required>
+								<option value="">- Сонгох -</option>
+                                {% for item in horoo %}
+                                    {% if address.horoo_code == item.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        	</select>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Хотхон</label>
+							<select name="select_hothon" id="select_hothon" class="form-control">
+								<option value="">- Сонгох -</option>
+                                {% for item in hothon %}
+                                    {% if address.hothon_code == item.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        	</select>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Эгнээ</label>
+							<select name="select_block" id="select_block" class="form-control">
+								<option value="">- Сонгох -</option>
+                                {% for item in egnee %}
+                                    {% if address.block_code == item.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        	</select>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Байр</label> <input
+								class="form-control" type="text" name="building_number"
+								maxlength="100" value="{{address.building_number}}" />
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Тоот</label> <input
+								class="form-control" type="text" name="toot"
+								maxlength="100" value="{{address.toot}}"/>
+						</div>
+					</fieldset>
+
+				</div>
+
+				<div class="col-md-4">
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Дэд станц</label>
+							<select name="select_dedstants" id="select_dedstants" class="form-control" required >
+								<option value="">- Сонгох -</option>
+                                {% for item in dedStants %}
+                                    {% if geree.dedstants_code == item.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+							</select>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Эзэмшилийн зааг</label>
+							<input type="text" class="form-control" name="ezemshliin_zaag"
+								placeholder="Эзэмшилийн зааг" value="{{geree.ezemshliin_zaag}}">
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Техникийн нөхцөл</label>
+							<select name="technical" class="form-control" >
+								<option value="">- Сонгох -</option>
+								{% for item in technical %}
+                                    {% if geree.technical_proposal.id == item.id %}
+                                        <option value="{{item.id}}" selected>{{item.tech_code}}</option>
+                                    {% else %}
+                                        <option value="{{item.id}}">{{item.tech_code}}</option>
+                                    {% endif %}
+                                {% endfor %}
+							</select>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Төлбөр төлөх банк</label>
+							<select name="select_bank" id="select_bank" class="form-control" required>
+								<option value="">- Сонгох -</option>
+                                {% for item in bank %}
+                                    {% if geree.bank_code == item.code %}
+                                        <option value="{{item.code}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.code}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+							</select>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Төлбөр төлөх данс</label> <input
+								class="form-control" type="text" name="bank_account"
+								id="bank_account" value="{{geree_bank.dans}}" disabled/>
+						</div>
+					</fieldset>
+					
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Гэрээний дугаар</label> <input
+								class="form-control" type="text" name="contract_number"
+								maxlength="40" value="{{geree.contract_number}}" required/>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Гэрээ байгуулсан огноо</label> 
+							<input type="text" class="form-control datetimepicker"
+								placeholder="Он сар өдөр" name="contract_made_date" required
+								value="{{made_date|date:'Y-m-d'}}">
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Гэрээ сунгасан огноо</label> 
+							<input type="text" class="form-control datetimepicker"
+								placeholder="Он сар өдөр" name="contract_extend_date"
+								value="{{extend_date|date:'Y-m-d'}}">
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Гэрээ дуусах огноо</label>
+							<input type="text" class="form-control datetimepicker"
+								placeholder="Он сар өдөр" name="contract_expire_date" required="true"
+								value="{{expire_date|date:'Y-m-d'}}">
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Нэмэлт тайлбар</label>
+							<textarea class="form-control" rows="3" name="description">{{geree.description}}</textarea>
+						</div>
+					</fieldset>
+
+				</div>
+				<div class="clearfix"></div>
+
+			</div>
+			<div class="footer text-center">
+				<button type="submit" class="btn btn-info btn-fill">Хадгалах</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+{% endblock %}

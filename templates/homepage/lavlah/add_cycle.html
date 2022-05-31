@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block head_block %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('select#select_angilal').change(function () {
+
+         var optionSelected = $(this).find("option:selected");
+         var valueSelected  = optionSelected.val();
+         data = {'code' : valueSelected };
+
+         ajax('/home/get_type',data,function(result){
+            $("#select_type option").remove().end();
+            for (var i = result.length - 1; i >= 0; i--) {
+                $("#select_type").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+            };
+         });
+    });
+
+    $('select#select_aimag').change(function () {
+
+         var optionSelected = $(this).find("option:selected");
+         var valueSelected  = optionSelected.val();
+         data = {'code' : valueSelected };
+
+         ajax('/home/get_duureg',data,function(result){
+            $("#select_duureg option").remove().end();
+            $("#select_horoo option").remove().end();
+            $("#select_hothon option").remove().end();
+            $("#select_block option").remove().end();
+            $("#select_duureg").append('<option value="">Ð¡Ð¾Ð½Ð³Ð¾Ñ…</option>');
+            for (var i = result.length - 1; i >= 0; i--) {
+                $("#select_duureg").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+            };
+         });
+    });
+
+    $('select#select_duureg').change(function () {
+
+         var optionSelected = $(this).find("option:selected");
+         var valueSelected  = optionSelected.val();
+         data = {'code' : valueSelected };
+
+         ajax('/home/get_horoo',data,function(result){
+            $("#select_horoo option").remove().end();
+            $("#select_hothon option").remove().end();
+            $("#select_block option").remove().end();
+            for (var i = result.length - 1; i >= 0; i--) {
+                $("#select_horoo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+            };
+         });
+    });
+
+    $('select#select_horoo').change(function () {
+
+         var optionSelected = $(this).find("option:selected");
+         var valueSelected  = optionSelected.val();
+         data = {'code' : valueSelected };
+
+         ajax('/home/get_hothon',data,function(result){
+            $("#select_hothon option").remove().end();
+            $("#select_block option").remove().end();
+            for (var i = result.length - 1; i >= 0; i--) {
+                $("#select_hothon").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+            };
+         });
+    });
+
+    $('select#select_hothon').change(function () {
+
+         var optionSelected = $(this).find("option:selected");
+         var valueSelected  = optionSelected.val();
+         data = {'code' : valueSelected };
+
+         ajax('/home/get_block',data,function(result){
+            $("#select_block option").remove().end();
+            for (var i = result.length - 1; i >= 0; i--) {
+                $("#select_block").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+            };
+         });
+    });
+});
+</script>
+{% endblock%}
+{% block title %} Цикл {% endblock%}
+{% block link %}/home/lavlagaa/cycle{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="" method="POST">
+            {% csrf_token %}
+            <div class="content">
+                {% if urlz == "/home/lavlagaa/add_cycle" %}
+	                <legend>Циклийн мэдээлэл бүртгэх</legend>
+	            {% else %}
+	                <legend>Циклийн мэдээлэл засах</legend>
+	            {%endif%}
+                <div class="col-md-6">
+                	<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Циклийн нэр</label>
+                            <input class="form-control" type="text" name="name" value="{{cycle.name}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Заалт авах өдөр</label>
+                            <input class="form-control" type="text" name="zaalt_avah" value="{{cycle.zaalt_avah}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төлбөр төлөх өдөр</label>
+                            <input class="form-control" type="number" name="tulbur_tuluh" value="{{cycle.tulbur_tuluh}}" max="31" min="1" required/>
+                        </div>
+                    </fieldset>
+
+                </div>
+
+                <div class="col-md-6">
+					<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Циклийн дугаар</label>
+                            <input class="form-control" type="number" name="code" value="{{cycle.code}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төлбөр гарах өдөр</label>
+                            <input class="form-control" type="number" name="tulbur_garah" value="{{cycle.tulbur_garah}}" max="31" min="1" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ангилал</label>
+                            <select class="form-control" name="angilal" required>
+                                <option value="">- Сонгох -</option>
+                                {% if cycle.angilal == '0' %}
+                                    <option value="0" selected>Аж ахуй нэгж</option>
+                                    <option value="1">Ахуйн хэрэглэгч</option>
+                                {% else %}
+                                    <option value="0" >Аж ахуй нэгж</option>
+                                    <option value="1" selected>Ахуйн хэрэглэгч</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_cycle" %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                   <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

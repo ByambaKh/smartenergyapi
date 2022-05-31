@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load homepage_tags %}
+{% block link %}/home/call_list{% endblock%}
+{% block title %}Дуудлага{% endblock %}
+
+{% block content %}
+{% if perms.data.view_call %}
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    Дуудлага
+                </div>
+                <div class="content content-full-width">
+                    <div class="panel-body">
+                        <div class="col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Хэрэглэгчийн код</label>
+                                    <h5>{{customer.code}}</h5>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Утасны дугаар</label>
+                                    <h5>{% if customer.code %}
+                                        {{customer.phone}}
+                                        {% else %}
+                                        {{call_data.call_phone}}
+                                        {% endif %}
+                                    </h5>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Дуудлага ирсэн огноо</label>
+                                    <h5>{{call_data.call_created_date|date:"d-m-Y H:i"}}</h5>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Дуудлагын төлөв</label>
+                                    <h5>{% if call_data.status == "0" %}
+                                            Шийдвэрлээгүй
+                                        {% elif call_data.status == "1" %}
+                                            Шийдвэрлэсэн
+                                        {% endif %}
+                                    </h5>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Төрөл</label>
+                                    <h5>{{call_data.call_type.name}}</h5>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Хариуцсан ажилтан</label>
+                                    <h5>
+                                        {% for user in users %}
+                                        {% make_int call_data.assigning_user as assigning_user %}
+                                        {% if assigning_user == user.id %}
+                                        {{user.user.last_name}} {{user.user.first_name}}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </h5>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Тэмдэглэл</label>
+                                    <h6><i>{{call_data.note}}</i></h6>
+                                </div>
+                            </fieldset>
+                        </div>
+                        {% if customer.code %}
+                        <div class="form-group col-md-12">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Дуудлагын явц</label>
+                                    <div class="download_button text-right">
+                                        <a href="/home/call_activity_add/{{call_data.id}}/" class="btn btn-primary btn-fill btn-wd" ><span ></span> Дуудлагын явц нэмэх</a>
+                                    </div>
+                                     <table id="bootstrap-table1" class="table">
+                                        <thead>
+                                            <th data-field="number" data-sortable="false">Дугаар</th>
+                                            <th data-field="activity_date" data-sortable="true">Хийгдсэн огноо</th>
+                                            <th data-field="activity_type" data-sortable="true">Явц</th>
+                                            <th data-field="note" data-sortable="true">Тэмдэглэл</th>
+                                            <th data-field="assigning_user" data-sortable="true">Хариуцсан ажилтан</th>
+                                            <th data-field="actions">Засах</th>
+                                        </thead>
+                                        <tbody>
+                                        {% for activity in activities %}
+                                            <tr>
+                                                <td>{{forloop.counter}}</td>
+                                                <td>{{activity.created_date|date:"Y-m-d h:i"}}</td>
+                                                <td>
+                                                    {% if activity.activity_type == "0" %}
+                                                        Дотооддоо шийдвэрлэх
+                                                    {% elif activity.activity_type == "1" %}
+                                                        Шилжүүлсэн
+                                                    {% elif activity.activity_type == "2" %}
+                                                        Хэрэглэгчид буцаасан
+                                                    {% elif activity.activity_type == "3" %}
+                                                        Шийдвэрлэгдсэн
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{activity.note}}</td>
+                                                <td>
+                                                    {% for user in users %}
+                                                        {% if activity.assigning_user is not None and activity.assigning_user != '' %}
+                                                            {% make_int activity.assigning_user as assigning_user %}
+                                                            {% if user.id == assigning_user %}
+                                                                {{user.user.first_name}} {{user.user.last_name}}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </td>
+                                                <td class="td-actions text-center">
+                                                    {% if perms.data.change_call %}
+                                                    <a href="/home/call_activity_edit/{{activity.call.id}}/{{activity.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                    {% if activities.length > 1 %}
+                                                        {% if perms.data.delete_call %}
+                                                        <a href="/home/call_activity_delete/{{call_data.id}}/{{activity.id}}/" onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')" class="btn btn-simple btn-danger btn-icon table-action remove">
+                                                            <i class="fa fa-remove"></i>
+                                                        </a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </fieldset>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

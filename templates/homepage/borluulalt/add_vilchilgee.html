@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block link %}{% url 'uilchilgee_list' %}{% endblock%}
+{% block title %}Төлбөрт үйлчилгээ{% endblock %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        function check_customer_code() {
+            var user_code_value = $('#user_code').val();
+            if (user_code_value.length == 0){
+                $('#user_code').is(':required')
+                $('#error_text').text('Хэрэглэгчийн дугаараа оруулна уу.');
+            }
+            else{
+                data = {'user_code' : user_code_value };
+
+                ajax('/home/get_username_addr', data, function(result){
+
+                    $('#user_name').val(result[0].user_name);
+                    $('#address_name').val(result[0].address_name);
+
+                    var ang = result[0].angilal;
+                    angilal = {'angilal' : ang };
+
+                    ajax('/home/get_uilchilgee_bytype',angilal,function(result){
+                        $("#services option").remove().end();
+                        for (var i = result.length - 1; i >= 0; i--) {
+                            $('#services').append('<option value="'+ result[i].id +'">'+ result[i].name + ' - ' + result[i].payment + '</option>');
+                        };
+                    });
+                });
+
+                ajax('/home/get_toobyuser', data, function(result){
+                    if (result.error != null){
+                        $('#error_text').text(result.error.description);
+                    }
+                    else{
+                        $('#error_text').text('');
+                        $("#tooluur_select option").remove();
+
+                        for (var i = result.length - 1; i >= 0; i--) {
+                            if (i == 0){
+                                $("#tooluur_select").append('<option value=\"' +result[i].code + '\" selected>' + result[i].name +'</option>');
+                            }
+                            else{
+                                $("#tooluur_select").append('<option value=\"' +result[i].code + '\">' + result[i].name +'</option>');
+                            }
+                        };
+                    }
+                });
+            }
+        }
+        $('input#user_code').focusout(function() {
+            check_customer_code()
+        });
+    });
+
+</script>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="card">
+        <form name="bichilt_form" class="form-horizontal" action="" method="post" onsubmit="return validateForm()">
+            {% csrf_token %}
+            <div class="content">
+                <legend>Төлбөрт үйлчилгээ бүртгэх</legend>
+                <div class="col-md-3">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хэрэглэгчийн код</label>
+                            <input class="form-control" type="text" name="user_code" id="user_code" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-3">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хэрэглэгчийн нэр</label>
+                            <input class="form-control" type="text" name="user_name"
+                                   	id="user_name" value="{{user_name}}" disabled/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хаяг</label>
+                            <input class="form-control" name="address_name" id="address_name" readonly/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-md-6">
+                    <div class="col-md-6">
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Төлбөрт үйлчилгээ үзүүлсэн ажилтан</label>
+                                <select class="form-control" id="select_monter" name="select_monter">
+                                    <option value="">- Сонгох -</option>
+                                    {% for monter in monters %}
+                                        <option value="{{monter.id}}" selected>{{monter.first_name}} {{monter.last_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Тоолуур</label>
+                                <select class="form-control" name="tooluur_select" id="tooluur_select" required>
+                                </select>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-6">
+                        <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Үйлчилгээний огноо</label>
+                            <input type="text" class="form-control datetimepicker" name="uil_date" required/>
+                        </div>
+                    </fieldset>
+                    </div>
+                    <div class="col-md-6">
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label">Бүртгэсэн ажилтан</label>
+                                <input type="text" class="form-control" value="{{request.user.first_name}} {{request.user.last_name}}" readonly/>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төлбөрт үйлчилгээний нэр</label>
+                            <select class="form-control" name="services" style="height:100px;" id="services" multiple="multiple">
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

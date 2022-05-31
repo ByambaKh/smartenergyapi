@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Авлага засах{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <form class="form-horizontal" action method="POST" id="allInputsFormValidation">
+                    {% csrf_token %}
+                    <div class="content">
+                        <legend>Авлага засах</legend>
+                        <div class="col-md-6">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Хэрэглэгчийн код</label>
+                                    <h5>{{avlaga.customer.code}}</h5>
+                                </div>
+                            </fieldset>
+
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Он</label>
+                                    <h5>{{avlaga.year}}</h5>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Хэрэглэгчийн нэр</label>
+                                    <h5>{{avlaga.customer.first_name}} {{avlaga.customer.last_name}}</h5>
+                                </div>
+                            </fieldset>
+
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Сар</label>
+                                    <h5>{{avlaga.month}}</h5>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-12">
+                            <br>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label">Хэрэглээний төлбөр</label>
+                                    <input class="form-control" type="number" name="heregleenii_tulbur" required
+                                           value="{{avlaga.heregleenii_tulbur}}">
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="footer text-center">
+                        <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

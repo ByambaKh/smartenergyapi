@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+
+{% block title %}Лавлагаа{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <ul role="tablist" class="nav nav-tabs">
+            <li role="presentation" class="active">
+                <a href="#BORLUULALT" data-toggle="tab"><i class="fa fa-money"></i>Борлуулалт</a>
+            </li>
+            <li>
+                <a href="#ASHIGLALT" data-toggle="tab"><i class="fa fa-wrench"></i>Ашиглалт</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="BORLUULALT" class="tab-pane active">
+                {% if perms.data.view_aanangilal or perms.data.add_aanangilal or perms.data.change_aanangilal or perms.data.delete_aanangilal %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">ААН ангилал</h5>
+                            <!-- <p class="text-muted">
+                                Аж ахуйн нэгжүүдийн ангилал
+                            </p> -->
+                            <a href="lavlagaa/aan_angilal" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_ahuinhereglegch or perms.data.add_ahuinhereglegch or perms.data.change_ahuinhereglegch or perms.data.delete_ahuinhereglegch %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Ахуйн хэрэглэгч</h5>
+                            <!-- <p class="text-muted">
+                                Ахуйн хэрэглэгчийн ангилал
+                            </p> -->
+                            <a href="/home/lavlagaa/ahui_hereglegch" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_albantushaal or perms.data.add_albantushaal or perms.data.change_albantushaal or perms.data.delete_albantushaal %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Албан тушаал</h5>
+                            <!-- <p class="text-muted">
+                                Ажилчидын албан тушаалууд
+                            </p> -->
+                            <a href="/home/lavlagaa/alban_tushaal" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_calltype or perms.data.add_calltype or perms.data.change_calltype or perms.data.delete_calltype %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Дуудлагын төрөл</h5>
+                            <!-- <p class="text-muted">
+                                Дуудлагын төрлүүд
+                            </p> -->
+                            <a href="/home/lavlagaa/call_type" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_bank or perms.data.change_bank or perms.data.add_bank or perms.data.delete_bank %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Банк</h5>
+                            <!-- <p class="text-muted">
+                                Хэрэглэгчийн төлбөр төлөх банк
+                            </p> -->
+                            <a href="/home/lavlagaa/bank" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_tulburtuilchilgee or perms.data.add_tulburtuilchilgee or perms.data.change_tulburtuilchilgee or perms.data.delete_tulburtuilchilgee %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Үйлчилгээ</h5>
+                            <!-- <p class="text-muted">
+                                Үзүүлж буй үйлчилгээний жагсаалт
+                            </p> -->
+                            <a href="/home/lavlagaa/uilchilgee" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_pricetariff or perms.data.add_pricetariff or perms.data.change_pricetariff or perms.data.delete_pricetariff %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Үнэ тариф</h5>
+                            <!-- <p class="text-muted">
+                                Өдөр, Шөнө, Оргил цагийн үнийн тарифууд
+                            </p> -->
+                            <a href="/home/lavlagaa/une_tarif" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_tooluur or perms.data.add_tooluur or perms.data.change_tooluur or perms.data.delete_tooluur %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Тоолуур</h5>
+                            <!-- <p class="text-muted">
+                                Байгууллагад бүртгэлтэй бүх тоолуур
+                            </p> -->
+                            <a href="/home/lavlagaa/tooluur" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_cycle or perms.data.add_cycle or perms.data.change_cycle or perms.data.delete_cycle %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Цикл</h5>
+                            <!-- <p class="text-muted">
+                                Тоолуурын заалт авах, төлбөр төлөх цикл
+                            </p> -->
+                            <a href="/home/lavlagaa/cycle" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_aimag or perms.data.add_aimag or perms.data.change_aimag or perms.data.delete_aimag %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Аймаг / нийслэл</h5>
+                            <!-- <p class="text-muted">
+                                Аймаг, Нийслэлийн бүртгэл
+                            </p> -->
+                            <a href="/home/lavlagaa/aimag_niislel" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_duureg or perms.data.add_duureg or perms.data.change_duureg or perms.data.delete_duureg %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Сум / Дүүрэг</h5>
+                            <!-- <p class="text-muted">
+                                Аймгуудын сумдууд, Хотын дүүргүүд
+                            </p> -->
+                            <a href="/home/lavlagaa/sum_duureg" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_horoo or perms.data.add_horoo or perms.data.change_horoo or perms.data.delete_horoo %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Баг / Хороо</h5>
+                            <!-- <p class="text-muted">
+                                Сумдуудын багууд, Дүүргийн хороод
+                            </p> -->
+                            <a href="/home/lavlagaa/bag_horoo" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_hothon or perms.data.add_hothon or perms.data.change_hothon or perms.data.delete_hothon %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Хотхон</h5>
+                            <!-- <p class="text-muted">
+                                Хотхонууд
+                            </p> -->
+                            <a href="/home/lavlagaa/hothon" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_block or perms.data.add_block or perms.data.change_block or perms.data.delete_block %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Эгнээ</h5>
+                            <!-- <p class="text-muted">
+                                Эгнээнүүд
+                            </p> -->
+                            <a href="/home/lavlagaa/egnee" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_bair or perms.data.add_bair or perms.data.change_bair or perms.data.delete_bair %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Байр</h5>
+                            <!-- <p class="text-muted">
+                                Байгууллагад бүртгэлтэй бүх тоолуур
+                            </p> -->
+                            <a href="/home/lavlagaa/bair" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_amper or perms.data.add_amper or perms.data.change_amper or perms.data.delete_amper %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Гүйдэл</h5>
+                            <!-- <p class="text-muted">
+                                Мэдэгдэлийн загвар
+                            </p> -->
+                            <a href="/home/lavlagaa/amper" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_voltage or perms.data.add_voltage or perms.data.change_voltage or perms.data.delete_voltage %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Хүчдэл</h5>
+                            <!-- <p class="text-muted">
+                                Мэдэгдэлийн загвар
+                            </p> -->
+                            <a href="lavlagaa/voltage" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_transformator or perms.data.add_transformator or perms.data.change_transformator or perms.data.delete_transformator %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Гүйдлийн трансформатор</h5>
+                            <!-- <p class="text-muted">
+                                Гүйдлийн трансформаторууд
+                            </p> -->
+                            <a href="/home/lavlagaa/guidliin_trans" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_transformator or perms.data.add_transformator or perms.data.change_transformator or perms.data.delete_transformator %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Хүчдэлийн трансформатор</h5>
+                            <!-- <p class="text-muted">
+                                Хүчдэлийн трансформаторууд
+                            </p> -->
+                            <a href="/home/lavlagaa/huchdeliin_trans" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div id="ASHIGLALT" class="tab-pane">
+                {% if perms.data.view_dedstantsangilal or perms.data.add_dedstantsangilal or perms.data.change_dedstantsangilal or perms.data.delete_dedstantsangilal %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Дэд станц ангилал</h5>
+                            <!-- <p class="text-muted">
+                                Дэд станц ангилал лавлах
+                            </p> -->
+                            <!-- <a class="btn btn-warning btn-fill" href="/home/lavlagaa/ded_stants_angilal.html">Харах</a> -->
+                            <a href="/home/lavlagaa/list_ded_stants_angilal" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_dedstants or perms.data.add_dedstants or perms.data.change_dedstants or perms.data.delete_dedstants %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Дэд станц</h5>
+                            <!-- <p class="text-muted">
+                                Дэд станцуудын лавлах
+                            </p> -->
+                            <!-- <a class="btn btn-warning btn-fill" href="/home/lavlagaa/ded_stants.html">Харах</a> -->
+                            <a href="/home/lavlagaa/ded_stants" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_powertransformator or perms.data.add_powertransformator or perms.data.change_powertransformator or perms.data.delete_powertransformator %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Хүчний трансформатор</h5>
+                            <!-- <p class="text-muted">
+                                Мэдэгдэлийн загвар
+                            </p> -->
+                            <a href="/home/lavlagaa/huchnii_trans" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_shugam or perms.data.add_shugam or perms.data.change_shugam or perms.data.delete_shugam %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Шугам</h5>
+                            <!-- <p class="text-muted">
+                                Мэдэгдэлийн загвар
+                            </p> -->
+                            <a href="/home/lavlagaa/shugam" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_cable or perms.data.add_cable or perms.data.change_cable or perms.data.delete_cable %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Кабель</h5>
+                            <!-- <p class="text-muted">
+                                Мэдэгдэлийн загвар
+                            </p> -->
+                            <a href="/home/lavlagaa/cable" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_cable or perms.data.add_cable or perms.data.change_cable or perms.data.delete_cable %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Релей</h5>
+                            <!-- <p class="text-muted">
+                                Мэдэгдэлийн загвар
+                            </p> -->
+                            <a href="/home/lavlagaa/relei" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_battery or perms.data.add_battery or perms.data.change_battery or perms.data.delete_battery %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Баттерей</h5>
+                            <!-- <p class="text-muted">
+                                Мэдэгдэлийн загвар
+                            </p> -->
+                            <a href="/home/lavlagaa/battery" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.data.view_zaavarchilgaa or perms.data.add_zaavarchilgaa or perms.data.change_zaavarchilgaa or perms.data.delete_zaavarchilgaa %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="content text-center">
+                            <h5 class="title_height">Зааварчилгаа</h5>
+                            <!-- <p class="text-muted">
+                                Мэдэгдэлийн загвар
+                            </p> -->
+                            <a href="lavlagaa/zaavarchilgaa/1/" class="btn btn-warning btn-fill">Харах</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

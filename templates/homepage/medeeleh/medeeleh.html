@@ -1,0 +1,440 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load homepage_tags %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        ajax('/home/get_default_start', function(result){
+            for (var i=0; i<result.length; i++) {
+                if(result[i].type == '2') {
+                    $("#duureg").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+                if(result[i].type == '3') {
+                    $("#khoroo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+                if(result[i].type == '4') {
+                    $("#hothon").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+                if(result[i].type == '5') {
+                    $("#egnee").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            }
+
+            $('select#duureg').find('option').each(function() {
+                if($(this).val() == '13') {
+                    $(this).prop('selected', true);
+                }
+            });
+
+            $('select#khoroo').find('option').each(function() {
+                if($(this).val() == '134') {
+                    $(this).prop('selected', true);
+                }
+            });
+
+            $('select#hothon').find('option').each(function() {
+                if($(this).val() == '1341') {
+                    $(this).prop('selected', true);
+                }
+            });
+        });
+
+        $('select#aimag').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            data = {'code': optionSelected.val()};
+
+            alert('SELECT AIMAG');
+
+            $("#duureg option").remove().end();
+            $("#khoroo option").remove().end();
+            $("#hothon option").remove().end();
+            $("#egnee option").remove().end();
+            $("#bair option").remove().end();
+
+            ajax('/home/get_duureg', data, function(result){
+                $("#duureg").append('<option>- Сонгох -</option>');
+                for (var i=0; i<result.length; i++) {
+                    $("#duureg").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            });
+        });
+
+        $('select#duureg').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            data = {'code': optionSelected.val()};
+
+            $("#khoroo option").remove().end();
+            $("#hothon option").remove().end();
+            $("#egnee option").remove().end();
+            $("#bair option").remove().end();
+
+            ajax('/home/get_horoo', data, function(result){
+                $("#khoroo").append('<option>- Сонгох -</option>');
+                for (var i=0; i<result.length; i++) {
+                    $("#khoroo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            });
+        });
+
+        $('select#khoroo').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            data = {'code': optionSelected.val()};
+
+            $("#hothon option").remove().end();
+            $("#egnee option").remove().end();
+            $("#bair option").remove().end();
+
+            ajax('/home/get_khotkhon', data, function(result){
+                $("#hothon").append('<option>- Сонгох -</option>');
+                for (var i=0; i<result.length; i++) {
+                    $("#hothon").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            });
+        });
+
+        $('select#hothon').change(function () {
+            $("#egnee option").remove().end();
+            $("#bair option").remove().end();
+
+            var optionSelected = $(this).find("option:selected");
+            data = {'khothonCode': optionSelected.val()};
+
+            ajax('/home/get_bair_block', data, function(result){
+                if (result.length > 0) {
+                    if (result.slice(-1)[0].type == "1") {
+                        $("#egnee").append('<option>- Сонгох -</option>');
+                        for (var i=0; i<result.length-1; i++) {
+                            $("#egnee").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                        }
+                    } else {
+                        $("#egnee").append('<option>- Сонгох -</option>');
+                        $("#bair").append('<option>- Сонгох -</option>');
+                        for (var i=0; i<result.length-1; i++) {
+                            $("#bair").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                        }
+                    }
+                }
+            });
+        });
+
+        $('select#egnee').change(function() {
+            var optionSelected = $(this).find("option:selected");
+            data = {'code': optionSelected.val()};
+
+            $("#bair option").remove().end();
+
+            ajax('/home/get_bairs', data, function(result){
+                $("#bair").append('<option>- Сонгох -</option>');
+                for (var i=0; i<result.length; i++) {
+                    $("#bair").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            });
+        });
+
+        $('#limit').change(function() {
+            $("#sms_limit").val($('#limit').val());
+            $("#email_limit").val($('#limit').val());
+        })
+
+        $('#sms_datas').val($('#print_datas').val());
+        $('#email_datas').val($('#print_datas').val());
+    });
+</script>
+{% endblock%}
+{% block title %}Мэдээлэх{% endblock%}
+{% block content %}
+{% if perms.data.view_medeelehzagvar %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if search_q is not None %}
+    <div class="row">
+        <div class="col-md-12">
+            <div style="float:left; margin-left:10px;">
+                <form method="post" action="/home/medeeleh_print">{% csrf_token %}
+                    <div style="float:left; margin-left:10px;">
+                        <div style="...">
+                            <label>Шатлал</label>
+                            <input type="number" id="limit" placeholder="Шатлал" class="form-control" name="limit">
+                        </div>
+                    </div>
+                    <div style="float:left; margin-left:10px;">
+                        <label>Хэвлэх загвар</label>
+                        <select name="print_design_id" class="form-control">
+                            <option value="">сонгох</option>
+                            {% for print_design in print_designs %}
+                            <option value="{{print_design.id}}">{{print_design.name}}</option>
+                            {% endfor %}
+                        </select>
+                        {% for huvi_avlaga in huvi_avlagas %}
+                            {% append huvi_avlaga.ehnii huvi_avlaga.bichilt as avlaga_all %}
+                            {% reduce avlaga_all huvi_avlaga.payment as balance %}
+                            {% set_print_datas huvi_avlaga.last_name huvi_avlaga.first_name huvi_avlaga.address_name huvi_avlaga.code huvi_avlaga.toot balance huvi_avlaga.bichilt huvi_avlaga.building_number huvi_avlaga.phone huvi_avlaga.email %}
+                        {% endfor %}
+                        {% get_print_datas as print_datas %}
+
+                        <input type="hidden" id="print_datas" name="print_datas" value="{{print_datas|safe}}">
+                        {% del_print_datas %}
+                        <button class="btn btn-primary btn-fill btn-wd" type="submit">Хэвлэх загвар сонгох</button>
+                    </div>
+                </form>
+            </div>
+            <div style="float:left; margin-left:10px">
+                <form method="post" action="/home/medeeleh_sms">{% csrf_token %}
+                    <div style="float:left; margin-left:10px;">
+                        <label>SMS загвар</label>
+                        <input type="hidden" id="sms_limit" name="sms_limit">
+                        <select name="sms_design_id" class="form-control">
+                            <option value="">сонгох</option>
+                            {% for sms_design in sms_designs %}
+                            <option value="{{sms_design.id}}">{{sms_design.name}}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" id="sms_datas" name="sms_datas" value="">
+                        <button class="btn btn-primary btn-fill btn-wd" type="submit">SMS загвар сонгох</button>
+                    </div>
+                </form>
+            </div>
+            <div style="float:left; margin-left:10px;">
+                <form method="post" action="/home/medeeleh_email">{% csrf_token %}
+                    <div style="float:left; margin-left:10px;">
+                        <label>Имэйл загвар</label>
+                        <input type="hidden" id="email_limit" name="email_limit">
+                        <select name="email_design_id" class="form-control">
+                            <option value="">сонгох</option>
+                            {% for email_design in email_designs %}
+                            <option value="{{email_design.id}}">{{email_design.name}}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" id="email_datas" name="email_datas" value="">
+                        <button class="btn btn-primary btn-fill btn-wd" type="submit">Имэйл загвар сонгох</button>
+                    </div>
+                </form>
+            </div>
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт төлбөр төлөх хэрэглэгчид</div>
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/medeeleh/1/">{% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-3">
+                                <label>Эхлэх огноо</label>
+                                <input type="text" class="form-control datetimepicker"
+                                       placeholder="Эхлэх огноо" name="start_date" id="start_date"
+                                       required value="{{search_q.start_date}}" style="margin-top: 0px;">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Дуусах огноо</label>
+                                <input type="text" class="form-control datetimepicker"
+                                       placeholder="Дуусах огноо" name="end_date" id="end_date"
+                                       required value="{{search_q.end_date}}" style="margin-top: 0px;">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Хэрэглэгчийн код</label>
+                                <input value="{{search_q.customer_code}}" type="text" maxlength="10"
+                                       placeholder="Хэрэглэгчийн код" class="form-control" name="customer_code">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Хэрэглэгчийн нэр</label>
+                                <input value="{{search_q.customer_name}}" type="text" maxlength="50"
+                                       placeholder="Хэрэглэгчийн нэр" class="form-control" name="customer_name">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Цикл</label>
+                                <select name="select_cycle" id="select_cycle" class="form-control">
+                                    <option value="">- Сонгох -</option>
+                                    {% for item in cycle %}
+                                        {% if search_q.cycle == item.code %}
+                                            <option value="{{item.code}}" selected>{{item.name}}</option>
+                                        {% else %}
+                                            <option value="{{item.code}}">{{item.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Хаяг</label>
+                                <input value="{{search_q.address}}" type="text" maxlength="100" placeholder="Хаяг"
+                                       class="form-control" name="address">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Хэрэглэгчийн төрөл</label>
+                                <select class="form-control" name="customer_angilal">
+                                    <option value="">Бүгд</option>
+                                    <option value="0" {% if search_q.customer_angilal == '0' %}selected{% endif %}>ААН</option>
+                                    <option value="1" {% if search_q.customer_angilal != '0' %}selected{% endif %}>Айл өрх</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                {% comment %}
+                                <a href="/home/medeeleh/0/" class="btn btn-info btn-fill btn-wd" type="button">Цэвэрлэх</a>
+                                {% endcomment %}
+                                <button type="submit" class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    <div class="clearfix"></div>
+                    </form>
+
+                    <form method="POST" action="/home/medeeleh/2/">{% csrf_token %}
+                        <div class="col-md-12">
+                            <div class="form-group col-md-3">
+                                <label>Эхлэх огноо</label>
+                                <input type="text" class="form-control datetimepicker"
+                                       placeholder="Эхлэх огноо" name="start_date"
+                                       required value="{{search_q.start_date}}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Дуусах огноо</label>/
+                                <input type="text" class="form-control datetimepicker"
+                                       placeholder="Дуусах огноо" name="end_date"
+                                       required value="{{search_q.end_date}}">
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Аймаг / Нийслэл</label>
+                                        <select class="form-control" name="aimag" id="aimag">
+                                            <option value="">- Сонгох -</option>
+                                            {% for aimag in aimags %}
+                                                {% if aimag.code == '1' %}
+                                                    <option value="{{aimag.code}}" selected>{{aimag.name}}</option>
+                                                {% else %}
+                                                    <option value="{{aimag.code}}">{{aimag.name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Сум / Дүүрэг</label>
+                                        <select class="form-control" name="duureg" id="duureg">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Хороо</label>
+                                        <select class="form-control" name="khoroo" id="khoroo">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Хотхон</label>
+                                        <select class="form-control" name="hothon" id="hothon">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Эгнээ</label>
+                                        <select class="form-control" name="egnee" id="egnee">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Байр</label>
+                                        <select class="form-control" name="bair" id="bair">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                        <input type="hidden" id="customer_id" value="">
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <!--div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Тоот</label>
+                                        <select class="form-control" name="toot" id="toot">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div-->
+
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-md-12 text-center">
+                            {% comment %}
+                                <a href="/home/medeeleh/0/" class="btn btn-info btn-fill btn-wd" type="button">Цэвэрлэх</a>
+                            {% endcomment %}
+                            <button type="submit" class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </form>
+                    <div class="clearfix"></div>
+
+                    {% if search_q is not None %}
+                    <table id="bootstrap-table" class="table" style="margin-left: 10px;">
+                        <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="code" data-sortable="true" class="text-center">Код</th>
+                        <th data-field="full_name" data-sortable="true" class="text-center">Овог нэр</th>
+                        <th data-field="address" data-sortable="true" class="text-center">Хаяг</th>
+                        <th data-field="phone" data-sortable="true" class="text-center">Утас</th>
+                        <th data-field="email" class="td-actions text-center">Имэйл</th>
+                        <th data-field="ehnii" data-sortable="true" class="text-center">Эхний үлдэгдэл</th>
+                        <th data-field="bichilt" data-sortable="true" class="text-center">Бичилт</th>
+                        <th data-field="payment" data-sortable="true" class="text-center">Орлого</th>
+                        <th data-field="balance" data-sortable="true" class="text-center">Эцсийн үлдэгдэл</th>
+                        </thead>
+                        <tbody>
+                        {% for huvi_avlaga in huvi_avlagas %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center">{{ huvi_avlaga.code }}</td>
+                            <td class="text-center">{{ huvi_avlaga.first_name }} {{ huvi_avlaga.last_name }}</td>
+                            <td class="text-center">{{ huvi_avlaga.address_name }}</td>
+                            <td class="text-center">{{ huvi_avlaga.phone }}</td>
+                            <td class="text-center">{{ huvi_avlaga.email }}</td>
+                            <td class="text-center">{{ huvi_avlaga.ehnii|floatformat:"2"|intcomma }}</td>
+                            <td class="text-center">{{ huvi_avlaga.bichilt|floatformat:"2"|intcomma }}</td>
+                            <td class="text-center">{{ huvi_avlaga.payment|floatformat:"2"|intcomma }}</td>
+                            <td class="text-center">
+                                {% append huvi_avlaga.ehnii huvi_avlaga.bichilt as avlaga_all %}
+                                {% reduce avlaga_all huvi_avlaga.payment as balance %}
+                                {{ balance|floatformat:"2"|intcomma }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

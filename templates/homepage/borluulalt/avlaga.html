@@ -1,0 +1,499 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load mathfilters %}
+{% load homepage_tags %}
+{% block head_block %}
+<style>
+    .download_excel {
+    margin-left: 15px;
+    margin-top: 20px;
+    margin-bottom: -55px;
+    padding-right: 410px;
+}
+</style>
+<script type="text/javascript">
+
+		function salgaltone(id, start, end) {
+			
+		    data = {'cus_id':id, 'start_date':start, 'end_date':end};
+		    $.ajax({
+		        type: 'GET',
+		        url: '/home/salgalt_one',
+		        data: data,
+		        success: function(response) {
+		        	alert("Таслалт хийх хүсэлт амжилттай бүртгэгдлээ")
+	            }
+		    });
+		}
+		
+		function salgaltall(start, end) {
+			var arr = [];
+			
+	        $("tr").each(function() {
+	        	var row = $(this);
+		        if (row.find('input[type="checkbox"]').is(':checked')) {
+		            arr.push(row.find('input[type="checkbox"]').val())
+		            console.log(row.find('input[type="checkbox"]').val())
+		        }
+			});
+	        
+		    data = {'ids[]': arr, 'start_date':start, 'end_date':end};
+		    
+		    $.ajax({
+		        type: 'GET',
+		        url: '/home/salgalt_all',
+		        data: data,
+		        success: function(response) {
+		        	alert("Таслалт хийх хүсэлтүүд амжилттай бүртгэгдлээ")
+	            }
+		    });
+		}
+
+		function nehemjleh(id, start, end) {
+
+	    	$("#nehemjleh_tbl tr").remove();
+           	$('#nehemjleh_tbl').append('<tr class="text-center"><td colspan="7"><strong>Ачааллаж байна</strong></td></tr>');
+
+		    data = {'cus_id':id, 'start_date':start, 'end_date':end};
+		    ajax('/home/avlaga_neh', data, function(result){
+
+		    	$("#nehemjleh_tbl tr").remove();
+		    	var trHTML = '';
+
+                trHTML = trHTML + '<tr><td height="15%" valign="middle"><table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">' +
+                                   '<tr><td>Ухаалаг эрчим хүч ХХК</td></tr><tr><td colspan="2" height="10" ></td></tr>' +
+                                   '<tr><td align="center" colspan="4" ><span class="neh-big">Төлбөрийн нэхэмжлэх</span></td></tr>' +
+                                   '<tr><td colspan="2" height="10" ></td></tr><tr><td>Борлуулалтын цикл:<span class="neh-small">';
+                trHTML = trHTML + result.cycle
+                trHTML = trHTML + '</span></td><td>Дэд станц:<span class="neh-small">';
+                trHTML = trHTML + result.dedstants
+                trHTML = trHTML + '</span></td><td></td><td>TY: <span class="neh-small">';
+                trHTML = trHTML + result.start_date + '-' + result.end_date
+                trHTML = trHTML + '</span></td></tr><tr><td colspan="2">Код:<span class="neh-small">';
+                trHTML = trHTML + result.kod
+                trHTML = trHTML + '</span></td><td colspan="2">Банк:<span class="neh-small">';
+                trHTML = trHTML + result.bank
+                trHTML = trHTML + '</span></td></tr><tr><td colspan="2">Нэр:<span class="neh-small">';
+                trHTML = trHTML + result.name
+                trHTML = trHTML + '</span></td><td colspan="2">Данс:<span class="neh-small">';
+                trHTML = trHTML + result.dans
+                trHTML = trHTML + '</span></td></tr><tr><td colspan="2">Хаяг:<span class="neh-small">';
+                trHTML = trHTML + result.address
+                trHTML = trHTML + '</span></td><td colspan="2">Тооцоонд хамрагдах хугацаа:<span class="neh-small">';
+                trHTML = trHTML + '---------------'
+                trHTML = trHTML + '</span></td></tr><tr><td colspan="2" height="10" ></td></tr><tr><td colspan="2">Эхний үлдэгдэл:<span class="neh-small">';
+                trHTML = trHTML + '---------------'
+                trHTML = trHTML + '</span>төгрөг</td><td colspan="2">Хэвлэсэн:<span class="neh-small">';
+                trHTML = trHTML + result.printed_date
+                trHTML = trHTML + '</span></td></tr></table></td></tr><tr><td height="50%">' +
+                                    '<table style="border:1px solid #000000; " width="100%" cellspacing="0" cellpadding="2"><tr>' +
+                                    '<td width="25%" rowspan="2" class="neh-small" style="border-right: 1px solid; text-align: center;" >Обьектын нэр</td>' +
+                                    '<td width="15%" rowspan="2" class="neh-small" style="border-right: 1px solid; text-align: center;" >Хэмжүүрийн дугаар</td>' +
+                                    '<td width="18%" colspan="2" class="neh-small" style="border-right: 1px solid; text-align: center;" >Тоолуурын заалт</td>' +
+                                    '<td width="12%" rowspan="2" class="neh-small" style="border-right: 1px solid; text-align: center;" >Хэрэглээ кВт.цаг</td>' +
+                                    '<td width="12%" rowspan="2" class="neh-small" style="border-right: 1px solid; text-align: center;" >Тариф төгрөг</td>' +
+                                    '<td width="18%" rowspan="2" class="neh-small" style="text-align: center;" >Дүн төгрөг</td></tr><tr>' +
+                                    '<td class="neh-small" style="border-right: 1px solid; border-top:1px solid; text-align: center;" >Өмнөх</td>' +
+                                    '<td class="neh-small" style="border-right: 1px solid; border-top:1px solid; text-align: center;" >Одоо</td></tr><tr>' +
+                                    '<td colspan="7" align="left" style=" padding-top:5px; padding-bottom:5px; border-top:1px solid"><span class="neh-small">Тоолууртай хэрэглээ</span></td></tr>';
+
+		    	for (var i = 0; i < result.result_set.length; i++) {
+		    	    trHTML = trHTML + '<tr><td style="border-top:1px solid">Өдөр' +
+                                        '</td><td style="border-right: 1px solid; border-top:1px solid; text-align: center;" >' +
+                                        '</td><td style="border-right: 1px solid; border-top:1px solid; text-align: right;" >' +
+                                        '</td><td style="border-right: 1px solid; border-top:1px solid; text-align: right;" >' +
+                                        '</td><td style="border-right: 1px solid; border-top:1px solid; text-align: right;" >' +
+                                        '</td><td style="border-right: 1px solid; border-top:1px solid; text-align: right;" >' +
+                                        '</td><td style="border-top:1px solid; text-align: right;" >' + 14760 + '</td></tr>';
+               	};
+
+               	trHTML = trHTML + '</table></td></tr><tr><td>Нийт орлого:<span class="neh-small">-------------</span>төгрөг.</td></tr>' +
+                                    '<tr><td>Эцсийн үлдэгдэл:<span class="neh-small">-------------</span>төгрөг.</td></tr>' +
+                                    '<tr><td>Нэхэмжлэхийн данс:<span>Худалдаа хөгжлийн банк төв - 499208431.Лавлах утас: 77226269</span></td></tr>' +
+                                    '<tr><td>Санамж: Тооцоо гарсанаас хойш 10 хоногийн дотор төлбөрөө төлөхгүй бол алданги тооцох болно.</td></tr>';
+
+               	$('#nehemjleh_tbl').append(trHTML);
+             });
+		}
+		
+        $(document).ready(function() {
+        	$('#salgalt').click(function () {
+        		var arr = [];
+        		
+	            $("tr").each(function() {
+	            	var row = $(this);
+        	        if (row.find('input[type="checkbox"]').is(':checked')) {
+        	            arr.push(row.find('input[type="checkbox"]').val())
+        	        }
+				});
+
+	           	$.ajax({
+			        type: 'GET',
+			        url: '/home/salgalt_all',
+			        data: {'ids[]': arr},
+			        success: function(response) {
+			        	alert("Таслалт хийх хүсэлтүүд амжилттай бүртгэгдлээ")
+		            }
+			    });
+        	});
+        	$('#bootstrap-table1').on('check.bs.table', function (e, arg1) {
+        	    if (arg1.id!='')
+                    if (!selected_ids.includes(arg1.id))
+                        selected_ids.push(arg1.id);
+            }).on('uncheck.bs.table', function (e, arg1) {
+                var index = selected_ids.indexOf(arg1.id);
+        	    selected_ids.splice(index, 1);
+            }).on('page-change.bs.table', function (e, arg1) {
+                $(this).bootstrapTable('checkBy', {field:'id',values:selected_ids});
+            }).on('check-all.bs.table', function (e, arg1) {
+                $(this).bootstrapTable('getData').forEach(function(entry){
+                    if (entry.id!='')
+                        if (!selected_ids.includes(entry.id))
+                            selected_ids.push(entry.id);
+                });
+            }).on('uncheck-all.bs.table', function (e, arg1) {
+                $(this).bootstrapTable('getData').forEach(function(entry){
+                    var index = selected_ids.indexOf(entry.id);
+                    selected_ids.splice(index, 1);
+                });
+            });
+        });
+        var selected_ids=[];
+        function send_invoice(){
+            if (confirm('Байгууллагууд руу нэхэмжлэл илгээхэд итгэлтэй байна уу?')) {
+                $.ajax({
+			        type: 'GET',
+			        url: '/home/send_invoice',
+			        data: {'selected_ids[]': selected_ids},
+			        success: function(response) {
+			            if(response == 'Success') {
+			                alert("Байгууллагууд руу нэхэмжлэл амжилттай илгээгдлээ");
+			            }
+			            if(response == 'Selected') {
+			                alert("Байгууллагуудаа сонгоно уу!");
+			            }
+		            }
+			    });
+			}
+        }
+
+        function disconnect(){
+            if (confirm('Таслалт хийхдээ итгэлтэй байна уу?')) {
+                $.ajax({
+			        type: 'GET',
+			        url: '/home/disconnect',
+			        data: {'selected_ids[]': selected_ids},
+			        success: function(response) {
+			            if(response == 'Success') {
+			                alert('Амжилттай таслалт хийгдлээ!');
+			            }
+			            if(response == 'Selected') {
+			                alert('Хэрэглэгч сонгоно уу!');
+			            }
+		            }
+			    });
+			}
+        }
+
+        function avlaga_confirm() {
+            if (confirm('Баталгаажуулалт хийхдээ итгэлтэй байна уу?')) {
+                $.ajax({
+			        type: 'POST',
+			        url: '/home/avlaga_confirm',
+			        data: {'selected_ids[]': selected_ids},
+			        success: function(response) {
+			            if(response == 'Success') {
+			                alert('Авлага амжилттай баталгаажлаа!');
+			            }
+			            if(response == 'Error') {
+			                alert('Авлага баталгаажуулахад алдаа гарлаа.');
+			            }
+			            if(response == 'Selected') {
+			                alert('Хэрэглэгч сонгоно уу!');
+			            }
+		            }
+			    });
+			}
+        }
+</script>
+<style>
+.barimt {
+	font-family: Arial, Verdana, sans-serif !important;
+	color: #000 !important;
+	font-size: 8px !important;
+	padding: -5px !important;
+}
+
+</style>
+{% endblock %}
+{% block title %}Авлага{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if search is not None %}
+    <div class="row">
+        <div class="col-md-6">
+            {% if perms.data.change_avlaga %}
+            <a href="javascript:;" class="btn btn-info btn-fill btn-wd" onclick="send_invoice()" {% if search.customer_angilal == '1' or search.customer_angilal == '' %}disabled{% endif %}>
+                Байгууллагууд руу нэхэмжлэл илгээх
+            </a>
+            <a href="/home/borluulalt/send_email" class="btn btn-info btn-fill btn-wd" id="send_email">
+                Хэрэглэгчид рүү имэйл илгээх
+            </a>
+            {% endif %}
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    Авлагатай хэрэглэгчдийн жагсаалт
+                </div>
+                <form method="POST" action="/home/borluulalt/avlaga/0/">{% csrf_token %}
+                    <div class="table_search_filter">
+                        <div class="form-group col-md-3">
+                            <label>Эхлэх огноо</label>
+                            <input type="text" class="form-control datetimepicker"
+                                   placeholder="Эхлэх огноо" name="start_date" id="start_date"
+                                   required value="{{search.start_date}}"  style="margin-top: 0px;">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Дуусах огноо</label>
+                            <input type="text" class="form-control datetimepicker"
+                                   placeholder="Дуусах огноо" name="end_date" id="end_date"
+                                   required value="{{search.end_date}}"  style="margin-top: 0px;">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Хэрэглэгчийн код</label>
+                            <input value="{{search.customer_code}}" type="text" maxlength="10"
+                                   placeholder="Хэрэглэгчийн код" class="form-control" name="customer_code">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Хэрэглэгчийн нэр</label>
+                            <input value="{{search.customer_name}}" type="text" maxlength="50"
+                                   placeholder="Хэрэглэгчийн нэр" class="form-control" name="customer_name">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Хаяг</label>
+                            <input value="{{search.address}}" type="text" maxlength="100" placeholder="Хаяг"
+                                   class="form-control" name="address">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Хэрэглэгчийн төрөл</label>
+                            <select class="form-control" name="customer_angilal">
+                                <option value="">Бүгд</option>
+                                <option value="0" {% if search.customer_angilal == '0' %}selected{% endif %}>ААН</option>
+                                <option value="1" {% if search.customer_angilal == '1' %}selected{% endif %}>Айл өрх</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                                <label>Цикл</label>
+                                <select name="select_cycle" id="select_cycle" class="form-control">
+                                    <option value="">- Сонгох -</option>
+                                    {% for item in cycle %}
+                                        {% if search.cycle == item.code %}
+                                            <option value="{{item.code}}" selected>{{item.name}}</option>
+                                        {% else %}
+                                            <option value="{{item.code}}">{{item.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        <div class="col-md-12 text-center">
+                            <button type="submit" class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                <div class="clearfix"></div>
+                {% if search is not None %}
+                {% if perms.data.delete_avlaga %}
+                <!--div class="avlaga_confirm text-right">
+                    <button name="avlaga_confirm" class="btn btn-success btn-fill" type="submit" style="border-radius: 50px;"><span class="fa fa-check-square-o"></span>Баталгаажуулах</button>
+                </div-->
+                {% endif %}
+                <div class="download_excel text-right">
+
+                    <button name="export_all_xls" class="btn btn-success btn-fill" type="submit" style="border-radius: 50px;"><span class="fa fa-file-excel-o"></span>Дэлгэрэнгүй татах</button>
+
+                </div>
+                <div class="send_to_ingeneer_button text-right">
+                    {% if perms.data.add_salgalt %}
+                    <a href="javascript:;" class="btn btn-primary btn-fill" onclick="disconnect()" style="border-radius: 50px;">
+                        <span class="fa fa-power-off"></span>Таслалт хийх
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="download_button text-right">
+                    <button name="export_av_xls" class="btn btn-success btn-fill" type="submit" style="border-radius: 50px;"><span class="fa fa-file-excel-o"></span>Файлаар татаж авах</button>
+                </div>
+                </form>
+
+                <table id="bootstrap-table1" class="table" id="av_table" name="av_table" data-unique-id="id">
+                    <thead>
+                    <th data-checkbox="true"></th>
+                    <th data-field="id" data-visible="false"></th>
+                    <th class="text-center">№</th>
+                    <th data-field="code" data-sortable="true" class="text-left">Хэрэглэгчийн код</th>
+                    <th data-field="name" data-sortable="true" class="text-left">Хэрэглэгчийн нэр</th>
+                    <th data-field="phone" data-sortable="true" class="text-left">Утасны дугаар</th>
+                    <th data-field="address" data-sortable="true" class="text-left">Хаяг</th>
+                    <th data-field="vldegdel" data-sortable="true" class="text-right">Эхний үлдэгдэл</th>
+                    <th data-field="bichilt" data-sortable="true" class="text-right">Бичилт</th>
+                    <th data-field="orlogo" data-sortable="true" class="text-right">Орлого</th>
+                    <th data-field="latest_vldegdel" data-sortable="true" class="text-right">Эцсийн үлдэгдэл</th>
+                    <th data-field="actions" class="td-actions text-center">Нэхэмжлэх</th>
+                    </thead>
+                    <tbody>
+                    {% for detail in data %}
+                    <tr>
+                        <td></td>
+                        <td>{{ detail.id }}</td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ detail.code }}</td>
+                        <td>{{ detail.last_name }} {{ detail.first_name }}</td>
+                        <td>{{ detail.phone }}</td>
+                        <td>{{ detail.address_name }}</td>
+                        <td align="right">{{ detail.ehnii|floatformat:"0"|intcomma }}</td>
+                        <td align="right">{{ detail.bichilt|floatformat:"0"|intcomma }}</td>
+                        <td align="right">{{ detail.payment|floatformat:"0"|intcomma }}</td>
+                        <td align="right">
+                            {% append detail.ehnii detail.bichilt as avlaga_all %}
+                            {% reduce avlaga_all detail.payment as balance %}
+                            {{ balance|floatformat:"0"|intcomma }}
+                        </td>
+                        <td align="center">
+                            {% if detail.customer_angilal == '1' %}
+                            <a href="/home/borluulalt/new_invoice_ahui/0/{{detail.code}}/{{search.start_date}}/{{search.end_date}}/{% if detail.ehnii %}{{detail.ehnii}}{% else %}0.00{% endif %}/0.00/{% if detail.payment %}{{detail.payment}}{% else %}0.00{% endif %}/{% if detail.bichilt %}{{detail.bichilt}}{% else %}0.00{% endif %}/" target="_blank"><i class="fa fa-file-o"></i></a>
+                            {% elif detail.customer_angilal == '0' %}
+                            <a href="/home/borluulalt/new_invoice_aan/0/{{detail.code}}/{{search.start_date}}/{{search.end_date}}/{% if detail.ehnii %}{{detail.ehnii}}{% else %}0.00{% endif %}/0.00/{% if detail.payment %}{{detail.payment}}{% else %}0.00{% endif %}/{% if detail.bichilt %}{{detail.bichilt}}{% else %}0.00{% endif %}/" target="_blank"><i class="fa fa-file-o"></i></a>
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td align="right"><strong>{{ehnii_total|floatformat:"2"|intcomma}}</strong></td>
+                        <td align="right"><strong>{{bichilt_total|floatformat:"2"|intcomma}}</strong></td>
+                        <td align="right"><strong>{{payment_total|floatformat:"2"|intcomma}}</strong></td>
+                        <td align="right"><strong>{{ balance_total|floatformat:"2"|intcomma }}</strong></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock%}
+
+{% block additionalblock %}
+<style>
+    tr.red{
+        background:#FB404B;
+        color: #fff;
+    }
+    tr.green{
+        background:#87CB16;
+        color: #fff;
+    }
+</style>
+<div class="modal fade invoice" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="invoiceModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="invoiceModalLabel">Татвар</h4>
+            </div>
+            <div class="modal-body">
+                {% if messages %}
+                <ul class="messagelist">
+                    {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+ <div class="modal fade all-tailan" tabindex="-1" role="dialog" aria-labelledby="ehzh1ModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Нийт явуулах имэйл <span id="all_sms"></span></h4>
+            </div>
+            <div class="modal-body" id="msgs" style="max-height: 500px; overflow-y: auto">
+                <table class="table msgtable" style="margin-left: 10px;">
+                        <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="phone" data-sortable="true" class="text-center">Код</th>
+                        <th data-field="text" data-sortable="true" class="text-center">Нэр</th>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#send_email").click(function(event){
+        $("#msgs table tbody").html("");
+        event.preventDefault();
+        i = 1;
+        count = 0;
+        $(".all-tailan").modal();
+
+        if (confirm('Хэрэглэгч рүү нэхэмжлэх явуулахдаа итгэлтэй байна уу?')) {
+
+			    var messedData =  $("#bootstrap-table1").bootstrapTable('getData');
+			    messedData.map(function (data) {
+			    <!--console.log(data.actions.search(/href="(.*?)"/g,''));-->
+			    var str1 = data.actions.split('href="');
+			    if(str1.length > 1){
+			        var str2 = str1[1].split('" target')[0];
+			        $.ajax({
+			        type: 'GET',
+			        url: str2 + "?email=true",
+			        success: function(response) {
+			            className = "red";
+                    if(response.status){
+                        className = "green";
+                        count++;
+                    }
+                    var sms = data.code;
+                    var text = data.name;
+                    $("#all_sms").text(count + "/" + (messedData.length - 1))
+                     $("#msgs table tbody").prepend("<tr class='"+className+"'><td class='text-center'>"+(i)+"</td><td class='text-center'>"+sms+"</td><td class='text-center'>"+text+"</td></tr>");
+                    i++;
+		            }
+			    });
+			    }
+
+			    })
+		}
+
+    })
+</script>
+{% endblock %}

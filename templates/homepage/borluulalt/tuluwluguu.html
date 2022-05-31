@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block link %}{% url 'tuluvluguu_list' %}{% endblock%}
+{% block title %}Төлөвлөгөө{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if perms.data.add_tuluvluguu %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/add_tuluv" class="btn btn-primary btn-fill btn-wd"
+               type="button">Санал оруулах</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    Худалдан авах цахилгаан эрчим хүчний төлөвлөгөөнд ирүүлсэн санал
+                </div>
+                <form id="allInputsFormValidationa" class="form-horizontal" action="/home/tuluvluguu" method="POST">
+                <div class="table_search_filter">
+                        {% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Он</label>
+                                <input class="form-control" type="number" name="year" min="1990" max="2100" value="{{year}}"/>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Сар</label>
+                                <input name="month" type="number" max="12" min="1" class="form-control" value="{{month}}"/>
+                            </div>
+                            <!--<div class="form-group col-md-4">-->
+                                <!--<label>Хэрэглэгчийн код</label>-->
+                                <!--<input name="tuluv_cus" type="text" class="form-control" value="{{tuluv_cus}}"/>-->
+                            <!--</div>-->
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd">Шүүж харах</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+
+                </div>
+                <div class="download_button text-right">
+                    <button class="btn btn-success btn-fill" type="submit" name="export_xls"><span class="fa fa-file-excel-o"></span>
+                        Файлаар татаж авах
+                    </button>
+                </div>
+                </form>
+                <table id="bootstrap-table1" class="table">
+                    <thead>
+                    <th class="text-center">№</th>
+                    <th data-field="reg_name" data-sortable="true">Хэрэглэгч | Хотхон</th>
+                    <th data-field="address" data-sortable="true">ХАЦЭХ-ний санал</th>
+                    <th data-field="ads1" data-sortable="true">ХАЦЭХ-ний гүйцэтгэл</th>
+                    <th data-field="ads2" data-sortable="true">Зөрүү кВтц</th>
+                    <th data-field="ads3" data-sortable="true">Зөрүү %</th>
+                    <th data-field="ads4" data-sortable="true">Жил</th>
+                    <th data-field="ads5" data-sortable="true">Сар</th>
+                    <th data-field="actions">Засвар</th>
+                    </thead>
+                    <tbody>
+                    {% for detail in datas %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ detail.code }}{% if detail.name != '' %} - {{ detail.name }}{% endif %}</td>
+                        <td>{{ detail.tuluvluguu|floatformat:'2'}} кВтц</td>
+                        <td>{{ detail.hereg|floatformat:'2'}} кВтц</td>
+                        <td>{{ detail.zuruu|floatformat:'2' }} кВтц</td>
+                        <td>{{ detail.zuruu_huvi|floatformat:'2' }} %</td>
+                        <td>{{ detail.year }}</td>
+                        <td>{{ detail.month }}</td>
+                        <td>
+                            {% if perms.data.delete_tuluvluguu %}
+                            <a href="/home/tul_del/{{detail.id}}/"
+                               class="btn btn-simple btn-danger btn-icon table-action remove"
+                               onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')">
+                                <i class="fa fa-remove"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div><!--  end card  -->
+        </div>
+    </div>
+</div>
+{% endblock %}

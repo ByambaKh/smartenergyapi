@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% block head_block %}
+<script type="text/javascript">
+        $(document).ready(function() {
+
+            $('select#select_angilal').change(function () {
+
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+
+                 ajax('/home/get_type',data,function(result){
+                 	$("#select_type option").remove().end();
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      	$("#select_type").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+
+            $('select#select_aimag').change(function () {
+
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+
+                 ajax('/home/get_duureg',data,function(result){
+                 	$("#select_duureg option").remove().end();
+                 	$("#select_horoo option").remove().end();
+                 	$("#select_hothon option").remove().end();
+                 	$("#select_block option").remove().end();
+                 	$("#select_duureg").append('<option value="">Ð¡Ð¾Ð½Ð³Ð¾Ñ…</option>');
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      	$("#select_duureg").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+
+            $('select#select_duureg').change(function () {
+
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+
+                 ajax('/home/get_horoo',data,function(result){
+                 	$("#select_horoo option").remove().end();
+                 	$("#select_hothon option").remove().end();
+                 	$("#select_block option").remove().end();
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      	$("#select_horoo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+
+            $('select#select_horoo').change(function () {
+
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+
+                 ajax('/home/get_hothon',data,function(result){
+                 	$("#select_hothon option").remove().end();
+                 	$("#select_block option").remove().end();
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      	$("#select_hothon").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+
+            $('select#select_hothon').change(function () {
+
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 data = {'code' : valueSelected };
+
+                 ajax('/home/get_block',data,function(result){
+                 	$("#select_block option").remove().end();
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      	$("#select_block").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                   	};
+                 });
+             });
+        });
+</script>
+{% endblock%}
+{% block title %}Тоолуур{% endblock%}
+{% block link %}/home/lavlagaa/tooluur{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+		<ul class="messagelist">
+			{% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="" method="post" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+                {% if urlz == "/home/lavlagaa/add_tooluur" %}
+	                <legend>Тоолуурын мэдээлэл бүртгэх</legend>
+	            {% else %}
+	                <legend>Тоолуурын мэдээлэл засах</legend>
+	            {%endif%}
+                <div class="col-md-6">
+                	<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тоолуурын дугаар</label>
+                            <input class="form-control" type="text" number="true" name="number"
+                                   value="{{number}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тоолуурын нэршил</label>
+                            <input class="form-control" type="text" name="name"
+                                   value="{{name}}" required/>
+                        </div>
+                    </fieldset>
+                    {% comment %}
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Эхний заалт</label>
+                            <input class="form-control" type="text" number="true" name="initial_value"
+                                   value="{{tooluur.initial_value}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Эхний заалт /Шөнө/</label>
+                            <input class="form-control" type="text" number="true" name="initial_value_night"
+                                   value="{{tooluur.initial_value_night}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Эхний заалт /Оргил цаг/</label>
+                            <input class="form-control" type="text" number="true" name="initial_value_rush"
+                                   value="{{tooluur.initial_value_rush}}" required/>
+                        </div>
+                    </fieldset>
+                    {% endcomment %}
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Суурилагдсан огноо</label> 
+							<input type="text" class="form-control datetimepicker"
+								name="installed_date" value="{{installed_date}}" required/>
+						</div>
+					</fieldset>
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Баталгаажилт дуусах огноо</label> 
+							<input type="text" class="form-control datetimepicker"
+								name="expire_date" value="{{expire_date}}" required/>
+						</div>
+					</fieldset>
+                     <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хүчдэл</label>
+                            <select
+								name="ut" id="ut" class="selectpicker"
+								data-title="- Сонгох -" data-style="btn-default btn-block"
+								data-menu-style="dropdown-blue" required>
+                                {% for item in huchdel %}
+                                    {% if item.id == voltage %}
+                                        <option value="{{item.id}}" selected>{{item.value}}B</option>
+                                    {% else %}
+                                        <option value="{{item.id}}">{{item.value}}B</option>
+                                    {% endif %}
+                                {% endfor %}
+							</select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Тариф</label> 
+							<select
+								name="select_tariff" id="select_tariff"
+								class="selectpicker" data-title="- Сонгох -"
+								data-style="btn-default btn-block"
+								data-menu-style="dropdown-blue" required>
+                                {% if tariff == "0" or tariff == None %}
+                                    <option value="0" selected>1 тарифт</option>
+                                {% else %}
+                                    <option value="0">1 тарифт</option>
+                                {%endif%}
+                                {% if tariff == "1" %}
+                                    <option value="1" selected>2 тарифт</option>
+                                {% else %}
+                                    <option value="1">2 тарифт</option>
+                                {%endif%}
+                                {% if tariff == "2" %}
+                                    <option value="2" selected>3 тарифт</option>
+                                {% else %}
+                                    <option value="2">3 тарифт</option>
+                                {%endif%}
+                            </select>
+						</div>
+					</fieldset>
+                </div>
+
+                <div class="col-md-6">
+					<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тоолуурын марк</label>
+                            <select name="mark" class="form-control" required>
+                                {% for item in marks %}
+                                    {% if item.mark != '' %}
+                                        {% if item.mark == mark %}
+                                            <option value="{{item.mark}}" selected>{{item.mark}}</option>
+                                        {% else %}
+                                            <option value="{{item.mark}}">{{item.mark}}</option>
+                                        {% endif %}
+                                    {% endif %}
+                                    item.mar
+                                {% endfor %}
+							</select>
+                        </div>
+                    </fieldset>
+                    {% comment %}
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Сүүлчийн заалт</label>
+                            <input class="form-control" type="text" number="true" name="balance_value"
+                                   value="{{tooluur.balance_value}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Сүүлчийн заалт/Шөнө/</label>
+                            <input class="form-control" type="text" number="true" name="balance_value_night"
+                                   value="{{tooluur.balance_value_night}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Сүүлчийн заалт/Оргил цаг/</label>
+                            <input class="form-control" type="text" number="true" name="balance_value_rush"
+                                   value="{{tooluur.balance_value_rush}}" required/>
+                        </div>
+                    </fieldset>
+                    {% endcomment %}
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Баталгаажуулсан огноо</label> 
+							<input type="text" class="form-control datetimepicker"
+								name="verified_date" value="{{verified_date}}" required/>
+						</div>
+					</fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Лацны дугаар</label>
+                            <input class="form-control" type="number" name="stamp_number"
+                                   value="{{stamp_number}}"/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Гэрчилгээний дугаар</label>
+                            <input class="form-control" type="number" name="cert_number"
+                                   value="{{cert_number}}"/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Гүйдэл</label>
+                            <select
+								name="gt" id="gt" class="selectpicker"
+								data-title="- Сонгох -" data-style="btn-default btn-block"
+								data-menu-style="dropdown-blue" required>
+                                {% for item in guidel %}
+                                    {% if item.id  == amper %}
+                                        <option value="{{item.id}}" selected>{{item.value}}A</option>
+                                    {% else %}
+                                        <option value="{{item.id}}">{{item.value}}A</option>
+                                    {% endif %}
+                                {% endfor %}
+							</select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Төлөв</label>
+                            {% if urlz == "/home/lavlagaa/add_tooluur" %}
+                                <select name="select_status" class="selectpicker" data-style="btn-default btn-block"
+								data-menu-style="dropdown-blue"  disabled>
+                                    <option value="0" selected>Ашиглагдаагүй</option>
+                                </select>
+                            {% else %}
+							<select name="select_status" id="select_status" class="selectpicker" data-style="btn-default btn-block"
+								data-menu-style="dropdown-blue" required >
+                                {% if status == "0" %}
+                                    <option value="0" selected>Ашиглагдаагүй</option>
+                                {% else %}
+                                    <option value="0">Ашиглагдаагүй</option>
+                                {%endif%}
+                                {% if status == "1" %}
+                                    <option value="1" selected>Ашиглагдаж байгаа</option>
+                                {% else %}
+                                    <option value="1">Ашиглагдаж байгаа</option>
+                                {%endif%}
+                                {% if status == "2" %}
+                                    <option value="2" selected>Ашиглалтаас гарсан</option>
+                                {% else %}
+                                    <option value="2">Ашиглалтаас гарсан</option>
+                                {%endif%}
+                            </select>
+                            {% endif %}
+						</div>
+					</fieldset>
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_tooluur" %}
+                    <button type="submit" class="btn btn-info btn-fill" name="save">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                    <button type="submit" class="btn btn-info btn-fill" name="save">Засах</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block link %}{{ header_link }}{% endblock%}
+{% block title %}Дуудлага{% endblock %}
+{% load homepage_tags %}
+{% block head_block %}
+<script type="text/javascript">
+        $(document).ready(function() {
+            console.log("called javascript")
+            $('select#select_general_types').change(function () {
+                 console.log("selected select")
+                 var optionSelected = $(this).find("option:selected");
+                 var valueSelected  = optionSelected.val();
+                 if (valueSelected == "0") {
+                      $("#assigning_title").text("Хариуцах ажилтан");
+                      $("#select_user").css("display", "inline-block");
+                      $("#assigning_company").css("display", "none");
+                      console.log("called 0")
+                 }
+                 else if (valueSelected == "1"){
+                      $("#assigning_title").text("Шилжүүлсэн байгууллага");
+                      $("#select_user").css("display", "none");
+                      $("#assigning_company").css("display", "inline-block");
+                      console.log("called 1")
+                 }
+                 else if (valueSelected == "2"){
+                      $("#assigning_title").text("Хариуцах ажилтан");
+                      $("#select_user").css("display", "none");
+                      $("#assigning_company").css("display", "inline-block");
+                      console.log("called 2")
+                 }
+                 else if (valueSelected == "3"){
+                      console.log("called 3")
+                      $("#assigning_title").text("Шийдвэрлэсэн ажилтан");
+                      $("#select_user").css("display", "inline-block");
+                      $("#assigning_company").css("display", "none");
+                 }
+                 else{
+                      $("#select_user").css("display", "inline-block");
+                      $("#assigning_company").css("display", "none");
+                 }
+             });
+        });
+
+
+</script>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+
+    <div class="card">
+        <form class="form-horizontal" action="{{urlz}}" method="POST">{% csrf_token %}
+            <div class="content">
+                <legend> {% if edit_activity != None %}
+                    Дуудлагын явц засварлах
+                    {% else %}
+                    Дуудлагын явц бүртгэх
+                    {% endif %}
+                </legend>
+
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Явц</label>
+                            <select class="form-control" id="select_general_types" name="type" oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                       oninput="setCustomValidity('')" required>
+                                <option value="">Сонгох</option>
+                                {% if edit_activity.activity_type == '0' %}
+                                <option value="0" selected>Дотооддоо шийдвэрлэх</option>
+                                {% else %}
+                                <option value="0">Дотооддоо шийдвэрлэх</option>
+                                {% endif %}
+                                {% if edit_activity.activity_type == '1' %}
+                                <option value="1" selected>Шилжүүлсэн</option>
+                                {% else %}
+                                <option value="1">Шилжүүлсэн</option>
+                                {% endif %}
+                                {% if edit_activity.activity_type == '2' %}
+                                <option value="2" selected>Хэрэглэгчид буцаасан</option>
+                                {% else %}
+                                <option value="2">Хэрэглэгчид буцаасан</option>
+                                {% endif %}
+                                {% if edit_activity.activity_type == '3' %}
+                                <option value="3" selected>Шийдвэрлэсэн</option>
+                                {% else %}
+                                <option value="3">Шийдвэрлэсэн</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label" id="assigning_title">Хариуцах ажилтан</label>
+                            <select class="form-control" id="select_user" name="select_user" oninvalid="this.setCustomValidity('Та талбарыг заавал сонгоно уу')"
+                                       oninput="setCustomValidity('')" required>
+                                <option value="">Сонгох</option>
+                                {% for user in users %}
+                                    {% if edit_activity.assigning_user is not None and edit_activity.assigning_user != '' %}
+                                        {% make_int edit_activity.assigning_user as assigning_user %}
+                                        {% if user.id == assigning_user %}
+                                        <option value="{{user.id}}" selected>{{user.user.first_name}} {{user.user.last_name}}</option>
+                                        {% else %}
+                                        <option value="{{user.id}}">{{user.user.first_name}} {{user.user.last_name}}</option>
+                                        {% endif %}
+                                    {% else %}
+                                        <option value="{{user.id}}">{{user.user.first_name}} {{user.user.last_name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <input type="text" id="assigning_company" name="assigning_company" class="form-control"
+                                   style="display:none;" value="{{edit_activity.assigning_user_name}}" oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                       oninput="setCustomValidity('')" required>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Төлбөрт үйлчилгээ</label>
+                            <select class="form-control" id="select_uil" name="select_uil">
+                                <option value="">- Сонгох -</option>
+                                {% for tuui in tuuis %}
+                                    {% if tuui.id == edit_activity.tulburt_uilchilgee_id %}
+                                        <option value="{{tuui.id}}" selected>{{tuui.name}}</option>
+                                    {% else %}
+                                        <option value="{{tuui.id}}">{{tuui.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-12">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Тэмдэглэл</label>
+                            <textarea class="form-control" rows="6" name="note">{{ edit_activity.note }}</textarea>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill" name="save">Хадгалах</button>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block head_block %}{% endblock%}
+{% block title %}Банк{% endblock%}
+{% block link %}/home/lavlagaa/bank{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="{{urlz}}" method="POST" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+                {% if urlz == "/home/lavlagaa/add_bank" %}
+	                <legend>Банкны мэдээлэл бүртгэх</legend>
+	            {% else %}
+	                <legend>Банкны мэдээлэл засах</legend>
+	            {%endif%}
+                <div class="col-md-6">
+                	<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Банкны нэр</label>
+                            <input class="form-control" type="text" name="name" value="{{name}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                	<fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Банкны данс</label>
+                            <input class="form-control" type="number" name="dans" value="{{dans}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if urlz == "/home/lavlagaa/add_bank" %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                   <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %} 
+{% block title %}Ахуйн хэрэглэгч{% endblock %}
+{% block link %}/home/lavlagaa/ahui_hereglegch{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="{{ urlz }}" method="POST">{% csrf_token %}
+            <div class="content">
+                {% if edit_data != None %}
+                    <legend>Ахуйн хэрэглэгч засах </legend>
+                {% else %}
+                    <legend>Ахуйн хэрэглэгч бүртгэх</legend>
+                {% endif %}
+                <div class="col-md-12">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Ахуйн хэрэглэгчийн нэр</label>
+                            <input class="form-control" type="text" name="name" value="{{edit_data.name}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="clearfix"></div>
+
+            </div>
+            <div class="footer text-center">
+                {% if edit_data == None %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% else %}
+                    <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

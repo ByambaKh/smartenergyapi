@@ -1,0 +1,491 @@
+{% extends "base.html" %}
+{% load homepage_tags %}
+{% block head_block %}
+{% endblock %}
+{% block title %}Дэд станц{% endblock%}
+{% block content %}
+{% if perms.data.view_ashiglalt_dedstants %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Толгой станцууд</div>
+                <div class="content content-full-width">
+                    <ul role="tablist" class="nav nav-tabs">
+                        {% if activeTab == '1' %}
+                        <li role="presentation" class="active">
+                            {% else %}
+                        <li role="presentation">
+                            {%endif%}
+                            <a href="#TSTANTS1" data-toggle="tab"><i class="fa fa-building"></i>Амгалан</a>
+                        </li>
+                        {% if activeTab == '2' %}
+                        <li class="active">
+                            {% else %}
+                        <li>
+                            {%endif%}
+                            <a href="#TSTANTS2" data-toggle="tab"><i class="fa fa-building"></i>Залаат</a>
+                        </li>
+                        {% if activeTab == '3' %}
+                        <li class="active">
+                            {% else %}
+                        <li>
+                            {%endif%}
+                            <a href="#TSTANTS3" data-toggle="tab"><i class="fa fa-building"></i>Туул</a>
+                        </li>
+                        {% if activeTab == '4' %}
+                        <li class="active">
+                            {% else %}
+                        <li>
+                            {%endif%}
+                            <a href="#TSTANTS4" data-toggle="tab"><i class="fa fa-building"></i>Үйлдвэр</a>
+                        </li>
+                        {% if activeTab == '5' %}
+                        <li class="active">
+                            {% else %}
+                        <li>
+                            {%endif%}
+                            <a href="#TSTANTS5" data-toggle="tab"><i class="fa fa-building"></i>Өмнөд</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        {% if activeTab == '1' %}
+                        <div id="TSTANTS1" class="tab-pane active">
+                            {% else %}
+                            <div id="TSTANTS1" class="tab-pane">
+                                {%endif%}
+                                {% for amg_ded in amgalan_ded %}
+                                <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll; overflow:auto; padding-top:10px; height:350px;">
+                                        <div class="header">{% get_dedstants_name amg_ded %}</div>
+                                        {% item_by_index amgalan_ttg forloop.counter as amgalan_ttgs %}
+                                        <table class="table">
+                                            <thead>
+                                            <th>№</th>
+                                            <th>Нэршил</th>
+                                            <th>Тоо</th>
+                                            <th>Хугацаа</th>
+                                            <th>Дутуу түгээсэн</th>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Тасралт</td>
+                                                <td>{{ amgalan_ttgs.tasralt_too }}</td>
+                                                <td>{{ amgalan_ttgs.tasralt_hugatsaa }} цаг</td>
+                                                <td>{{ amgalan_ttgs.tasralt_dutuu }} кВт/цаг</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>Таслалт</td>
+                                                <td>{{ amgalan_ttgs.taslalt_too }}</td>
+                                                <td>{{ amgalan_ttgs.taslalt_hugatsaa }} цаг</td>
+                                                <td>{{ amgalan_ttgs.taslalt_dutuu }} кВт/цаг</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td>Гэмтэл</td>
+                                                <td>{{ amgalan_ttgs.gemtel_too }}</td>
+                                                <td>{{ amgalan_ttgs.gemtel_hugatsaa }} цаг</td>
+                                                <td>{{ amgalan_ttgs.gemtel_dutuu }} кВт/цаг</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <table class="table">
+                                            <caption class="text-center"><h6>Шугам</h6></caption>
+                                            <thead>
+                                                <th>№</th>
+                                                <th>Нэр</th>
+                                                <th>Төлөв</th>
+                                                <th>Тип</th>
+                                            </thead>
+                                            <tbody>
+                                            {% get_shugam_by_ded amg_ded as amgalan_shugs %}
+                                            {% for amg_shug in amgalan_shugs %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ amg_shug.shugam_ner }}</td>
+                                                    {% if amg_shug.shugam_tuluv == '0' %}
+                                                    <td class="cell_bg_red">Залгаатай</td>
+                                                    {% elif amg_shug.shugam_tuluv == '1' %}
+                                                    <td class="cell_bg_green">Тасархай</td>
+                                                    {% else %}
+                                                    <td>Бэлтгэлт</td>
+                                                    {% endif %}
+                                                    <td>
+                                                        {% if amg_shug.shugam_tip == '0' %}
+                                                        Оролт
+                                                        {% elif amg_shug.shugam_tip == '1' %}
+                                                        Гаралт
+                                                        {% elif amg_shug.shugam_tip == '2' %}
+                                                        СХВТ
+                                                        {% elif amg_shug.shugam_tip == '3' %}
+                                                        СХС
+                                                        {% else %}
+                                                        ДХТ
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <div class="clearfix"></div>
+                            </div>
+                            {% if activeTab == '2' %}
+                            <div id="TSTANTS2" class="tab-pane active">
+                                {% else %}
+                                <div id="TSTANTS2" class="tab-pane">
+                                    {%endif%}
+                                    {% for zal_ded in zalaat_ded %}
+                                    <div class="col-md-6">
+                                        <div class="card" style="overflow-y:scroll; overflow:auto; padding-top:10px; height:350px;">
+                                            <div class="header">{% get_dedstants_name zal_ded %}</div>
+                                            {% item_by_index zalaat_ttg forloop.counter as zalaat_ttgs %}
+                                            <table class="table">
+                                                <thead>
+                                                <th>№</th>
+                                                <th>Нэршил</th>
+                                                <th>Тоо</th>
+                                                <th>Хугацаа</th>
+                                                <th>Дутуу түгээсэн</th>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>Тасралт</td>
+                                                    <td>{{ zalaat_ttgs.tasralt_too }}</td>
+                                                    <td>{{ zalaat_ttgs.tasralt_hugatsaa }} цаг</td>
+                                                    <td>{{ zalaat_ttgs.tasralt_dutuu }} кВт/цаг</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2</td>
+                                                    <td>Таслалт</td>
+                                                    <td>{{ zalaat_ttgs.taslalt_too }}</td>
+                                                    <td>{{ zalaat_ttgs.taslalt_hugatsaa }} цаг</td>
+                                                    <td>{{ zalaat_ttgs.taslalt_dutuu }} кВт/цаг</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3</td>
+                                                    <td>Гэмтэл</td>
+                                                    <td>{{ zalaat_ttgs.gemtel_too }}</td>
+                                                    <td>{{ zalaat_ttgs.gemtel_hugatsaa }} цаг</td>
+                                                    <td>{{ zalaat_ttgs.gemtel_dutuu }} кВт/цаг</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                            <table class="table">
+                                                <caption class="text-center"><h6>Шугам</h6></caption>
+                                                <thead>
+                                                    <th>№</th>
+                                                    <th>Нэр</th>
+                                                    <th>Төлөв</th>
+                                                    <th>Тип</th>
+                                                </thead>
+                                                <tbody>
+                                                {% get_shugam_by_ded zal_ded as zalaat_shugs %}
+                                                {% for zal_shug in zalaat_shugs %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ zal_shug.shugam_ner }}</td>
+                                                    {% if zal_shug.shugam_tuluv == '0' %}
+                                                    <td class="cell_bg_red">Залгаатай</td>
+                                                    {% elif zal_shug.shugam_tuluv == '1' %}
+                                                    <td class="cell_bg_green">Тасархай</td>
+                                                    {% else %}
+                                                    <td>Бэлтгэлт</td>
+                                                    {% endif %}
+                                                    <td>
+                                                        {% if zal_shug.shugam_tip == '0' %}
+                                                        Оролт
+                                                        {% elif zal_shug.shugam_tip == '1' %}
+                                                        Гаралт
+                                                        {% elif zal_shug.shugam_tip == '2' %}
+                                                        СХВТ
+                                                        {% elif zal_shug.shugam_tip == '3' %}
+                                                        СХС
+                                                        {% else %}
+                                                        ДХТ
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <div class="clearfix"></div>
+                                </div>
+                                {% if activeTab == '3' %}
+                                <div id="TSTANTS3" class="tab-pane active">
+                                    {% else %}
+                                    <div id="TSTANTS3" class="tab-pane">
+                                        {%endif%}
+                                        {% for tul_ded in tuul_ded %}
+                                        <div class="col-md-6">
+                                            <div class="card" style="overflow-y:scroll; overflow:auto; padding-top:10px; height:350px;">
+                                                <div class="header">{% get_dedstants_name tul_ded %}</div>
+                                                {% item_by_index tuul_ttg forloop.counter as tuul_ttgs %}
+                                                <table class="table">
+                                                    <thead>
+                                                    <th>№</th>
+                                                    <th>Нэршил</th>
+                                                    <th>Тоо</th>
+                                                    <th>Хугацаа</th>
+                                                    <th>Дутуу түгээсэн</th>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Тасралт</td>
+                                                        <td>{{ tuul_ttgs.tasralt_too }}</td>
+                                                        <td>{{ tuul_ttgs.tasralt_hugatsaa }} цаг</td>
+                                                        <td>{{ tuul_ttgs.tasralt_dutuu }} кВт/цаг</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2</td>
+                                                        <td>Таслалт</td>
+                                                        <td>{{ tuul_ttgs.taslalt_too }}</td>
+                                                        <td>{{ tuul_ttgs.taslalt_hugatsaa }} цаг</td>
+                                                        <td>{{ tuul_ttgs.taslalt_dutuu }} кВт/цаг</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>3</td>
+                                                        <td>Гэмтэл</td>
+                                                        <td>{{ tuul_ttgs.gemtel_too }}</td>
+                                                        <td>{{ tuul_ttgs.gemtel_hugatsaa }} цаг</td>
+                                                        <td>{{ tuul_ttgs.gemtel_dutuu }} кВт/цаг</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table class="table">
+                                                    <caption class="text-center"><h6>Шугам</h6></caption>
+                                                    <thead>
+                                                        <th>№</th>
+                                                        <th>Нэр</th>
+                                                        <th>Төлөв</th>
+                                                        <th>Тип</th>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% get_shugam_by_ded tul_ded as tuul_shugs %}
+                                                    {% for tul_shug in tuul_shugs %}
+                                                        <tr>
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td>{{ tul_shug.shugam_ner }}</td>
+                                                            {% if tul_shug.shugam_tuluv == '0' %}
+                                                                <td class="cell_bg_red">Залгаатай</td>
+                                                            {% elif tul_shug.shugam_tuluv == '1' %}
+                                                                <td class="cell_bg_green">Тасархай</td>
+                                                            {% else %}
+                                                                <td>Бэлтгэлт</td>
+                                                            {% endif %}
+                                                            <td>
+                                                                {% if tul_shug.shugam_tip == '0' %}
+                                                                Оролт
+                                                                {% elif tul_shug.shugam_tip == '1' %}
+                                                                Гаралт
+                                                                {% elif tul_shug.shugam_tip == '2' %}
+                                                                СХВТ
+                                                                {% elif tul_shug.shugam_tip == '3' %}
+                                                                СХС
+                                                                {% else %}
+                                                                ДХТ
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    {% if activeTab == '4' %}
+                                    <div id="TSTANTS4" class="tab-pane active">
+                                        {% else %}
+                                        <div id="TSTANTS4" class="tab-pane">
+                                            {%endif%}
+                                            {% for uil_ded in uildver_ded %}
+                                            <div class="col-md-6">
+                                                <div class="card" style="overflow-y:scroll; overflow:auto; padding-top:10px; height:350px;">
+                                                    <div class="header">{% get_dedstants_name uil_ded %}</div>
+                                                    {% item_by_index uildver_ttg forloop.counter as uildver_ttgs %}
+                                                    <table class="table">
+                                                        <thead>
+                                                            <th>№</th>
+                                                            <th>Нэршил</th>
+                                                            <th>Тоо</th>
+                                                            <th>Хугацаа</th>
+                                                            <th>Дутуу түгээсэн</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>1</td>
+                                                                <td>Тасралт</td>
+                                                                <td>{{ uildver_ttgs.tasralt_too }}</td>
+                                                                <td>{{ uildver_ttgs.tasralt_hugatsaa }} цаг</td>
+                                                                <td>{{ uildver_ttgs.tasralt_dutuu }} кВт/цаг</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>2</td>
+                                                                <td>Таслалт</td>
+                                                                <td>{{ uildver_ttgs.taslalt_too }}</td>
+                                                                <td>{{ uildver_ttgs.taslalt_hugatsaa }} цаг</td>
+                                                                <td>{{ uildver_ttgs.taslalt_dutuu }} кВт/цаг</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>3</td>
+                                                                <td>Гэмтэл</td>
+                                                                <td>{{ uildver_ttgs.gemtel_too }}</td>
+                                                                <td>{{ uildver_ttgs.gemtel_hugatsaa }} цаг</td>
+                                                                <td>{{ uildver_ttgs.gemtel_dutuu }} кВт/цаг</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table class="table">
+                                                        <caption class="text-center"><h6>Шугам</h6></caption>
+                                                        <thead>
+                                                            <th>№</th>
+                                                            <th>Нэр</th>
+                                                            <th>Төлөв</th>
+                                                            <th>Тип</th>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% get_shugam_by_ded uil_ded as uildver_shugs %}
+                                                        {% for uil_shug in uildver_shugs %}
+                                                        <tr>
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td>{{ uil_shug.shugam_ner }}</td>
+                                                            {% if uil_shug.shugam_tuluv == '0' %}
+                                                                <td class="cell_bg_red">Залгаатай</td>
+                                                            {% elif uil_shug.shugam_tuluv == '1' %}
+                                                                <td class="cell_bg_green">Тасархай</td>
+                                                            {% else %}
+                                                                <td>Бэлтгэлт</td>
+                                                            {% endif %}
+                                                            <td>
+                                                                {% if uil_shug.shugam_tip == '0' %}
+                                                                Оролт
+                                                                {% elif uil_shug.shugam_tip == '1' %}
+                                                                Гаралт
+                                                                {% elif uil_shug.shugam_tip == '2' %}
+                                                                СХВТ
+                                                                {% elif uil_shug.shugam_tip == '3' %}
+                                                                СХС
+                                                                {% else %}
+                                                                ДХТ
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        {% if activeTab == '5' %}
+                                        <div id="TSTANTS5" class="tab-pane active">
+                                            {% else %}
+                                            <div id="TSTANTS5" class="tab-pane">
+                                                {%endif%}
+                                                {% for umn_ded in umnud_ded %}
+                                                <div class="col-md-6">
+                                                    <div class="card" style="overflow-y:scroll; overflow:auto; padding-top:10px; height:350px;">
+                                                        <div class="header">{% get_dedstants_name umn_ded %}</div>
+                                                        {% item_by_index umnud_ttg forloop.counter as umnud_ttgs %}
+                                                        <table class="table">
+                                                            <thead>
+                                                                <th>№</th>
+                                                                <th>Нэршил</th>
+                                                                <th>Тоо</th>
+                                                                <th>Хугацаа</th>
+                                                                <th>Дутуу түгээсэн</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>1</td>
+                                                                    <td>Тасралт</td>
+                                                                    <td>{{ umnud_ttgs.tasralt_too }}</td>
+                                                                    <td>{{ umnud_ttgs.tasralt_hugatsaa }} цаг</td>
+                                                                    <td>{{ umnud_ttgs.tasralt_dutuu }} кВт/цаг</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>2</td>
+                                                                    <td>Таслалт</td>
+                                                                    <td>{{ umnud_ttgs.taslalt_too }}</td>
+                                                                    <td>{{ umnud_ttgs.taslalt_hugatsaa }} цаг</td>
+                                                                    <td>{{ umnud_ttgs.taslalt_dutuu }} кВт/цаг</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>3</td>
+                                                                    <td>Гэмтэл</td>
+                                                                    <td>{{ umnud_ttgs.gemtel_too }}</td>
+                                                                    <td>{{ umnud_ttgs.gemtel_hugatsaa }} цаг</td>
+                                                                    <td>{{ umnud_ttgs.gemtel_dutuu }} кВт/цаг</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table class="table">
+                                                            <caption class="text-center"><h6>Шугам</h6></caption>
+                                                            <thead>
+                                                                <th>№</th>
+                                                                <th>Нэр</th>
+                                                                <th>Төлөв</th>
+                                                                <th>Тип</th>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% get_shugam_by_ded umn_ded as umnud_shugs %}
+                                                            {% for umn_shug in umnud_shugs %}
+                                                            <tr>
+                                                                <td>{{ forloop.counter }}</td>
+                                                                <td>{{ umn_shug.shugam_ner }}</td>
+                                                                {% if umn_shug.shugam_tuluv == '0' %}
+                                                                    <td class="cell_bg_red">Залгаатай</td>
+                                                                {% elif umn_shug.shugam_tuluv == '1' %}
+                                                                    <td class="cell_bg_green">Тасархай</td>
+                                                                {% else %}
+                                                                    <td>Бэлтгэлт</td>
+                                                                {% endif %}
+                                                                <td>
+                                                                    {% if umn_shug.shugam_tip == '0' %}
+                                                                    Оролт
+                                                                    {% elif umn_shug.shugam_tip == '1' %}
+                                                                    Гаралт
+                                                                    {% elif umn_shug.shugam_tip == '2' %}
+                                                                    СХВТ
+                                                                    {% elif umn_shug.shugam_tip == '3' %}
+                                                                    СХС
+                                                                    {% else %}
+                                                                    ДХТ
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                                <div class="clearfix"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+{% endif %}
+{% endblock %}

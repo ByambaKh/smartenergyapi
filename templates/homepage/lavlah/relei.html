@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Релей{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if perms.data.add_relei %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/lavlagaa/add_relei" class="btn btn-primary btn-fill btn-wd" type="button">Релейны утга
+                бүртгэх</a>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт бүртгэлтэй релейны утгууд</div>
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/lavlagaa/relei">
+                        {% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-4">
+                                <label>Дэд станцын нэр</label>
+                                <select name="ded_stants" class="form-control" id="ded_stants">
+                                    <option value="">Сонгох</option>
+                                    {% for ded_stant in ded_stants %}
+                                    {% if search_q.ded_stants == ded_stant.id %}
+                                    <option value="{{ded_stant.id}}" selected>{{ded_stant.name}}</option>
+                                    {% else %}
+                                    <option value="{{ded_stant.id}}">{{ded_stant.name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Шугамын нэр</label>
+                                <select name="shugam" class="form-control" id="shugam">
+                                    <option value="">Сонгох</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Нэр</label>
+                                <input placeholder="Нэр" class="form-control" name="ner" value="{{search_q.ner}}">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-4">
+                                <label class="control-label">Релей тип</label>
+                                <select class="form-control" name="tip">
+                                    <option value="">Сонгох</option>
+                                    <option value="0" {%if search_q.tip == '0'%}selected{%endif%}>Оролт</option>
+                                    <option value="1" {%if search_q.tip == '1'%}selected{%endif%}>Гаралт</option>
+                                    <option value="2" {%if search_q.tip == '2'%}selected{%endif%}>СХВТ</option>
+                                    <option value="3" {%if search_q.tip == '3'%}selected{%endif%}>СХС</option>
+                                    <option value="4" {%if search_q.tip == '4'%}selected{%endif%}>ДХТ</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="control-label">Суурилуулсан огноо</label>
+                                <input class="form-control datetimepicker" placeholder="Суурилуулсан огноо" type="text" name="suuriluulsan_ognoo" value="{{search_q.suuriluulsan_ognoo}}"/>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd" type="submit">Шүүж харах</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                        <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="ded_stants" data-sortable="true" class="text-center">Дэд станц</th>
+                        <th data-field="shugam" data-sortable="true" class="text-center">Шугам</th>
+                        <th data-field="ner" data-sortable="true" class="text-center">Нэр</th>
+                        <th data-field="tip" data-sortable="true" class="text-center">Тип</th>
+                        <th data-field="hugatsaa_barilttai" data-sortable="true" class="text-center">Хугацааны барилттай тавил</th>
+                        <th data-field="hugatsaa_bariltgui" data-sortable="true" class="text-center">Хугацааны барилтгүй тавил</th>
+                        <th data-field="gazardalt" data-sortable="true" class="text-center">Газардлагын хамгаалалтын тавил</th>
+                        <th data-field="suuriluulsan_ognoo" data-sortable="true" class="text-center">Суурилуулсан огноо</th>
+                        <th data-field="actions" class="td-actions text-center">Засвар</th>
+                        </thead>
+                        <tbody>
+                        {% for relei in releis %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center">{{ relei.name }}</td>
+                            <td class="text-center">{{ relei.shugam_ner }}</td>
+                            <td class="text-center">{{ relei.ner }}</td>
+                            <td class="text-center">
+                                {% if relei.tip == '0' %}
+                                Оролт
+                                {% elif relei.tip == '1' %}
+                                Гаралт
+                                {% elif relei.tip == '2' %}
+                                СХВТ
+                                {% elif relei.tip == '3' %}
+                                СХС
+                                {% else %}
+                                ДХТ
+                                {% endif %}
+                            </td>
+                            <td class="text-center">{{ relei.hugatsaa_barilttai }}</td>
+                            <td class="text-center">{{ relei.hugatsaa_bariltgui }}</td>
+                            <td class="text-center">{{ relei.gazardalt }}</td>
+                            <td class="text-center">{{ relei.suuriluulsan_ognoo|date:'Y-m-d' }}</td>
+                            <td class="td-actions text-center">
+                                {% if perms.data.change_relei %}
+                                <a href="/home/lavlagaa/edit_relei/{{relei.id}}/"
+                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                {% endif %}
+                                {% if perms.data.delete_relei %}
+                                <a href="/home/lavlagaa/del_relei/{{relei.id}}/"
+                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

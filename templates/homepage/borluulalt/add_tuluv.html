@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block link %}{% url 'tuluvluguu_list' %}{% endblock%}
+{% block title %}Төлөвлөгөө{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card">
+        <form class="form-horizontal" action="{{ urlz }}"
+              method="POST"> {% csrf_token %}
+            <div class="content">
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Он</label>
+                            <input class="form-control" type="number" min="1990" max="2030" name="year"
+                                   value="{{year}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хэрэглэгчийн нэр</label>
+                            <select name="org_tuluv" class="form-control">
+                                {% for element in datas %}
+                                <option value="{{ element.code }}">{{ element.code }}{% if element.name != '' %} - {{ element.name }}{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Сар</label>
+                            <input class="form-control" type="number" name="month" min="1" max="12"
+                                   value="{{month}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">ХАЦЭХ-ний төлөвлөгөөнд ирүүлсэн санал</label>
+                            <input class="form-control" type="number" max="100000000" name="value" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+                <div class="footer text-center">
+                    <button type="submit" class="btn btn-info btn-fill">
+                        Бүртгэх
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

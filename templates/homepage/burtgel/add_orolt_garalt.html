@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        var tooluurs = [];
+        var selected_flow_type = '';
+
+        function check_fs_and_name(valueSelected){
+            if(valueSelected == 0) {
+                $("#user_label").text("Дэд станц");
+                $('#dedstants_tooluurtype_fs').show();
+            }
+            if(valueSelected == 1) {
+                $("#user_label").text("Хэрэглэгч");
+                $('#dedstants_tooluurtype_fs').hide();
+            }
+            if(valueSelected == 2) {
+                $("#user_label").text("Байр");
+                $('#dedstants_tooluurtype_fs').hide();
+            }
+        }
+
+        function get_flow_type(flow_type, input_type){
+            var type = '';
+            if (flow_type == 0){
+                type = "(Оролт"
+            }
+            else if (flow_type == 1){
+                type = "(Гаралт"
+            }
+            else if (flow_type == 2){
+                type = "(Дотоод хэрэгцээ)"
+            }
+            else if (flow_type == 3){
+                type = "(Т)"
+            }
+            if (input_type == 0){
+                type = type + ", 10000 кВт";
+            }
+            else{
+                type = type + "0.4 кВт";
+            }
+            type = type + ')'
+            return type;
+        }
+        function clear_error(){
+            $("#error_text").text("");
+        }
+
+        function clear_tooluur_error(){
+            $("#tooluur_error_text").text("");
+        }
+
+        function clear_bottom_fields(){
+            $("#select_input_customer option").remove().end();
+            $("#select_input_customer").append('<option value="">- Сонгох -</option>');
+            $("#select_input_tooluur option").remove().end();
+            $("#select_input_tooluur").append('<option value="">- Сонгох -</option>');
+            $("#select_input_type option").remove().end();
+            $("#select_input_type").append('<option value="">- Сонгох -</option>');
+            var valueSelected = $('select#select_angilal').find("option:selected").val();
+            $("#select_input_type").append('<option value="0">Дэд станц</option><option value="1">Хэрэглэгч</option>');
+            if (valueSelected == 1)
+                $("#select_input_type").append('<option value="2">Байр</option>');
+            clear_error();
+        }
+        $('select#select_input_type').change(function () {
+            var optionSelected = $("#select_input_type").find("option:selected");
+            var valueSelected  = optionSelected.val();
+            var selectedCustomer = $('select#select_customer').find("option:selected").val();
+            var selectedTooluur = $('select#select_tooluur').find("option:selected").val();
+            var selectedCustomerType = $('select#select_angilal').find("option:selected").val();
+            if (selectedTooluur.length == 0){
+                $('#select_customer').is(':required')
+                $("#tooluur_error_text").text("Та холболт хийх тоолуураа сонгоно уу.");
+                return false;
+            }
+            clear_tooluur_error();
+            data = {'code' : valueSelected, 'selected_customer':selectedCustomer , 'type':selectedCustomerType};
+            if (valueSelected == 0){
+                $("#input_customer_name").text("Дэд станц");
+                $("#select_input_tooluur").prop('enabled', false);
+            }
+            else{
+                $("#input_customer_name").text("Байр");
+            }
+            $("#select_input_customer option").remove().end();
+            $("#select_input_customer").append('<option>- Сонгох -</option>');
+            ajax('/home/get_input_customer',data,function(result){
+                $("#select_input_customer option").remove().end();
+                $("#select_input_customer").append('<option>- Сонгох -</option>');
+                for (var i = 0; i < result.length; i++) {
+                    $("#select_input_customer").append('<option value="'+ result[i].id +'">'+ result[i].name +'</option>');
+                };
+            });
+        });
+
+        $('select#select_input_customer').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            if (valueSelected.length > 0){
+                var angilal = $('select#select_input_type').find("option:selected").val();
+                var selectedTooluur = $('select#select_tooluur').find("option:selected").val();
+                if (selectedTooluur.length == 0){
+                    $('#select_customer').is(':required')
+                    $("#tooluur_error_text").text("Та холболт хийх тоолуураа сонгоно уу.");
+                    return false;
+                }
+                clear_tooluur_error();
+                data = {'code' : valueSelected, 'angilal':angilal, 'selected_tooluur':selectedTooluur};
+                $("#select_input_tooluur option").remove().end();
+                $("#select_input_tooluur").append('<option value="">- Сонгох -</option>');
+                ajax('/home/get_angilal_tooluur',data,function(result){
+                    $("#select_input_tooluur option").remove().end();
+                    $("#select_input_tooluur").append('<option value="">- Сонгох -</option>');
+                    tooluurs = result;
+                    for (var i = 0; i < result.length; i++) {
+                        if (angilal == 0){
+                            $("#select_input_tooluur").append('<option value="'+ result[i].id +'">'+ result[i].number + ' ' + get_flow_type(result[i].flow_type, result[i].input_type) +'</option>');
+                        }
+                        else{
+                            $("#select_input_tooluur").append('<option value="'+ result[i].id +'" selected>'+ result[i].number + ' ' + '</option>');
+                        }
+                    };
+                });
+            }
+        });
+
+        $('select#select_tooluur').change(function () {
+             var optionSelected = $(this).find("option:selected");
+             var valueSelected  = optionSelected.val();
+             data = {'id' : valueSelected };
+             clear_tooluur_error();
+             clear_bottom_fields()
+             ajax('/home/get_input_tooluur',data,function(result){
+                console.log(result)
+                if (result.error != null){
+                    if (result.error.flow_type == 0){
+                        $("#error_text").text("Холбогдсон гаралтын тоолуур байхгүй байна.");
+                    }
+                    else{
+                        $("#error_text").text("Холбогдсон оролтын тоолуур байхгүй байна.");
+                    }
+                    selected_flow_type = result.error.flow_type
+                }
+                else{
+                    clear_error();
+                    selected_flow_type = result.flow_type
+                    $("#select_input_type").val(result.tooluur.customer_angilal)
+                    $("#select_input_customer option").remove().end();
+                    $("#select_input_customer").append('<option>- Сонгох -</option>');
+                    for (var i = 0; i < result.customers.length; i++) {
+                        $("#select_input_customer").append('<option value="'+ result.customers[i].id +'">'+ result.customers[i].name +'</option>');
+                    };
+                    if (result.tooluur.customer_angilal == 0){
+                        $("#select_input_customer").val(result.tooluur.dedstants.id)
+                    }
+                    else if (result.tooluur.customer_angilal == 1){
+                        $("#select_input_customer").val(result.tooluur.customer.code)
+                    }
+                    else{
+                        $("#select_input_customer").val(result.tooluur.bair.id)
+                    }
+                    for (var i = 0; i < result.tooluurs.length; i++) {
+                        if (result.tooluur.customer_angilal == 0){
+                            $("#select_input_tooluur").append('<option value="'+ result.tooluurs[i].id +'">'+ result.tooluurs[i].number + ' ' + get_flow_type(result.tooluurs[i].flow_type, result.tooluurs[i].input_type) +'</option>');
+                        }
+                        else{
+                            $("#select_input_tooluur").append('<option value="'+ result.tooluurs[i].id +'">'+ result.tooluurs[i].number + ' ' + '</option>');
+                        }
+                    };
+                    $("#select_input_tooluur").val(result.tooluur.id)
+                }
+            });
+         });
+
+        $('select#select_angilal').change(function () {
+
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            data = {'code' : valueSelected };
+            check_fs_and_name(valueSelected);
+            $("#select_customer option").remove().end();
+            $("#select_customer").append('<option>- Сонгох -</option>');
+            $("#select_tooluur option").remove().end();
+            $("#select_tooluur").append('<option>- Сонгох -</option>');
+            ajax('/home/get_cus',data,function(result){
+                $("#select_customer option").remove().end();
+                $("#select_customer").append('<option>- Сонгох -</option>');
+                for (var i = 0; i < result.length; i++) {
+                    if(valueSelected == 1) {
+                        $("#select_customer").append('<option value="'+ result[i].id +'">'+ result[i].code +'</option>');
+                    }
+                    else {
+                        $("#select_customer").append('<option value="'+ result[i].id +'">'+ result[i].name +'</option>');
+                    }
+                };
+            });
+            clear_bottom_fields()
+        });
+
+        $('select#select_customer').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            if (valueSelected.length > 0){
+                var angilal = $('select#select_angilal').find("option:selected").val();
+                if (angilal.length > 0){
+                    data = {'code' : valueSelected, 'angilal':angilal };
+                    $("#select_tooluur option").remove().end();
+                    $("#select_tooluur").append('<option>- Сонгох -</option>');
+                    ajax('/home/get_angilal_tooluur',data,function(result){
+                        $("#select_tooluur option").remove().end();
+                        $("#select_tooluur").append('<option>- Сонгох -</option>');
+                        tooluurs = result;
+                        for (var i = 0; i < result.length; i++) {
+                            if (angilal == 0){
+                                $("#select_tooluur").append('<option value="'+ result[i].id +'">'+ result[i].number + ' ' + get_flow_type(result[i].flow_type, result[i].input_type) +'</option>');
+                            }
+                            else{
+                                $("#select_tooluur").append('<option value="'+ result[i].id +'">'+ result[i].number + ' ' + '</option>');
+                            }
+                        };
+                    });
+                    clear_bottom_fields()
+                }
+            }
+        });
+        {% if tooluurCus != None %}
+            check_fs_and_name({{tooluurCus.customer_angilal}})
+        {%endif %}
+    });
+</script>
+{% endblock %}
+{% block title %}Оролт гаралт{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="/home/add_orolt_garalt" method="post" novalidate="">
+            {% csrf_token %}
+            <div class="content">
+                <legend>Оролт гаралт бүртгэх</legend>
+                <div class="col-md-4">
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Ангилал</label>
+							<select id="select_angilal" name="select_angilal" class="selectpicker"
+                                data-title="- Сонгох -" data-style="btn-default btn-block"
+                                data-menu-style="dropdown-blue" required>
+                                    <option value="0">Дэд станц</option>
+                                    <option value="1">Хэрэглэгч</option>
+                                    <option value="2">Байр</option>
+                            </select>
+						</div>
+					</fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хэрэглэгч</label>
+                            <select class="form-control" id="select_customer" name="select_customer" required>
+                                <option value="">- Сонгох -</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                 <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Оролтын тоолуур</label>
+                            <select class="form-control" id="select_tooluur" name="select_tooluur" required>
+                                <option value="">- Сонгох -</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                    <fieldset>
+                        <font color="red" id="tooluur_error_text"></font>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                    <fieldset>
+                        <font color="red" id="error_text"></font>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-md-4">
+                    <fieldset>
+						<div class="form-group">
+							<label class="control-label">Толгой тоолуурын ангилал</label>
+							<select class="form-control" id="select_input_type" name="select_input_type" required>
+                                    <option value="">- Сонгох -</option>
+                                    <option value="0">Дэд станц</option>
+                                    <option value="2">Байр</option>
+                            </select>
+						</div>
+					</fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label" id="input_customer_name">Толгой дэд станц</label>
+                            <select class="form-control" id="select_input_customer" name="select_input_customer" required>
+                                <option value="">- Сонгох -</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+					<fieldset>
+						<div class="form-group">
+							<label class="control-label">Тоолуур</label>
+                            <select class="form-control" id="select_input_tooluur" name="select_input_tooluur" required>
+                                <option value="">- Сонгох -</option>
+                            </select>
+                        </div>
+					</fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            {% if perms.data.add_oroltgaralt %}
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill" name="save">Бүртгэх</button>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

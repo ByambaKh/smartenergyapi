@@ -1,0 +1,581 @@
+{% extends 'base.html' %}
+{% load homepage_tags %}
+{% block title %}Дуудлага{% endblock %}
+{% block head_block %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        ajax('/home/get_default_start', function(result){
+            for (var i=0; i<result.length; i++) {
+                if(result[i].type == '2') {
+                    $("#duureg").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+                if(result[i].type == '3') {
+                    $("#khoroo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+                if(result[i].type == '4') {
+                    $("#hothon").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+                if(result[i].type == '5') {
+                    $("#egnee").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            }
+
+            $('select#duureg').find('option').each(function() {
+                if($(this).val() == '13') {
+                    $(this).prop('selected', true);
+                }
+            });
+
+            $('select#khoroo').find('option').each(function() {
+                if($(this).val() == '134') {
+                    $(this).prop('selected', true);
+                }
+            });
+
+            $('select#hothon').find('option').each(function() {
+                if($(this).val() == '1341') {
+                    $(this).prop('selected', true);
+                }
+            });
+        });
+
+        $('select#aimag').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            data = {'code': optionSelected.val()};
+
+            $("#duureg option").remove().end();
+            $("#khoroo option").remove().end();
+            $("#hothon option").remove().end();
+            $("#egnee option").remove().end();
+            $("#bair option").remove().end();
+            $("#toot option").remove().end();
+
+            ajax('/home/get_duureg', data, function(result){
+                $("#duureg").append('<option>- Сонгох -</option>');
+                for (var i=0; i<result.length; i++) {
+                    $("#duureg").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            });
+        });
+
+        $('select#duureg').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            data = {'code': optionSelected.val()};
+
+            $("#khoroo option").remove().end();
+            $("#hothon option").remove().end();
+            $("#egnee option").remove().end();
+            $("#bair option").remove().end();
+            $("#toot option").remove().end();
+
+            ajax('/home/get_horoo', data, function(result){
+                $("#khoroo").append('<option>- Сонгох -</option>');
+                for (var i=0; i<result.length; i++) {
+                    $("#khoroo").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            });
+        });
+
+        $('select#khoroo').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            data = {'code': optionSelected.val()};
+
+            $("#hothon option").remove().end();
+            $("#egnee option").remove().end();
+            $("#bair option").remove().end();
+            $("#toot option").remove().end();
+
+            ajax('/home/get_khotkhon', data, function(result){
+                $("#hothon").append('<option>- Сонгох -</option>');
+                for (var i=0; i<result.length; i++) {
+                    $("#hothon").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            });
+        });
+
+        $('select#hothon').change(function () {
+            $("#egnee option").remove().end();
+            $("#bair option").remove().end();
+            $("#toot option").remove().end();
+
+            var optionSelected = $(this).find("option:selected");
+            data = {'khothonCode': optionSelected.val()};
+
+            ajax('/home/get_bair_block', data, function(result){
+                if (result.length > 0) {
+                    if (result.slice(-1)[0].type == "1") {
+                        $("#egnee").append('<option>- Сонгох -</option>');
+                        for (var i=0; i<result.length-1; i++) {
+                            $("#egnee").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                        }
+                    } else {
+                        $("#egnee").append('<option>- Сонгох -</option>');
+                        $("#bair").append('<option>- Сонгох -</option>');
+                        for (var i=0; i<result.length-1; i++) {
+                            $("#bair").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                        }
+                    }
+                }
+            });
+        });
+
+        $('select#egnee').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            data = {'code': optionSelected.val()};
+
+            $("#bair option").remove().end();
+            $("#toot option").remove().end();
+
+            ajax('/home/get_bairs', data, function(result){
+                $("#bair").append('<option>- Сонгох -</option>');
+                for (var i=0; i<result.length; i++) {
+                    $("#bair").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                }
+            });
+        });
+
+        $('select#bair').change(function () {
+            $("#toot option").remove().end();
+
+            var hothonCode = $('select#hothon').find("option:selected");
+            var blockCode = $('select#egnee').find("option:selected");
+            var optionSelected = $(this).find("option:selected");
+            data = {'hothonCode': hothonCode.val(), blockCode: blockCode.val(), 'code': optionSelected.val()};
+
+            ajax('/home/get_toots', data, function(result){
+                $("#toot").append('<option>- Сонгох -</option>');
+                console.log(result.length);
+                if (result.length > 0) {
+                    for (var i=0; i<result.length; i++) {
+                        $("#toot").append('<option value="'+ result[i].code +'">'+ result[i].name +'</option>');
+                    }
+                }
+            });
+        });
+    });
+    function Reset() {
+        document.getElementById("myForm").reset();
+    }
+
+</script>
+{% endblock %}
+{% block content %}
+{% if perms.data.view_call %}
+<div class="container-fluid">
+
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if perms.data.add_call %}
+    <div class="row">
+        <div class="col-md-12">
+            <form action="/home/call_list" method="POST" id="allInputsFormValidation" class="form-horizontal"
+                  onkeypress="return event.keyCode != 13;">{% csrf_token %}
+                <div class="card">
+                    <div class="content content-full-width">
+                        <div class="col-md-8">
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Аймаг / Нийслэл</label>
+                                        <select class="form-control" name="aimag" id="aimag">
+                                            <option value="">- Сонгох -</option>
+                                            {% for aimag in aimags %}
+                                            {% if aimag.code == '1' %}
+                                            <option value="{{aimag.code}}" selected>{{aimag.name}}</option>
+                                            {% else %}
+                                            <option value="{{aimag.code}}">{{aimag.name}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Сум / Дүүрэг</label>
+                                        <select class="form-control" name="duureg" id="duureg">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Хороо</label>
+                                        <select class="form-control" name="khoroo" id="khoroo">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Хотхон</label>
+                                        <select class="form-control" name="hothon" id="hothon">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Эгнээ</label>
+                                        <select class="form-control" name="egnee" id="egnee">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Байр</label>
+                                        <select class="form-control" name="bair" id="bair">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                        <input type="hidden" id="customer_id" value="">
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Тоот</label>
+                                        <select class="form-control" name="toot" id="toot">
+                                            <option value="">- Сонгох -</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-3 text-right" style="margin-top:15px;">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <button class="btn btn-warning btn-fill btn-wd" style="width:100%;"
+                                                type="submit" name="check_by_address">Шалгах
+                                        </button>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="col-md-12 text-right" style="margin-top:75px;">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <a href="#" class="btn btn-warning btn-fill btn-wd" style="width:100%;"
+                                           data-toggle="modal" data-target=".geree-3">
+                                            Бүртгэх
+                                        </a>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="control-label">Хэрэглэгчийн код</label>
+                                        <input class="form-control" type="number" placeholder="Хэрэглэгчийн код"
+                                               id="user_code" name="user_code" maxlength="7"/>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-md-12 text-right" style="margin-top:15px;">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <button class="btn btn-warning btn-fill btn-wd" style="width:100%;"
+                                                type="submit" name="check_by_user_code">Шалгах
+                                        </button>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </form>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    Дуудлагын жагсаалт
+                </div>
+                <div class="content content-full-width">
+                    <form method="POST" action="/home/call_list">{% csrf_token %}
+                        <div class="table_search_filter">
+                            <div class="form-group col-md-3">
+                                <label>Огноо /эхлэх/</label>
+                                <input value="{{search_q.start_created_date}}" class="form-control datetimepicker"
+                                       name="start_date" type="text">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Огноо /дуусах/</label>
+                                <input value="{{search_q.end_created_date}}" class="form-control datetimepicker"
+                                       name="end_date" type="text">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Хэрэглэгчийн код</label>
+                                <input value="{{search_q.customer_code}}" placeholder="Хэрэглэгчийн код"
+                                       class="form-control" name="user_code" maxlength="7" type="number">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Хэрэглэгчийн нэр</label>
+                                <input value="{{search_q.customer_name}}" placeholder="Хэрэглэгчийн нэр"
+                                       class="form-control" name="customer_name">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-3">
+                                <label>Дуудлагын төлөв</label>
+                                <select class="form-control" name="select_call_type">
+                                    <option value="">- Сонгох -</option>
+                                    {% for call_type in call_types %}
+                                    {% if call_type.id == search_q.select_call_type %}
+                                    <option value="{{call_type.id}}" selected>{{call_type.name}}</option>
+                                    {% else %}
+                                    <option value="{{call_type.id}}">{{call_type.name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Шийдвэрлэсэн огноо /эхлэх/</label>
+                                <input value="{{search_q.start_completed_date}}"
+                                       placeholder="Шийдвэрлэсэн огноо /эхлэх/" class="form-control datetimepicker"
+                                       type="text" name="start_completed_date">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Шийдвэрлэсэн огноо /дуусах/</label>
+                                <input value="{{search_q.end_completed_date}}" placeholder="Шийдвэрлэсэн огноо /дуусах/"
+                                       class="form-control datetimepicker" type="text" name="end_completed_date">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Хариуцах ажилтан</label>
+                                <select class="form-control" name="assigning_user">
+                                    <option value="">- Сонгох -</option>
+                                    {% for user in users %}
+                                    {% if user.id == search_q.assigning_user %}
+                                    <option value="{{user.id}}" selected>{{user.user.first_name}}
+                                        {{user.user.last_name}}
+                                    </option>
+                                    {% else %}
+                                    <option value="{{user.id}}">{{user.user.last_name}} {{user.user.first_name}}
+                                    </option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-3">
+                                <label>Залгасан дугаар</label>
+                                <input value="{{search_q.call_phone}}" placeholder="Залгасан дугаар"
+                                       class="form-control" name="call_phone">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Хаяг</label>
+                                <input value="{{search_q.address}}" placeholder="Хаяг" class="form-control"
+                                       name="address">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Тайлбар</label>
+                                <input value="{{search_q.note}}" placeholder="Тайлбар" class="form-control" name="note">
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-warning btn-fill btn-wd" type="submit">Шүүж харах</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="download_button text-right">
+                            <button class="btn btn-success btn-fill" type="submit" name="export_xls"><span
+                                    class="fa fa-file-excel-o"></span>
+                                Файлаар татаж авах
+                            </button>
+                        </div>
+                    </form>
+
+                    <table id="bootstrap-table1" class="table">
+                        <thead>
+                        <th class="text-center">№</th>
+                        <th data-field="id" data-sortable="true">Хэрэглэгчийн код</th>
+                        <th data-field="name" data-sortable="true">Хэрэглэгчийн нэр</th>
+                        <th data-field="call_phone" data-sortable="true">Залгасан дугаар</th>
+                        <th data-field="assigning_user" data-sortable="true">Хариуцах ажилтан</th>
+                        <th data-field="vldegdel" data-sortable="true">Төрөл</th>
+                        <th data-field="tuluv" data-sortable="true">Төлөв</th>
+                        <th class="text-center" data-field="latest_vldegdel" data-sortable="true">Бүртэгсэн огноо</th>
+                        <th class="text-center" data-field="ognoo" data-sortable="true">Шийдвэрлэсэн огноо</th>
+                        <th data-field="note" data-sortable="true">Тайлбар</th>
+                        <th class="text-center">Харах</th>
+                        <th class="text-right" data-field="actions">Засах</th>
+                        </thead>
+                        <tbody>
+                        {% for detail in datas %}
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{detail.customer_code}}</td>
+                            <td>{{detail.last_name}} {{detail.first_name}}</td>
+                            {% if detail.call_phone == '' %}
+                            <td>{{detail.phone}}</td>
+                            {% else %}
+                            <td>{{detail.call_phone}}</td>
+                            {% endif %}
+                            <td>
+                                {{detail.as_last_name}} {{detail.as_first_name}}
+                            </td>
+                            <td>{{ detail.call_type.name}}</td>
+                            {% if detail.status == "0" %}
+                            <td>Шийдвэрлээгүй</td>
+                            {% elif detail.status == "1" %}
+                            <td>Шийдвэрлэсэн</td>
+                            {% else %}
+                            <td> -</td>
+                            {% endif %}
+                            {% if detail.created_date != None %}
+                            <td>{{ detail.created_date|date:"Y-m-d"}}</td>
+                            {% else %}
+                            <td> -</td>
+                            {% endif %}
+                            {% if detail.completed_date != None %}
+                            <td>{{ detail.completed_date|date:"Y-m-d"}}</td>
+                            {% else %}
+                            <td> -</td>
+                            {% endif %}
+                            {% if detail.note != None and detail.note != '' %}
+                            <td>{{ detail.note }}</td>
+                            {% else %}
+                            <td> -</td>
+                            {%endif %}
+                            <td>
+                                <a href="/home/call_detail/{{detail.id}}/"
+                                   class="btn btn-simple btn-info btn-icon table-action view">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </td>
+                            <td class="text-right">
+                                {% if perms.data.change_call %}
+                                {% if detail.customer_code %}
+                                <a href="/home/call_edit/{{detail.customer_code}}/{{detail.id}}/"
+                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                {% else %}
+                                <a href="/home/call_edit/0/{{detail.id}}/"
+                                   class="btn btn-simple btn-warning btn-icon table-action edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                {% endif %}
+                                {% endif %}
+                                {% if perms.data.delete_call %}
+                                <a href="/home/call_delete/{{detail.id}}/"
+                                   onclick="return confirm('Бичлэгийг устгахдаа итгэлтэй байна уу?')"
+                                   class="btn btn-simple btn-danger btn-icon table-action remove">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div><!--  end card  -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block additionalblock %}
+<div class="modal fade geree-3" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Дуудлага бүртгэх</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/home/call_list" method="post" class="form-horizontal" id="myForm">
+                    {% csrf_token %}
+                    <div class="content">
+                        <div class="form-group col-md-4">
+                            <label class="control-label">Залгасан утасны дугаар</label>
+                            <input class="form-control" type="text" name="call_phone"/>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="control-label">Бүртгэсэн ажилтан</label>
+                            <input class="form-control" placeholder="Бүртгэсэн ажилтан" type="text" name=""
+                                   value="{{request.user.last_name}} {{request.user.first_name}}" disabled/>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="control-label">Дуудлагын огноо</label>
+                            <input name="created_date" value="{{now|date:'Y-m-d h:i'}}" class="form-control datetimepicker1" type="text" disabled>
+                            <input value="{{now|date:'Y-m-d h:i'}}" name="created_date" type="hidden">
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="form-group col-md-4">
+                            <label class="control-label" id="assigning_title">Хариуцах ажилтан</label>
+                            <select class="form-control" id="select_user" name="select_user" required
+                                    oninvalid="this.setCustomValidity('Та талбарыг заавал оруулна уу')"
+                                    oninput="setCustomValidity('')">
+                                <option value="">- Сонгох -</option>
+                                {% for user in users %}
+                                {% if request.user.id == user.id %}
+                                <option value="{{user.id}}" selected>{{user.user.first_name}} {{user.user.last_name}}
+                                </option>
+                                {% else %}
+                                <option value="{{user.id}}">{{user.user.first_name}} {{user.user.last_name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="control-label">Дуудлагын төрөл</label>
+                            <select class="form-control" name="select_call_type" required>
+                                <option value="">Сонгох</option>
+                                {% for call_type in call_types %}
+                                <option value="{{call_type.id}}">{{call_type.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="control-label">Шийдвэрлэсэн огноо</label>
+                            <input class="form-control datetimepicker1" name="completed_date" type="text">
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Тайлбар</label>
+                            <textarea class="form-control" rows="6" name="note"></textarea>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="footer text-center">
+                        <button type="submit" class="btn btn-info btn-fill" name="clear" onclick="Reset()">Цэвэрлэх
+                        </button>
+                        <button type="submit" class="btn btn-info btn-fill" name="unregister_code">Бүртгэх</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

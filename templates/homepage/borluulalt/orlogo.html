@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load homepage_tags %}
+{% load humanize %}
+{% block head_block %}
+<script type="text/javascript">
+		function nehemjleh(id) {
+		    data = {'or_id': id};
+		    ajax('/home/orlogo_neh',data,function(result){
+		        $()
+		    	$("#nehemjleh_tbl_body tr").remove();
+		    	var trHTML = '';
+		    	for (var i = 0; i < result.length; i++) {
+		    		var status = result[i].status == 0 ? 'Төлөөгүй' : 'Төлсөн';
+                    trHTML = trHTML + '<tr><td>' + result[i].code + '</td><td>' + result[i].pay_date + '</td><td>' + result[i].pay_total + '</td><td>' + result[i].bank + '</td></tr>';
+               	};
+               	$('#nehemjleh_tbl_body').append(trHTML);
+             });
+		}
+</script>
+{% endblock %}
+{% block title %}Орлого{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if perms.data.add_paymenthistory %}
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/home/borluulalt/orlogo_add" class="btn btn-primary btn-fill btn-wd" type="button">Орлого бүртгэх</a>
+            <a href="/home/borluulalt/orlogo_import" class="btn btn-success btn-fill btn-wd" type="button">Импорт хийх</a>
+        </div>
+
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+
+                <div class="header">
+                    Орлогын жагсаалт
+                </div>
+                <form method="POST" action="/home/borluulalt/orlogo_list">{% csrf_token %}
+                    <div class="table_search_filter">
+                        <div class="form-group col-md-3">
+                            <label>Эхлэх огноо</label>
+                            <input value="{{search_q.start_date}}" class="form-control datetimepicker" name="start_date" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Дуусах огноо</label>
+                            <input value="{{search_q.end_date}}" class="form-control datetimepicker" name="end_date" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Хэрэглэгчийн код</label>
+                            <input placeholder="Хэрэглэгчийн код" class="form-control" name="customer_code"
+                                   id="customer_code" value="{{search_q.customer_code}}">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Хэрэглэгчийн нэр</label>
+                            <input placeholder="Хэрэглэгчийн нэр" class="form-control" name="user_name" id="user_name"
+                                   value="{{search_q.user_name}}">
+                        </div>
+                        <div class="form-group col-md-3">
+							<label class="control-label">Төлбөр төлсөн банк</label>
+                            <select name="select_bank" class="selectpicker" data-title="- Сонгох -"
+                                    data-style="btn-default btn-block" data-menu-style="dropdown-blue" >
+                                <option value="">- Сонгох -</option>
+                                {% for item in banks %}
+                                    {% if search_q.bank == item.id %}
+                                        <option value="{{item.id}}" selected>{{item.name}}</option>
+                                    {% else %}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+						</div>
+						<div class="form-group col-md-3">
+							<label class="control-label">Хэрэглэгчийн ангилал</label>
+
+                            <select name="select_angilal" class="selectpicker" data-title="- Сонгох -"
+                                    data-style="btn-default btn-block" data-menu-style="dropdown-blue" >
+                                <option value="">- Сонгох -</option>
+                                {% if search_q.customer_angilal == '0' %}
+                                    <option value="0" selected>Аж ахуй нэгж</option>
+                                {% else %}
+                                    <option value="0">Аж ахуй нэгж</option>
+                                {%endif%}
+                                {% if search_q.customer_angilal == '1' %}
+                                    <option value="1" selected>Ахуйн хэрэглэгч</option>
+                                {% else %}
+                                    <option value="1">Ахуйн хэрэглэгч</option>
+                                {%endif%}
+                            </select>
+						</div>
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-warning btn-fill btn-wd" type="submit" name="search">Шүүж харах</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
+                <div class="download_button text-right">
+                    <button class="btn btn-success btn-fill" type="submit" name="export_xls"><span class="fa fa-file-excel-o"></span>
+                        Файлаар татаж авах
+                    </button>
+                </div>
+                </form>
+                <table id="bootstrap-table1" class="table">
+                    <thead>
+                    <th class="text-center">№</th>
+                    <th data-field="reg_number" data-sortable="true">Хэрэглэгчийн код</th>
+                    <th data-field="name" data-sortable="true">Хэрэглэгчийн нэр</th>
+                    <th data-field="address" data-sortable="true">Хаяг</th>
+                    <th class="text-right" data-field="bank_name" data-sortable="true">Банк</th>
+                    <th class="text-right" data-field="cur_pay" data-sortable="true">Тухайн сард орсон</th>
+                    <th class="text-right" data-field="iluu" data-sortable="true">Урьдчилж төлсөн</th>
+                    <th class="text-right" data-field="payment" data-sortable="true">Нийт дүн</th>
+                    <th class="text-center" data-field="date_max" data-sortable="true">Төлсөн огноо</th>
+                    <th class="text-center" data-field="tuluv">Засах/Устгах</th>
+                    </thead>
+                    <tbody>
+                    {% for item in data_orlogo %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{item.code}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.address}}</td>
+                        <td>{{item.bank_name}}</td>
+                        <td>{% if item.cur_pay != 0 %}{{item.cur_pay|intcomma}} ₮{% endif %}</td>
+                        <td>{% if item.iluu != 0 %}{{item.iluu|intcomma}} ₮{% endif %}</td>
+                        <td>{% if item.payment != 0 %}{{item.payment|intcomma}} ₮{% endif %}</td>
+                        <td>{{item.date_max|date:"Y-m-d"}}</td>
+                        <td>
+                            {% if item.date_max != '' %}
+                            {% if perms.data.change_paymenthistory %}
+                            <a href="/home/borluulalt/orlogo_list/edit/{{item.id}}/" class="btn btn-simple btn-warning btn-icon table-action edit">
+                                <i class="fa fa-edit"></i></a>
+                            {% endif %}
+                            {% if perms.data.delete_paymenthistory %}
+                            <a href="/home/borluulalt/orlogo_list/delete/{{item.id}}/{{item.code}}/{{item.payment}}/" onclick="return confirm('Та {{item.code}} кодтой хэрэглэгчийн {{item.payment}} ₮ орлогыг устгахдаа итгэлтэй байна уу?')"
+                               class="btn btn-simple btn-info btn-icon table-action view" >
+                                <i class="fa fa-trash-o"></i>
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><b>{{total_cur_pay|floatformat:'2'|intcomma}}</b></td>
+                        <td><b>{{total_iluu|floatformat:'2'|intcomma}}</b></td>
+                        <td><b>{{total_pay|floatformat:'2'|intcomma}}</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--  end card  -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block additionalblock %}
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Төлбөр төлөлт</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group col-md-12">
+                    <table class="table" id="nehemjleh_tbl" name="nehemjleh_tbl">
+                        <thead>
+                        <th>Хэрэглэгчийн код</th>
+                        <th>Огноо</th>
+                        <th>Төлсөн дүн</th>
+                        <th>Банк</th>
+                        </thead>
+                        <tbody id="nehemjleh_tbl_body" name="nehemjleh_tbl_body">
+                        <tr>
+                            <td>Ачааллаж байна....</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-fill" data-dismiss="modal">Хаах</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

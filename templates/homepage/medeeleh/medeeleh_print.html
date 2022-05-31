@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Хэвлэх{% endblock%}
+{% block content %}
+{% if perms.data.view_medeelehzagvar %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li
+        {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт хэвлэж мэдэгдэх хэрэглэгчид</div>
+                <div class="content content-full-width">
+                    {% if perms.data.print_medeelehzagvar %}
+                    <div class="download_button text-right">
+                        <button name="dwon" id="dwon" class="btn btn-success btn-fill"><span class="fa fa-file-o"></span>Хэвлэх</button>
+                    </div>
+                    {% endif %}
+                    <table id="bootstrap-table" class="table" style="margin-left: 10px;">
+                        <thead>
+                            <th data-field="check" class="text-center">№</th>
+                            <th data-field="text" data-sortable="true" class="text-center">Хэвлэх текст</th>
+                        </thead>
+                        <tbody>
+                        {% for print_text in print_texts %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center">{{ print_text|safe }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div style="display:none;">
+                    <table id="print_table" style="font-size:11px;">
+                        {% for print_text in print_texts %}
+                        <tr>
+                            <td style="padding:0px;">{{ print_text|safe }}<hr/></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block headblock %}
+<script type="text/javascript">
+function printData() {
+    var divToPrint=document.getElementById("print_table");
+    newWin= window.open("");
+    newWin.document.write(divToPrint.outerHTML);
+    newWin.print();
+    newWin.close();
+}
+
+$('#dwon').on('click',function(){
+    printData();
+})
+</script>
+{% endblock %}

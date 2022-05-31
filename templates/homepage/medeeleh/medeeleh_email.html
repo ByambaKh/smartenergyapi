@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Имэйлээр мэдээлэх{% endblock%}
+{% block content %}
+{% if perms.data.view_medeelehzagvar %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li
+        {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Нийт имэйл явуулах хэрэглэгчид</div>
+                <div class="content content-full-width">
+                     <form method="post" action="/home/medeeleh_email_send">{% csrf_token %}
+                        {% for email, email_text in email_texts %}
+                        <input type="hidden" name="emails" value="{{email}}">
+                        <input type="hidden" name="email_texts" value="{{email_text}}">
+                        {% endfor %}
+                        <div class="download_button text-right">
+                            <button class="btn btn-success btn-fill"><i class="fa fa-paper-plane" aria-hidden="true"></i>Илгээх</button>
+                        </div>
+                    </form>
+                    <table id="bootstrap-table" class="table" style="margin-left: 10px;">
+                        <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="phone" data-sortable="true" class="text-center">Имэйл</th>
+                        <th data-field="text" data-sortable="true" class="text-center">Имэйл текст</th>
+                        </thead>
+                        <tbody>
+                        {% for mail, show_text in show_texts %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center">{{ mail }}</td>
+                            <td class="text-center">{{ show_text|safe }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

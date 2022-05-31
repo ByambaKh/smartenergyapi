@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load homepage_tags %}
+{% block title %}Татвар{% endblock%}
+{% block content %}
+<div class="container-fluid">
+{% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <form action="/home/borluulalt/tatvar" method="post">{% csrf_token %}
+                <button class="btn btn-primary btn-fill btn-wd" type="submit" name="send_invoice">Илгээх</button>
+            </form>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">Татвар</div>
+                    <div class="table_search_filter">
+                        <form action="/home/borluulalt/tatvar" method="post">{% csrf_token %}
+                        <div class="form-group col-md-4">
+                            <label>Эхлэх огноо</label>
+                            <input value="{{start_date|date:'Y-m-d'}}" type="text" placeholder="Эхлэх огноо" class="form-control datetimepicker" name="start_date" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Дуусах огноо</label>
+                            <input value="{{end_date|date:'Y-m-d'}}" type="text" placeholder="Дуусах огноо" class="form-control datetimepicker" name="end_date" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Орлого бүртгэсэн</label>
+                            <select name="user" class="form-control">
+                                <option value="">- Сонгох -</option>
+                                {% for user in users %}
+                                {% if user_id == user.id %}
+                                    <option value="{{user.id}}" selected>{{user.first_name}}</option>
+                                {% else %}
+                                    <option value="{{user.id}}">{{user.first_name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="form-group col-md-4">
+                            <label class="control-label">Илгээсэн эсэх</label>
+							<select id="select_angilal" name="is_send" class="form-control">
+                                <option value="">- Сонгох -</option>
+                                <option value="1" {% if is_send == '1' %}selected{% endif %}>Илгээсэн</option>
+                                <option value="0" {% if is_send == '0' %}selected{% endif %}>Илгээгээгүй</option>
+                        	</select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Хэрэглэгчийн код</label>
+                            <input value="{{customer_code}}" type="text" placeholder="Хэрэглэгчийн код" class="form-control" name="customer_code">
+                        </div>
+                        <div class="col-md-12 text-center">
+                            {% comment %}
+                            <a href="/home/borluulalt/tatvar" class="btn btn-info btn-fill btn-wd" type="button">Цэвэрлэх</a>
+                            {% endcomment %}
+                            <button class="btn btn-warning btn-fill btn-wd" type="submit" name="search">Шүүж харах</button>
+                        </div>
+                        <div class="clearfix"></div>
+                        </form>
+                    </div>
+                <table id="bootstrap-table1" class="table" style="margin-left: 10px;">
+                    <thead>
+                        <th data-field="check" class="text-center">№</th>
+                        <th data-field="created_user_id" data-sortable="true" class="text-center">Орлого бүртгэсэн</th>
+                        <th data-field="customer_code" data-sortable="true" class="text-center">Хэрэглэгч код</th>
+                        <th data-field="success" data-sortable="true" class="text-center">Амжилттай эсэх</th>
+                        <th data-field="registerNo" data-sortable="true" class="text-center">Бүртгэлийн дугаар</th>
+                        <th data-field="billId" data-sortable="true" class="text-center">Нэхэмжлэл ID</th>
+                        <th data-field="date" data-sortable="true" class="text-center">Огноо</th>
+                        <th data-field="macAddress" data-sortable="true" class="text-center">МАК хаяг</th>
+                        <th data-field="billType" data-sortable="true" class="text-center">Нэхэмжлэл төрөл</th>
+                        <th data-field="amount" data-sortable="true" class="text-center">Нийт дүн</th>
+                        <th data-field="branchNo" data-sortable="true" class="text-center">Салбар дугаар</th>
+                        <th data-field="cashAmount" data-sortable="true" class="text-center">Бэлэн нийт дүн</th>
+                        <th data-field="customerNo" data-sortable="true" class="text-center">Үйлчлүүлэгчийн дугаар</th>
+                        <th data-field="districtCode" data-sortable="true" class="text-center">Дүүрэг код</th>
+                        <th data-field="invoiceId" data-sortable="true" class="text-center">Нэхэмжлэл дугаар</th>
+                        <th data-field="merchantId" data-sortable="true" class="text-center">Хэрэглэгчийн дугаар</th>
+                        <th data-field="nonCashAmount" data-sortable="true" class="text-center">Бэлэн бус нийт дүн</th>
+                        <th data-field="returnBillId" data-sortable="true" class="text-center">Буцах нэхэмжлэл ID</th>
+                        <th data-field="taxType" data-sortable="true" class="text-center">Татвар төрөл</th>
+                        <th data-field="vat" data-sortable="true" class="text-center">НӨАТ</th>
+                        <th data-field="is_send" data-sortable="true" class="text-center">Илгээсэн эсэх</th>
+                    </thead>
+                    <tbody>
+                    {% for posapi in posapis %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center"><b>{% get_first_last_name posapi.created_user_id as first_last_name %}{{first_last_name}}</b></td>
+                            <td class="text-left">{{ posapi.pay_his.customer.code }}</td>
+                            <td class="text-left">{% if posapi.success == True %}Амжилттай{% else %}Амжилтгүй{% endif %}</td>
+                            <td class="text-left">{{ posapi.registerNo }}</td>
+                            <td class="text-left">{{ posapi.billId }}</td>
+                            <td class="text-left">{{ posapi.date|date:'Y-m-d H:i' }}</td>
+                            <td class="text-left">{{ posapi.macAddress }}</td>
+                            <td class="text-left">
+                                {% if posapi.billType == '1' %}
+                                    Байгууллагаас хувь иргэнд борлуулсан бараа, ажил үйлчилгээний баримт
+                                {% elif posapi.billType == '3' %}
+                                    Байгууллагаас байгууллагын хооронд борлуулсан бараа, ажил үйлчилгээний баримт
+                                {% elif posapi.billType == '5' %}
+                                    Нэхэмжлэхээр борлуулсан бараа, ажил, үйлчилгээний баримт
+                                {% endif %}
+                            </td>
+                            <td class="text-left">{{ posapi.amount }}</td>
+                            <td class="text-left">{{ posapi.branchNo }}</td>
+                            <td class="text-left">{{ posapi.cashAmount }}</td>
+                            <td class="text-left">{{ posapi.customerNo }}</td>
+                            <td class="text-left">{% if posapi.districtCode == '23' %}Хан-Уул{% else %}{{posapi.districtCode}}{% endif %}</td>
+                            <td class="text-left">{{ posapi.invoiceId }}</td>
+                            <td class="text-left">{{ posapi.merchantId }}</td>
+                            <td class="text-left">{{ posapi.nonCashAmount }}</td>
+                            <td class="text-left">{{ posapi.returnBillId }}</td>
+                            <td class="text-left">
+                                {% if posapi.taxType == '1' %}
+                                    НӨАТ тооцох баримт
+                                {% elif posapi.taxType == '2' %}
+                                    НӨАТ-аас чөлөөлөгдөх бараа, ажил, үйлчилгээ борлуулсан баримт
+                                {% elif posapi.taxType == '3' %}
+                                    НӨАТ 0% тооцох бараа, ажил, үйлчилгээ борлуулсан баримт
+                                {% endif %}
+                            </td>
+                            <td class="text-left">{{ posapi.vat }}</td>
+                            <td class="text-left">{% if posapi.is_send %}Илгээсэн{% else %}Илгээгээгүй{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td class="text-center"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"><b>{{amount|floatformat:'2'}}</b></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"><b>{{nonCashAmount|floatformat:'2'}}</b></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                        <td class="text-left"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

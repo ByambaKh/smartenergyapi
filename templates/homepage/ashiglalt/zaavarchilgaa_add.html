@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Зааварчилгаа{% endblock%}
+{% block link %}/home/ashiglalt/zaavarchilgaa_list{% endblock %}
+{% block content %}
+{% if perms.data.add_ashiglaltzaavarchilgaa or perms.data.change_ashiglaltzaavarchilgaa %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" name="zaavarchilgaa" action="{{action}}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="zaavar_ids" id="zaavar_ids" value="">
+            <div class="content">
+                {% if 'edit' in action %}
+                <legend>Зааварчилгаа засах</legend>
+                {% else %}
+                <legend>Зааварчилгаа бүртгэх</legend>
+                {%endif%}
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Огноо</label>
+                            <input class="form-control datetimepicker1" placeholder="Огноо" type="text" name="ognoo" value="{{zaavarchilgaa.ognoo|date:'m/d/Y H:i p'}}" required/>
+                        </div>
+                    </fieldset>
+					<fieldset>
+						<div class="form-group">
+							<label>Зааварчилгаа өгсөн</label>
+							<select name="zaavar_ugsun" class="form-control" id="zaavar_ugsun" required>
+								<option value="">Сонгох</option>
+								{% for ugsun in ugsuns %}
+								{% if zaavarchilgaa.zaavar_ugsun_id == ugsun.id %}
+								<option value="{{ugsun.id}}" selected>{{ugsun.first_name}} {{ugsun.last_name}}</option>
+								{% else %}
+								<option value="{{ugsun.id}}">{{ugsun.first_name}} {{ugsun.last_name}}</option>
+								{% endif %}
+								{% endfor %}
+							</select>
+						</div>
+					</fieldset>
+					<fieldset>
+						<div class="form-group">
+							<label>Зааварчилгаа авсан</label>
+							<select class="form-control" name="zaavar_avsan" id="zaavar_avsan" multiple required>
+                                {% if 'edit' in action %}
+                                {% for avsan_in in avsans_in %}
+                                <option value="{{avsan_in.id}}" selected>{{avsan_in.first_name}} {{avsan_in.last_name}}</option>
+                                {% endfor %}
+                                {% for avsan_out in avsans_out%}
+                                <option value="{{avsan_out.id}}">{{avsan_out.first_name}} {{avsan_out.last_name}}</option>
+                                {% endfor %}
+                                {% else %}
+                                {% for avsan in avsans %}
+                                <option value="{{avsan.id}}">{{avsan.first_name}} {{avsan.last_name}}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+						</div>
+					</fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+						<div class="form-group">
+							<label>Бүлэг</label>
+							<select name="category" id="category" class="form-control">
+								<option value="">Сонгох</option>
+								{% for category in categories %}
+								<option value="{{category.id}}">{{category.name}}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</fieldset>
+                    <fieldset>
+						<div class="form-group">
+							<label>Зааварчилгаа</label>
+							<select name="zaavarchilgaa" id="zaavarchilgaa" style="height:130px;" class="form-control" multiple
+                            required>
+							</select>
+						</div>
+					</fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                <button type="submit" class="btn btn-info btn-fill">
+                    {% if 'edit' in action %}
+                        Засах
+                    {% else %}
+                        Хадгалах
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block headblock %}
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    zaavar_ids = [];
+	zaavar_avsan_options = [];
+
+	var current_url = $(location).attr('pathname');
+	current_url = current_url.split('/');
+	zaavar_id = current_url[current_url.length-2];
+
+    $('select#zaavar_ugsun').change(function() {
+		var options = $('select#zaavar_avsan').children();
+		for(i=0; i<options.length; i++) {
+			if(options[i].value == $('select#zaavar_ugsun').val()) {
+				options.splice(i, 1);
+			}
+		}
+		$('select#zaavar_avsan option').remove().end();
+		for(i=0; i<options.length; i++) {
+			$('select#zaavar_avsan').append('<option value="' + options[i].value + '">' + options[i].text + '</option>');
+		}
+    });
+
+    var selected_zaavar;
+    var current_url = $(location).attr('pathname')
+    current_url = current_url.split('/');
+    if(current_url[3]=='zaavarchilgaa_edit') {
+        $.ajax({
+            url: $(location).attr('pathname')+'?zaavar_id='+current_url[4],
+            type: 'GET',
+            success: function(result){
+                selected_zaavar = result;
+                for (var i=0; i<result.length; i++) {
+                    zaavar_ids.push(result[i].id);
+                }
+            }
+        });
+    }
+
+	$('select#category').change(function() {
+	    var current_url = $(location).attr('pathname')
+        current_url = current_url.split('/')[3];
+
+    	var category_id = $('#category').val();
+    	$('select#zaavarchilgaa option').remove().end();
+
+    	if(category_id != '') {
+        	$.ajax({
+            	url: $(location).attr('pathname')+'?category='+category_id,
+                type: 'GET',
+                success: function(result){
+                    if(current_url=='zaavarchilgaa_edit') {
+                        same_ids = []
+                        for (var i=0; i<result.length; i++) {
+                            for (var j=0; j<selected_zaavar.length; j++) {
+                                if(result[i].id==selected_zaavar[j].id) {
+                                    same_ids.push(i);
+                                    $('select#zaavarchilgaa').append('<option value="' + selected_zaavar[j].id + '" selected>' + selected_zaavar[j].title + '</option>');
+                                }
+                            }
+                        }
+                        for (var i=0; i<same_ids.length; i++) {
+                            result.pop(same_ids[i]);
+                        }
+                        for (var i=0; i<result.length; i++) {
+                            $('select#zaavarchilgaa').append('<option value="' + result[i].id + '">' + result[i].title + '</option>');
+                        }
+                    } else {
+                        for (var i=0; i<result.length; i++) {
+                            $('select#zaavarchilgaa').append('<option value="' + result[i].id + '">' + result[i].title + '</option>');
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+	$('select#zaavarchilgaa').focusout(function() {
+		$('select#zaavarchilgaa').find('option').each(function() {
+			if($(this).is(':selected')) {
+				zaavar_ids.push($(this).val());
+			}
+		});
+	});
+
+    $('form[name=zaavarchilgaa]').submit(function() {
+        $('input#zaavar_ids').val(zaavar_ids);
+    });
+});
+</script>
+{% endblock %}

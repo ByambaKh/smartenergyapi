@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Релей{% endblock%}
+{% block link %}/home/lavlagaa/relei{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="card">
+        <form id="allInputsFormValidation" class="form-horizontal" action="{{action}}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="relei_id" value="{{relei.id}}">
+            <div class="content">
+                {% if 'edit' in action %}
+                <legend>Релейны утга засах</legend>
+                {% else %}
+                <legend>Релейны утга бүртгэх</legend>
+                {%endif%}
+                <div class="col-md-6">
+                     <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Дэд станц</label>
+                            <select class="form-control" name="ded_stants" id="ded_stants">
+                                <option value="">Сонгох</option>
+                                {% for ded_stant in ded_stants %}
+                                {% if relei.ded_stants_id == ded_stant.id %}
+                                <option value="{{ded_stant.id|safe}}" selected>{{ded_stant.name}}</option>
+                                {% else %}
+                                <option value="{{ded_stant.id|safe}}">{{ded_stant.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Шугам</label>
+                            <select class="form-control" name="shugam" id="shugam">
+                                <option value="">Сонгох</option>
+                                {% if 'edit' in action %}
+                                {% for shugam in shugams %}
+                                {% if relei.shugam_id == shugam.id %}
+                                <option value="{{shugam.id|safe}}" selected>{{shugam.shugam_ner}}</option>
+                                {% else %}
+                                <option value="{{shugam.id|safe}}">{{shugam.shugam_ner}}</option>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Релей нэр</label>
+                            <input class="form-control" placeholder="Релей нэр" name="ner" value="{{relei.ner}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Релей тип</label>
+                            <select class="form-control" name="tip" required>
+                                <option value="">Сонгох</option>
+                                <option value="0" {%if relei.tip == '0'%}selected{%endif%}>Оролт</option>
+                                <option value="1" {%if relei.tip == '1'%}selected{%endif%}>Гаралт</option>
+                                <option value="2" {%if relei.tip == '2'%}selected{%endif%}>СХВТ</option>
+                                <option value="3" {%if relei.tip == '3'%}selected{%endif%}>СХС</option>
+                                <option value="4" {%if relei.tip == '4'%}selected{%endif%}>ДХТ</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Суурилуулсан огноо</label>
+                            <input class="form-control datetimepicker" type="text" placeholder="Суурилуулсан огноо" name="suuriluulsan_ognoo" value="{{relei.suuriluulsan_ognoo|date:'Y-m-d'}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хугацааны барилттай ихсэх гүйдлийн хамгаалалтын тавил</label>
+                            <input class="form-control" placeholder="Хугацааны барилттай ихсэх гүйдлийн хамгаалалтын тавил" name="hugatsaa_barilttai" type="number" value="{{relei.hugatsaa_barilttai}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Хугацааны барилтгүй ихсэх гүйдлийн хамгаалалтын тавил</label>
+                            <input class="form-control" placeholder="Хугацааны барилтгүй ихсэх гүйдлийн хамгаалалтын тавил" name="hugatsaa_bariltgui" type="number" value="{{relei.hugatsaa_bariltgui}}" required/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">Газардлагын хамгаалалтын тавил</label>
+                            <input class="form-control" placeholder="Газардлагын хамгаалалтын тавил" name="gazardalt" type="number" value="{{relei.gazardalt}}" required/>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="footer text-center">
+                {% if 'edit' in action %}
+                    <button type="submit" class="btn btn-info btn-fill">Засах</button>
+                {% else %}
+                    <button type="submit" class="btn btn-info btn-fill">Бүртгэх</button>
+                    <button type="submit" class="btn btn-info btn-fill" name="save_and_continue">Бүртгэх & Үргэлжлүүлэх</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

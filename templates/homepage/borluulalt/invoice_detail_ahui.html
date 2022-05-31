@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load humanize %}
+{% load homepage_tags %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow"/>
+    <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.ico' %}">
+    <link href="{% static 'assets/css/invoice.css' %}" rel="stylesheet"/>
+    <title>Хэрэглэгчийн дансны дэлгэрэнгүй тайлан - Ухаалаг эрчим хүч ХХК</title>
+</head>
+<body>
+<div class="actions">
+    <button onclick="window.close()">Хаах</button>
+    <button onclick="window.print()">Хэвлэх</button>
+</div>
+<div class="page">
+    <h2 align="center"><b>Хэрэглэгчийн дансны дэлгэрэнгүй тайлан</b></h2><br/>
+    <table width="100%" border="0" style="font-family: Arial, Verdana, sans-serif; color: #000; font-size: 10px; padding: -5px;">
+        <tbody>
+        <tr>
+            <td width="50%">Хэрэглэгчийн овог: <b>{{customer.last_name}}</b></td>
+            <td width="50%">Хэрэглэгчийн код: <b>{{customer.code}}</b></td>
+        </tr>
+        <tr>
+            <td>Хэрэглэгчийн нэр: <b>{{customer.first_name}}</b></td>
+            <td>Борлуулалтын цикл: <b>{{customer.cycl_name}}</b></td>
+        </tr>
+        <tr>
+            <td>Регистр: <b>{{customer.register}}</b></td>
+            <td>Холбогдсон дэд станц: <b>{% if customer.deds_name %}{{customer.deds_name}}{% endif %}</b></td>
+        </tr>
+        <tr>
+            <td>Хаяг: <b>{% if customer.address_name %}{{customer.address_name}}{% endif %}</b></td>
+            <td>Хамрагдах хугацаа: <b>{{start_date}} - {{end_date}}</b></td>
+        </tr>
+        <tr>
+            <td>Банкны нэр: <b>{{customer.bank_name}}</b></td>
+            <td>Дансны дугаар: <b>{{customer.bank_dans}}</b></td>
+        </tr>
+        <tr>
+            <td>Эхний үлдэгдэл: <b>{{ehnii|floatformat:'2'|intcomma}}</b></td>
+            <td>Нэхэмжлэл: <b>Ухаалаг эрчим хүч ХХК</b></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <br/>
+    <table>
+        <tr>
+            <td width="10%" align="left"><b>Огноо</b></td>
+            <td width="90%" align="center"><b>Дэлгэрэнгүй</b></td>
+        </tr>
+        {% for dates, types, datas, barimt_une in all_datas %}
+        {% if types == '0' %}
+        <tr>
+            <td><b>{{dates}}</b></td>
+            <td>
+                <table>
+                    {% make_float datas.total_diff as total_diff %}
+                    {% if total_diff == 0.0 %}
+                    <tr>
+                        <td colspan="5" style="border-left: solid 1px #000; border-top: solid 1px #000; padding-left:5px; border-bottom: solid 1px #000;"><b>Бичилт : </b> Тоолуурын дугаар - {{datas.number}}</td>
+                        <td align="right" style="border-top: solid 1px #000; border-right: solid 1px #000; padding-right:5px; border-bottom: solid 1px #000;"><b>0.00</b></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="border-left: solid 1px #000; border-top: solid 1px #000; border-right: solid 1px #000; padding-left:5px;"><b>Бичилт : </b> Тоолуурын дугаар - {{datas.number}}</td>
+                    </tr>
+                    <tr>
+                        <td width="5%" align="center" style="border-bottom: solid 1px #000; border-top: solid 1px #000; border-left: solid 1px #000;">№</td>
+                        <td width="25%" align="center" style="border-bottom: solid 1px #000; border-top: solid 1px #000;"><strong>Үзүүлэлт</strong></td>
+                        <td width="20%" align="center" style="border-bottom: solid 1px #000; border-top: solid 1px #000; border-right: solid 1px #000;"><strong>Тоолуурын заалт</strong></td>
+                        <td width="16%" align="center" style="border-bottom: solid 1px #000; border-top: solid 1px #000;"><strong>Хэрэглээ</strong><br/>кВт.ц</td>
+                        <td width="17%" align="center" style="border-bottom: solid 1px #000; border-top: solid 1px #000;"><strong>Төлбөр тооцох тариф</strong><br/>төг/кВт.ц</td>
+                        <td width="17%" align="center" style="border-bottom: solid 1px #000; border-top: solid 1px #000; border-right: solid 1px #000;"><strong>Төлбөр</strong><br/>төгрөг</td>
+                    </tr>
+                    {% if total_diff <= 150.0 and datas.tariff == '0' %}
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">1.1</td>
+                        <td>150 кВт.ц хүртэл</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right">{{datas.total_diff|floatformat:'2'|intcomma}}</td>
+                        <td align="right">{% get_ahuin_udur_une as ahuin_udur_une %}{{ahuin_udur_une}}</td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply ahuin_udur_une datas.total_diff as day_price %}{{day_price|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;"></td>
+                        <td>
+                            <blockquote>өмнөх</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{datas.umnu_day|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;"></td>
+                        <td>
+                            <blockquote>одоо</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{datas.bich_day|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">1.2</td>
+                        <td>151 кВт.ц-аас дээш</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right">0.0</td>
+                        <td align="right">{% get_ahuin_udur_une_high %}</td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">0.0</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">&nbsp;</td>
+                        <td>
+                            <blockquote>өмнөх</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">0.00</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">&nbsp;</td>
+                        <td>
+                            <blockquote>одоо</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">0.00</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">1</td>
+                        <td><b>Нийт</b></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"><b>{{datas.total_diff|floatformat:'2'|intcomma}}</b></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>{{day_price|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">2</td>
+                        <td>Сарын суурь төлбөр</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% new_ahui_suuri_une datas.bich_id as suuri_une %}{{suuri_une|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">3</td>
+                        <td>Баримт үнэ</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% make_float barimt_une as barimt_une %}{{barimt_une|floatformat:'2'}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">4</td>
+                        <td><b>Цахилгааны төлбөр</b></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% append day_price suuri_une as day_suuri %}{% append day_suuri barimt_une as day_suuri_barimt %}<b>{{day_suuri_barimt|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">5</td>
+                        <td>НӨАТатвар</td>
+                        <td align="right" style="border-right: solid 1px #000;">&nbsp;</td>
+                        <td align="right"></td>
+                        <td align="right">10%</td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% return_nuat day_suuri_barimt as nuat %}{{nuat|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-bottom: solid 1px #000; border-left: solid 1px #000;">6</td>
+                        <td style="border-bottom: solid 1px #000;"><b>Төлбөл зохих нийт төлбөрийн дүн</b></td>
+                        <td align="right" style="border-bottom: solid 1px #000;border-right: solid 1px #000;"></td>
+                        <td align="right" style="border-bottom: solid 1px #000;"></td>
+                        <td align="right" style="border-bottom: solid 1px #000;"></td>
+                        <td align="right" style="border-bottom: solid 1px #000; border-right: solid 1px #000; padding-right:5px;">{% append day_suuri_barimt nuat as total_price %}<b>{{total_price|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                    {% elif total_diff >= 150.1 and datas.tariff == '0' %}
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">1.1</td>
+                        <td>150 кВт.ц хүртэл</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right">150.00</td>
+                        <td align="right">{% get_ahuin_udur_une as ahuin_udur_une %}{{ahuin_udur_une}}</td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply ahuin_udur_une 150.0 as day_low_price %}{{day_low_price|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;"></td>
+                        <td>
+                            <blockquote>өмнөх</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{datas.umnu_day|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;"></td>
+                        <td>
+                            <blockquote>одоо</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% append datas.umnu_day 150.0 as middle_day %}{{middle_day|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">1.2</td>
+                        <td>151 кВт.ц-аас дээш</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right">{% reduce datas.bich_day middle_day as middle_diff %}{{middle_diff|floatformat:'2'|intcomma}}</td>
+                        <td align="right">{% get_ahuin_udur_une_high as ahui_high_une %}{{ahui_high_une|floatformat:'2'|intcomma}}</td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply middle_diff ahui_high_une as day_high_price %}{{day_high_price|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">&nbsp;</td>
+                        <td>
+                            <blockquote>өмнөх</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{middle_day|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">&nbsp;</td>
+                        <td>
+                            <blockquote>одоо</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{datas.bich_day|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">1</td>
+                        <td><b>Нийт</b></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"><b>{{datas.total_diff|floatformat:'2'|intcomma}}</b></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>{% append day_low_price day_high_price as day_price %}{{day_price|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">2</td>
+                        <td>Сарын суурь төлбөр</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% new_ahui_suuri_une datas.bich_id as suuri_une %}{{suuri_une|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">3</td>
+                        <td>Баримт үнэ</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right">{{invoice_une}}</td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% make_float barimt_une as barimt_une %}{{barimt_une|floatformat:'2'}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">4</td>
+                        <td><b>Цахилгааны төлбөр</b></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% append day_price suuri_une as day_suuri %}{% append day_suuri barimt_une as day_suuri_barimt %}<b>{{day_suuri_barimt|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">5</td>
+                        <td>НӨАТатвар</td>
+                        <td align="right" style="border-right: solid 1px #000;">&nbsp;</td>
+                        <td align="right"></td>
+                        <td align="right">10%</td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% return_nuat day_suuri_barimt as nuat %}{{nuat|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-bottom: solid 1px #000; border-left: solid 1px #000;">6</td>
+                        <td style="border-bottom: solid 1px #000;"><b>Төлбөл зохих нийт төлбөрийн дүн</b></td>
+                        <td align="right" style="border-bottom: solid 1px #000;border-right: solid 1px #000;"></td>
+                        <td align="right" style="border-bottom: solid 1px #000;"></td>
+                        <td align="right" style="border-bottom: solid 1px #000;"></td>
+                        <td align="right" style="border-bottom: solid 1px #000; border-right: solid 1px #000; padding-right:5px;">{% append day_suuri_barimt nuat as total_price %}<b>{{total_price|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                    {% elif datas.tariff == '1' %}
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">1.1</td>
+                        <td>Өдрийн хэрэглээ</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right">{% reduce datas.bich_day datas.umnu_day as diff_day %}{{diff_day|floatformat:'2'|intcomma}}</td>
+                        <td align="right">{% get_ahuin_udur_une_tariff2 as ahuin_udur_une_tariff2 %}{{ahuin_udur_une_tariff2|floatformat:'2'|intcomma}}</td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply ahuin_udur_une_tariff2 diff_day as day_tariff2_price %}{{day_tariff2_price|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;"></td>
+                        <td>
+                            <blockquote>өмнөх</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{datas.umnu_day|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;"></td>
+                        <td>
+                            <blockquote>одоо</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{datas.bich_day|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">1.2</td>
+                        <td>Шөнийн хэрэглээ</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right">{% reduce datas.bich_night datas.umnu_night as night_diff %}{{night_diff|floatformat:'2'|intcomma}}</td>
+                        <td align="right">{% get_ahuin_shunu_une as ahuin_shunu_une %}{{ahuin_shunu_une|floatformat:'2'|intcomma}}</td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% multiply night_diff ahuin_shunu_une as night_tariff2_price %}{{night_tariff2_price|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">&nbsp;</td>
+                        <td>
+                            <blockquote>өмнөх</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{datas.umnu_night|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">&nbsp;</td>
+                        <td>
+                            <blockquote>одоо</blockquote>
+                        </td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{{datas.bich_night|floatformat:'2'|intcomma}}</td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">1</td>
+                        <td><b>Нийт</b></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"><b>{% append diff_day night_diff as day_night_diff %}{{day_night_diff|floatformat:'2'|intcomma}}</b></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;"><b>{% append day_tariff2_price night_tariff2_price as day_night_price %}{{day_night_price|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">2</td>
+                        <td>Сарын суурь төлбөр</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% new_ahui_suuri_une datas.bich_id as suuri_une %}{{suuri_une|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">3</td>
+                        <td>Баримт үнэ</td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right">{{invoice_une}}</td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% make_float barimt_une as barimt_une %}{{barimt_une|floatformat:'2'}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">4</td>
+                        <td><b>Цахилгааны төлбөр</b></td>
+                        <td align="right" style="border-right: solid 1px #000;"></td>
+                        <td align="right"></td>
+                        <td align="right"></td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% append day_night_price suuri_une as day_night_suuri %}{% append day_night_suuri barimt_une as day_night_suuri_barimt %}<b>{{day_night_suuri_barimt|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-left: solid 1px #000;">5</td>
+                        <td>НӨАТатвар</td>
+                        <td align="right" style="border-right: solid 1px #000;">&nbsp;</td>
+                        <td align="right"></td>
+                        <td align="right">10%</td>
+                        <td align="right" style="border-right: solid 1px #000; padding-right:5px;">{% return_nuat day_night_suuri_barimt as nuat %}{{nuat|floatformat:'2'|intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border-bottom: solid 1px #000; border-left: solid 1px #000;">6</td>
+                        <td style="border-bottom: solid 1px #000;"><b>Төлбөл зохих нийт төлбөрийн дүн</b></td>
+                        <td align="right" style="border-bottom: solid 1px #000;border-right: solid 1px #000;"></td>
+                        <td align="right" style="border-bottom: solid 1px #000;"></td>
+                        <td align="right" style="border-bottom: solid 1px #000;"></td>
+                        <td align="right" style="border-bottom: solid 1px #000; border-right: solid 1px #000; padding-right:5px;">{% append day_night_suuri_barimt nuat as total_price %}<b>{{total_price|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                    {% endif %}
+                    {% endif %}
+                </table>
+            </td>
+        </tr>
+        {% set_bichilt_prices total_price %}
+        {% elif types == '2' %}
+        <tr>
+            <td><b>{{dates}}</b></td>
+            <td>
+                <table>
+                    <tr>
+                        <td style="border-left: solid 1px #000; border-top: solid 1px #000; border-bottom: solid 1px #000; padding-left:5px;"><b>Үйлчилгээ : </b>{% if datas.uil_name %}{{datas.uil_name}}{% endif %}</td>
+                        <td align="right" style="border-top: solid 1px #000; border-bottom: solid 1px #000; border-right: solid 1px #000; padding-right:5px;"><b>{{datas.payment|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        {% set_uilchilgee_prices datas.payment %}
+        {% elif types == '1' %}
+        <tr>
+            <td><b>{{dates}}</b></td>
+            <td>
+                <table>
+                    <tr>
+                        <td style="border-left: solid 1px #000; border-top: solid 1px #000; border-bottom: solid 1px #000; padding-left:5px;"><b>Орлого : </b>{% if datas.bank_name %}{{datas.bank_name}} - {{datas.bank_dans}}{% endif %}</td>
+                        <td align="right" style="border-top: solid 1px #000; border-bottom: solid 1px #000; border-right: solid 1px #000; padding-right:5px;"><b>{{datas.pay_total|floatformat:'2'|intcomma}}</b></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        {% set_orlogo_prices datas.pay_total %}
+        {% endif %}
+        {% endfor %}
+    </table>
+    <br/><hr/><p align="center">
+    <b>Эхний үлдэгдэл : </b>{{ehnii|floatformat:'2'|intcomma}} |
+    <b> Нийт бичилт : </b>{% get_bichilt_prices as bichilt_prices %}{{bichilt_prices|floatformat:'2'|intcomma}} |
+    <b> Нийт төлбөрт үйлчилгээ : </b>{% get_uilchilgee_prices as uilchilgee_prices %}{{uilchilgee_prices|floatformat:'2'|intcomma}}</p>
+    <p align="center"><br/>
+    <b> Нийт орлого : </b>{% get_orlogo_prices as orlogo_prices %}{{orlogo_prices|floatformat:'2'|intcomma}} |
+    <b> Үлдэгдэл : </b> {% append ehnii bichilt_prices as ehni_bich %}{% append ehni_bich uilchilgee_prices as ehni_bich_uilch %}
+    {% reduce ehni_bich_uilch orlogo_prices as uldegdel %}{{uldegdel|floatformat:'2'|intcomma}}</p>
+</div>
+</body>
+</html>
